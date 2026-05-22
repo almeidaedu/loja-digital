@@ -1,0 +1,62 @@
+.trust-bar {
+  background-color: var(--bg-card);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 18px 0;
+}
+
+.trust-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;
+  transition: color 0.2s;
+}
+
+.trust-item:hover .trust-text {
+  color: var(--text-primary);
+}
+
+.trust-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.trust-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.trust-sep {
+  width: 1px;
+  height: 20px;
+  background-color: rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .trust-sep {
+    display: none;
+  }
+
+  .trust-items {
+    justify-content: center;
+    gap: 20px 24px;
+  }
+}

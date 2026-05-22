@@ -1,0 +1,43 @@
+.layout-main {
+  min-height: 100vh;
+  padding-top: var(--header-total);
+}
+
+/* ── WhatsApp floating button ─────────────────────── */
+.wpp-float {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 999;
+  background-color: #25D366;
+  color: #fff;
+  font-family: var(--font-condensed);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 14px 18px;
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  animation: fadeIn 1s 2s both;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wpp-float:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 32px rgba(37, 211, 102, 0.55);
+}
+
+.wpp-label {
+  display: inline;
+}
+
+@media (max-width: 480px) {
+  .wpp-label {
+    display: none;
+  }
+}

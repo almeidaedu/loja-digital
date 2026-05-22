@@ -1,0 +1,19 @@
+.route-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--accent-green);
+  z-index: 9999;
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 10px var(--accent-green);
+  animation: routeProgress 1s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes routeProgress {
+  0%   { width: 0%;   opacity: 1; }
+  70%  { width: 85%;  opacity: 1; }
+  90%  { width: 100%; opacity: 1; }
+  100% { width: 100%; opacity: 0; }
+}

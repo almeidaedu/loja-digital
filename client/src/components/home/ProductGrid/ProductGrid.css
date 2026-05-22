@@ -1,0 +1,89 @@
+.product-grid-section {
+  padding: 80px 0;
+  background-color: var(--bg-dark);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* Skeleton */
+.skeleton-card {
+  pointer-events: none;
+}
+
+.skeleton-image {
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite;
+}
+
+.skeleton-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-line {
+  height: 12px;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.skeleton-line.short {
+  width: 45%;
+}
+
+.skeleton-line.medium {
+  width: 70%;
+}
+
+.skeleton-line.price {
+  height: 28px;
+  width: 55%;
+}
+
+.skeleton-btn {
+  height: 40px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@media (max-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}

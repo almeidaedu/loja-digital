@@ -1,0 +1,101 @@
+.account-page {
+  padding: 60px 0 80px;
+}
+
+.account-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 40px;
+}
+
+.account-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.account-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 32px 28px;
+}
+
+.account-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent-green-dim);
+  border: 2px solid var(--accent-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--accent-green);
+  margin-bottom: 16px;
+}
+
+.account-name {
+  font-family: var(--font-condensed);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.account-email {
+  font-family: var(--font-condensed);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  word-break: break-all;
+}
+
+.account-role-badge {
+  display: inline-block;
+  font-family: var(--font-condensed);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--accent-green-dim);
+  color: var(--accent-green);
+  border: 1px solid rgba(0, 255, 135, 0.3);
+  margin-bottom: 24px;
+}
+
+.account-orders-link {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.account-section-title {
+  font-family: var(--font-condensed);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.account-success-msg {
+  font-family: var(--font-condensed);
+  font-size: 0.9rem;
+  color: var(--accent-green);
+  margin-bottom: 12px;
+  padding: 10px;
+  background: var(--accent-green-dim);
+  border: 1px solid rgba(0, 255, 135, 0.2);
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .account-grid {
+    grid-template-columns: 1fr;
+  }
+}

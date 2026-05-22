@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String     @db.VarChar(150)
+  email     String     @unique @db.VarChar(255)
+  password  String     @db.VarChar(255)
+  role      String     @default("customer") @db.VarChar(20)
+  createdAt DateTime   @default(now()) @db.Timestamptz @map("created_at")
+  updatedAt DateTime   @updatedAt @db.Timestamptz @map("updated_at")
+  orders    Order[]
+  cartItems CartItem[]
+
+  @@map("users")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(100)
+  slug      String    @unique @db.VarChar(100)
+  flagEmoji String?   @db.VarChar(10) @map("flag_emoji")
+  sortOrder Int       @default(0) @map("sort_order")
+  createdAt DateTime  @default(now()) @db.Timestamptz @map("created_at")
+  products  Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id            Int         @id @default(autoincrement())
+  categoryId    Int?        @map("category_id")
+  name          String      @db.VarChar(255)
+  slug          String      @unique @db.VarChar(255)
+  description   String?     @db.Text
+  price         Decimal     @db.Decimal(10, 2)
+  originalPrice Decimal?    @db.Decimal(10, 2) @map("original_price")
+  stock         Int         @default(0)
+  imageUrl      String?     @db.VarChar(500) @map("image_url")
+  badge         String?     @db.VarChar(30)
+  rating        Decimal     @default(5.00) @db.Decimal(3, 2)
+  reviewCount   Int         @default(0) @map("review_count")
+  active        Boolean     @default(true)
+  featured      Boolean     @default(false)
+  createdAt     DateTime    @default(now()) @db.Timestamptz @map("created_at")
+  updatedAt     DateTime    @updatedAt @db.Timestamptz @map("updated_at")
+  category      Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  orderItems    OrderItem[]
+  cartItems     CartItem[]
+
+  @@map("products")
+}
+
+model Order {
+  id                String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String     @db.Uuid @map("user_id")
+  status            String     @default("pending") @db.VarChar(30)
+  totalAmount       Decimal    @db.Decimal(10, 2) @map("total_amount")
+  paymentMethod     String?    @db.VarChar(30) @map("payment_method")
+  paymentId         String?    @db.VarChar(100) @map("payment_id")
+  mpPreferenceId    String?    @db.VarChar(100) @map("mp_preference_id")
+  mpMerchantOrderId String?    @db.VarChar(100) @map("mp_merchant_order_id")
+  pixQrCode         String?    @db.Text @map("pix_qr_code")
+  pixQrCodeBase64   String?    @db.Text @map("pix_qr_code_base64")
+  pixExpiration     DateTime?  @db.Timestamptz @map("pix_expiration")
+  shippingAddress   Json?      @map("shipping_address")
+  createdAt         DateTime   @default(now()) @db.Timestamptz @map("created_at")
+  updatedAt         DateTime   @updatedAt @db.Timestamptz @map("updated_at")
+  user              User       @relation(fields: [userId], references: [id])
+  items             OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id           Int      @id @default(autoincrement())
+  orderId      String   @db.Uuid @map("order_id")
+  productId    Int?     @map("product_id")
+  productName  String   @db.VarChar(255) @map("product_name")
+  productImage String?  @db.VarChar(500) @map("product_image")
+  unitPrice    Decimal  @db.Decimal(10, 2) @map("unit_price")
+  quantity     Int
+  size         String?  @db.VarChar(10)
+  createdAt    DateTime @default(now()) @db.Timestamptz @map("created_at")
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product      Product? @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  userId    String   @db.Uuid @map("user_id")
+  productId Int      @map("product_id")
+  quantity  Int      @default(1)
+  size      String?  @db.VarChar(10)
+  createdAt DateTime @default(now()) @db.Timestamptz @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId, size])
+  @@map("cart_items")
+}

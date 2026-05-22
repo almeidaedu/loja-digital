@@ -1,0 +1,129 @@
+.categories-section {
+  padding: 80px 0;
+  background-color: var(--bg-dark);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--text-primary);
+  letter-spacing: 0.03em;
+  margin: 0 0 10px;
+}
+
+.section-subtitle {
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+.category-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 2px solid transparent;
+  border-radius: 8px;
+  padding: 28px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: center;
+  width: 100%;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  border-bottom-color: var(--accent-green);
+  box-shadow: 0 8px 30px rgba(0, 255, 135, 0.1);
+}
+
+.category-card:hover .category-name {
+  color: var(--accent-green);
+}
+
+.category-flag {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.category-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.25s;
+}
+
+.category-count {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+/* Skeletons */
+.category-skeleton {
+  pointer-events: none;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-flag {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton-name {
+  width: 80px;
+  height: 12px;
+  margin-top: 4px;
+}
+
+.skeleton-count {
+  width: 56px;
+  height: 10px;
+}
+
+@media (max-width: 1024px) {
+  .categories-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

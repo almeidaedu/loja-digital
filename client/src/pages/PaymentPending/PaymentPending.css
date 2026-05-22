@@ -1,0 +1,131 @@
+.pix-page {
+  padding: 60px 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.pix-title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  letter-spacing: 0.04em;
+  color: var(--accent-green);
+  margin-bottom: 8px;
+}
+
+.pix-subtitle {
+  font-family: var(--font-condensed);
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 40px;
+}
+
+.pix-qr {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+.pix-qr img {
+  width: 220px;
+  height: 220px;
+  display: block;
+}
+
+.pix-copy-label {
+  font-family: var(--font-condensed);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.pix-copy-box {
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.pix-code {
+  flex: 1;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pix-copy-btn {
+  background: var(--accent-green);
+  color: #000;
+  font-family: var(--font-condensed);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  padding: 8px 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.pix-copy-btn:hover {
+  opacity: 0.85;
+}
+
+.pix-countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.pix-countdown-label {
+  font-family: var(--font-condensed);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pix-countdown-time {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+}
+
+.pix-countdown-urgent {
+  color: #ff6b35;
+}
+
+.pix-status {
+  font-family: var(--font-condensed);
+  font-size: 1rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.pix-expired {
+  font-family: var(--font-condensed);
+  font-size: 1rem;
+  color: var(--accent-red, #ff3b3b);
+  margin-top: 24px;
+}

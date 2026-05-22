@@ -1,0 +1,24 @@
+// Re-exports from MUI Icons — single import point for the whole app
+export { default as StarFilledIcon }      from '@mui/icons-material/Star';
+export { default as StarEmptyIcon }       from '@mui/icons-material/StarBorder';
+export { default as HeartFilledIcon }     from '@mui/icons-material/Favorite';
+export { default as HeartOutlineIcon }    from '@mui/icons-material/FavoriteBorder';
+export { default as ShirtIcon }           from '@mui/icons-material/Checkroom';
+export { default as TrophyIcon }          from '@mui/icons-material/EmojiEvents';
+export { default as FlameIcon }           from '@mui/icons-material/LocalFireDepartment';
+export { default as SparkleIcon }         from '@mui/icons-material/AutoAwesome';
+export { default as DashboardIcon }       from '@mui/icons-material/Dashboard';
+export { default as GridViewIcon }        from '@mui/icons-material/GridView';
+export { default as OrdersIcon }          from '@mui/icons-material/ListAlt';
+export { default as BoltIcon }            from '@mui/icons-material/Bolt';
+export { default as LocalShippingIcon }   from '@mui/icons-material/LocalShipping';
+export { default as LockIcon }            from '@mui/icons-material/Lock';
+export { default as SyncIcon }            from '@mui/icons-material/Sync';
+export { default as CreditCardIcon }      from '@mui/icons-material/CreditCard';
+export { default as StadiumIcon }         from '@mui/icons-material/Stadium';
+export { default as GiftIcon }            from '@mui/icons-material/CardGiftcard';
+export { default as PackageIcon }         from '@mui/icons-material/Inventory2';
+export { default as CheckCircleIcon }     from '@mui/icons-material/CheckCircle';
+export { default as CancelIcon }          from '@mui/icons-material/Cancel';
+export { default as SecurityIcon }        from '@mui/icons-material/Security';
+export { default as PaymentsIcon }        from '@mui/icons-material/Payments';

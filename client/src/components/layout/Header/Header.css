@@ -1,0 +1,330 @@
+.header {
+  position: fixed;
+  top: var(--frete-bar-height);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header.scrolled {
+  background: rgba(10, 10, 10, 0.98);
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.6);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-height);
+  gap: 20px;
+}
+
+/* ── Logo ─────────────────────────────────────────── */
+.logo {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  flex-shrink: 0;
+  line-height: 1;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.logo span {
+  color: var(--accent-green);
+}
+
+/* ── Desktop nav ──────────────────────────────────── */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+/* Sliding pill — single element that moves between active links */
+.nav-pill {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 32px;
+  background: var(--accent-green);
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 0;
+  transition:
+    left  0.38s cubic-bezier(0.34, 1.3, 0.64, 1),
+    width 0.38s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+.nav-link {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-condensed);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+.nav-link.active {
+  color: #000;
+}
+
+/* ── Header actions ───────────────────────────────── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Cart button */
+.cart-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-primary);
+  transition: border-color 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.cart-btn:hover {
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+.cart-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  background: var(--accent-green);
+  color: #000;
+  font-family: var(--font-condensed);
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Ver Coleção CTA */
+.header-cta {
+  font-size: 0.85rem;
+  padding: 10px 20px;
+  white-space: nowrap;
+}
+
+/* Login link */
+.header-login-link {
+  font-family: var(--font-condensed);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.header-login-link:hover {
+  color: var(--accent-green);
+}
+
+/* ── User menu ────────────────────────────────────── */
+.user-menu-wrapper {
+  position: relative;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  background: var(--accent-green);
+  color: #000;
+  font-family: var(--font-condensed);
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.user-avatar:hover {
+  opacity: 0.85;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 180px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  z-index: 100;
+  overflow: hidden;
+  animation: fadeInUp 0.18s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.user-dropdown-name {
+  padding: 12px 16px 10px;
+  font-family: var(--font-condensed);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+
+.user-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 11px 16px;
+  font-family: var(--font-condensed);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.user-dropdown-item:hover {
+  background: var(--bg-card-hover);
+  color: var(--accent-green);
+}
+
+.user-dropdown-admin {
+  color: var(--accent-green);
+}
+
+.user-dropdown-logout {
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.user-dropdown-logout:hover {
+  color: var(--accent-red);
+  background: rgba(255, 59, 59, 0.08);
+}
+
+/* ── Hamburger ────────────────────────────────────── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Mobile nav ───────────────────────────────────── */
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+  padding: 12px 0 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+.mobile-nav-link {
+  font-family: var(--font-condensed);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 12px 0;
+  transition: color 0.2s;
+}
+
+.mobile-nav-link:hover {
+  color: var(--accent-green);
+}
+
+.mobile-nav-cta {
+  margin-top: 12px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 768px) {
+  .header-nav {
+    display: none;
+  }
+
+  .header-cta {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .header-login-link {
+    display: none;
+  }
+}

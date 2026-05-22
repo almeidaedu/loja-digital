@@ -1,0 +1,2680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CAMPO CHEIO | Camisas de Futebol Originais</title>
+  <meta name="description" content="As melhores camisas de futebol do Brasil. Clubes, seleções e coleções retrô. Entrega em 24h, frete grátis acima de R$149." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =====================================================
+       CSS VARIABLES & RESET
+    ===================================================== */
+    :root {
+      --bg-dark: #0A0A0A;
+      --bg-card: #141414;
+      --bg-card-hover: #1C1C1C;
+      --accent-green: #00FF87;
+      --accent-green-dim: rgba(0, 255, 135, 0.1);
+      --accent-green-glow: rgba(0, 255, 135, 0.3);
+      --accent-red: #FF3B3B;
+      --text-primary: #FFFFFF;
+      --text-muted: #888888;
+      --border: #2A2A2A;
+      --border-hover: #3A3A3A;
+      --font-display: 'Bebas Neue', 'Barlow Condensed', sans-serif;
+      --font-condensed: 'Barlow Condensed', sans-serif;
+      --font-body: 'Barlow', sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+    }
+
+    /* =====================================================
+       UTILITY CLASSES
+    ===================================================== */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      letter-spacing: 0.05em;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .section-title span {
+      color: var(--accent-green);
+    }
+
+    .section-subtitle {
+      font-family: var(--font-condensed);
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 48px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background-color: var(--accent-green);
+      color: #000;
+      font-family: var(--font-condensed);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 16px 36px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.15);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover::after {
+      opacity: 1;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--accent-green-glow);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-condensed);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    .badge-green {
+      background: var(--accent-green-dim);
+      color: var(--accent-green);
+      border: 1px solid rgba(0, 255, 135, 0.2);
+    }
+
+    .badge-red {
+      background: rgba(255, 59, 59, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(255, 59, 59, 0.3);
+    }
+
+    .stars {
+      color: #FFD700;
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+    }
+
+    /* =====================================================
+       ANIMATIONS
+    ===================================================== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -1000px 0; }
+      100% { background-position: 1000px 0; }
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(120%); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(120%); }
+    }
+
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .animate-on-scroll.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =====================================================
+       STICKY HEADER
+    ===================================================== */
+    #header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    #header.scrolled {
+      background: rgba(10, 10, 10, 0.98);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      gap: 20px;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .logo span {
+      color: var(--accent-green);
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .header-nav a {
+      font-family: var(--font-condensed);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .header-nav a:hover {
+      color: var(--accent-green);
+    }
+
+    .header-cta {
+      flex-shrink: 0;
+      padding: 10px 22px;
+      font-size: 0.9rem;
+    }
+
+    .header-menu-btn {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px;
+    }
+
+    .header-menu-btn span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text-primary);
+      transition: all 0.3s;
+    }
+
+    /* =====================================================
+       FRETE PROGRESS BAR
+    ===================================================== */
+    .frete-bar {
+      background: #111;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 0;
+    }
+
+    .frete-bar-inner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-condensed);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .frete-bar-inner .highlight {
+      color: var(--accent-green);
+    }
+
+    .frete-progress-track {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .frete-progress-fill {
+      height: 100%;
+      width: 60%;
+      background: var(--accent-green);
+      border-radius: 2px;
+      transition: width 1s ease;
+    }
+
+    /* =====================================================
+       HERO SECTION
+    ===================================================== */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 120px;
+      padding-bottom: 60px;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    /* Campo de futebol estilizado como background */
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 50%, rgba(0, 255, 135, 0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0, 255, 135, 0.03) 0%, transparent 50%);
+    }
+
+    /* Linhas do campo */
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle 200px at 70% 50%, transparent 198px, rgba(255,255,255,0.025) 200px, transparent 202px),
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 80px 80px, 80px 80px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-content {
+      animation: slideInLeft 0.8s ease forwards;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-condensed);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-green);
+      margin-bottom: 20px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 2px;
+      background: var(--accent-green);
+    }
+
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 7vw, 6rem);
+      line-height: 0.95;
+      letter-spacing: 0.03em;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+
+    .hero-headline .green {
+      color: var(--accent-green);
+      display: block;
+    }
+
+    .hero-subheadline {
+      font-family: var(--font-condensed);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hero-subheadline .pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .hero-social-proof {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-avatars {
+      display: flex;
+    }
+
+    .hero-avatars .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid var(--bg-dark);
+      margin-left: -8px;
+      overflow: hidden;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .hero-avatars .avatar:first-child {
+      margin-left: 0;
+    }
+
+    .avatar-a { background: #1a472a; }
+    .avatar-b { background: #1e3a5f; }
+    .avatar-c { background: #5f1e1e; }
+    .avatar-d { background: #3d1e5f; }
+
+    .hero-social-text {
+      font-family: var(--font-condensed);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .hero-social-text .count {
+      color: var(--accent-green);
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Imagem hero */
+    .hero-image-wrap {
+      position: relative;
+      animation: slideInRight 0.8s ease forwards;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hero-shirt-visual {
+      position: relative;
+      width: 360px;
+      height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Círculo de fundo com glow */
+    .hero-shirt-visual::before {
+      content: '';
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 255, 135, 0.08) 0%, transparent 70%);
+      border: 1px solid rgba(0, 255, 135, 0.1);
+    }
+
+    /* Camisa SVG */
+    .shirt-svg-wrap {
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 20px 60px rgba(0, 255, 135, 0.2));
+    }
+
+    .shirt-tag {
+      position: absolute;
+      background: var(--accent-green);
+      color: #000;
+      font-family: var(--font-condensed);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border-radius: 4px;
+    }
+
+    .shirt-tag-top {
+      top: 40px;
+      right: 20px;
+      transform: rotate(5deg);
+    }
+
+    .shirt-tag-bottom {
+      bottom: 60px;
+      left: 10px;
+      background: var(--accent-red);
+      color: #fff;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* =====================================================
+       TRUST BAR
+    ===================================================== */
+    #trust-bar {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+    }
+
+    .trust-items {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-condensed);
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .trust-item:hover {
+      color: var(--text-primary);
+    }
+
+    .trust-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .trust-sep {
+      width: 1px;
+      height: 30px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    /* =====================================================
+       CATEGORIAS
+    ===================================================== */
+    #categorias {
+      padding: 80px 0;
+    }
+
+    .categorias-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+    }
+
+    .categoria-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 28px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      overflow: hidden;
+    }
+
+    .categoria-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent-green);
+      transform: scaleX(0);
+      transition: transform 0.25s ease;
+    }
+
+    .categoria-card:hover {
+      border-color: rgba(0, 255, 135, 0.3);
+      background: var(--bg-card-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .categoria-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .categoria-flag {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .categoria-name {
+      font-family: var(--font-condensed);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.25s;
+    }
+
+    .categoria-card:hover .categoria-name {
+      color: var(--accent-green);
+    }
+
+    .categoria-count {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      opacity: 0.6;
+    }
+
+    /* =====================================================
+       PRODUTOS EM DESTAQUE
+    ===================================================== */
+    #produtos {
+      padding: 80px 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(0, 255, 135, 0.02) 50%, transparent 100%);
+    }
+
+    .produtos-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .produto-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .produto-card:hover {
+      border-color: rgba(0, 255, 135, 0.25);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .produto-img-wrap {
+      position: relative;
+      aspect-ratio: 4/5;
+      background: #111;
+      overflow: hidden;
+    }
+
+    .produto-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .produto-card:hover .produto-img {
+      transform: scale(1.06);
+    }
+
+    /* Placeholder para camisa */
+    .produto-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+    }
+
+    .produto-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+    }
+
+    .produto-badge-vendido {
+      background: var(--accent-green);
+      color: #000;
+    }
+
+    .produto-badge-urgencia {
+      background: var(--accent-red);
+      color: #fff;
+    }
+
+    .produto-badge-novo {
+      background: #3B82F6;
+      color: #fff;
+    }
+
+    .produto-heart {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+    }
+
+    .produto-heart:hover {
+      background: rgba(255, 59, 59, 0.2);
+      border-color: var(--accent-red);
+    }
+
+    .produto-info {
+      padding: 16px;
+    }
+
+    .produto-time {
+      font-family: var(--font-condensed);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-green);
+      margin-bottom: 4px;
+    }
+
+    .produto-nome {
+      font-family: var(--font-condensed);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .produto-stars {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .produto-stars .count {
+      font-family: var(--font-condensed);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .produto-preco {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .produto-preco-original {
+      font-family: var(--font-condensed);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    .produto-preco-atual {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .produto-preco-parcela {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .produto-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      font-family: var(--font-condensed);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 12px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .produto-btn:hover {
+      background: var(--accent-green);
+      color: #000;
+    }
+
+    /* =====================================================
+       PROVA SOCIAL
+    ===================================================== */
+    #prova-social {
+      padding: 80px 0;
+      background: var(--bg-card);
+    }
+
+    .social-proof-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .rating-big {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 6rem);
+      color: var(--accent-green);
+      display: block;
+      letter-spacing: 0.03em;
+    }
+
+    .rating-sub {
+      font-family: var(--font-condensed);
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .depoimentos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .depoimento-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 28px;
+      transition: border-color 0.25s;
+    }
+
+    .depoimento-card:hover {
+      border-color: rgba(0, 255, 135, 0.2);
+    }
+
+    .depoimento-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .depoimento-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      border: 2px solid var(--border);
+    }
+
+    .depoimento-nome {
+      font-family: var(--font-condensed);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .depoimento-local {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .depoimento-texto {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+
+    .depoimento-produto {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-condensed);
+      font-size: 0.8rem;
+      color: var(--accent-green);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .verified-badge {
+      margin-left: auto;
+      font-size: 0.75rem;
+      color: var(--accent-green);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* =====================================================
+       BANNER DE URGÊNCIA
+    ===================================================== */
+    #urgencia {
+      padding: 80px 0;
+      background: #0D0D0D;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #urgencia::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent-green);
+    }
+
+    #urgencia::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent-green);
+    }
+
+    .urgencia-inner {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .urgencia-tag {
+      display: inline-block;
+      background: var(--accent-green);
+      color: #000;
+      font-family: var(--font-condensed);
+      font-size: 0.8rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 2px;
+      margin-bottom: 24px;
+    }
+
+    .urgencia-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .urgencia-title .highlight {
+      color: var(--accent-green);
+    }
+
+    .urgencia-sub {
+      font-family: var(--font-condensed);
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 48px;
+    }
+
+    /* Contador */
+    .countdown {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 48px;
+    }
+
+    .countdown-block {
+      text-align: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 24px;
+      min-width: 80px;
+    }
+
+    .countdown-num {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      color: var(--accent-green);
+      display: block;
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+
+    .countdown-label {
+      font-family: var(--font-condensed);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .countdown-sep {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      color: var(--accent-green);
+      line-height: 1;
+      margin-top: -20px;
+    }
+
+    /* =====================================================
+       BENEFÍCIOS
+    ===================================================== */
+    #beneficios {
+      padding: 80px 0;
+    }
+
+    .beneficios-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .beneficio-card {
+      text-align: center;
+      padding: 36px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.25s;
+    }
+
+    .beneficio-card:hover {
+      border-color: rgba(0, 255, 135, 0.25);
+      transform: translateY(-4px);
+    }
+
+    .beneficio-icon {
+      font-size: 2.4rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .beneficio-titulo {
+      font-family: var(--font-condensed);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .beneficio-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* =====================================================
+       FAQ
+    ===================================================== */
+    #faq {
+      padding: 80px 0;
+      background: var(--bg-card);
+    }
+
+    .faq-list {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .faq-item {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .faq-item.open {
+      border-color: rgba(0, 255, 135, 0.3);
+    }
+
+    .faq-question {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      text-align: left;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: var(--font-condensed);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      gap: 12px;
+    }
+
+    .faq-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      transition: all 0.25s;
+      color: var(--accent-green);
+    }
+
+    .faq-item.open .faq-icon {
+      background: var(--accent-green);
+      color: #000;
+      transform: rotate(45deg);
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 0 24px 20px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      margin-top: -1px;
+    }
+
+    .faq-item.open .faq-answer {
+      display: block;
+    }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+    #footer {
+      padding: 60px 0 30px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 36px;
+    }
+
+    .footer-brand .logo {
+      font-size: 2rem;
+      margin-bottom: 14px;
+    }
+
+    .footer-brand p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 280px;
+      margin-bottom: 20px;
+    }
+
+    .footer-wpp {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #25D366;
+      color: #fff;
+      font-family: var(--font-condensed);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 10px 18px;
+      border-radius: 4px;
+      transition: opacity 0.2s;
+    }
+
+    .footer-wpp:hover {
+      opacity: 0.9;
+    }
+
+    .footer-col-title {
+      font-family: var(--font-condensed);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-green);
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .footer-pay-icons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pay-badge {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-family: var(--font-condensed);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .pay-badge.pix {
+      color: #32BCAD;
+      border-color: rgba(50, 188, 173, 0.3);
+    }
+
+    /* =====================================================
+       WHATSAPP FLUTUANTE
+    ===================================================== */
+    .wpp-float {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #25D366;
+      color: #fff;
+      font-family: var(--font-condensed);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 14px 18px;
+      border-radius: 50px;
+      box-shadow: 0 8px 30px rgba(37, 211, 102, 0.35);
+      cursor: pointer;
+      transition: all 0.25s;
+      text-decoration: none;
+      animation: fadeIn 1s ease 2s both;
+    }
+
+    .wpp-float:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 40px rgba(37, 211, 102, 0.5);
+    }
+
+    .wpp-icon {
+      font-size: 1.3rem;
+    }
+
+    /* =====================================================
+       TOAST NOTIFICATIONS
+    ===================================================== */
+    #toast-container {
+      position: fixed;
+      bottom: 90px;
+      right: 28px;
+      z-index: 998;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 280px;
+    }
+
+    .toast {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent-green);
+      border-radius: 6px;
+      padding: 12px 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      animation: toastIn 0.4s ease forwards;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast.out {
+      animation: toastOut 0.4s ease forwards;
+    }
+
+    .toast-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      background: var(--bg-dark);
+    }
+
+    .toast-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .toast-name {
+      font-family: var(--font-condensed);
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toast-msg {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .toast-time {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    /* =====================================================
+       EXIT POPUP
+    ===================================================== */
+    #exit-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #exit-popup.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .popup-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--accent-green);
+      border-radius: 12px;
+      padding: 48px 40px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      animation: fadeInUp 0.4s ease;
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 30px;
+      height: 30px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .popup-close:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+
+    .popup-tag {
+      display: inline-block;
+      background: var(--accent-green);
+      color: #000;
+      font-family: var(--font-condensed);
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 2px;
+      margin-bottom: 20px;
+    }
+
+    .popup-title {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .popup-title span {
+      color: var(--accent-green);
+    }
+
+    .popup-sub {
+      font-family: var(--font-condensed);
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 28px;
+    }
+
+    .popup-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .popup-input {
+      flex: 1;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px 16px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .popup-input:focus {
+      border-color: var(--accent-green);
+    }
+
+    .popup-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .popup-skip {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: underline;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .popup-skip:hover {
+      color: var(--text-primary);
+    }
+
+    /* =====================================================
+       RESPONSIVO
+    ===================================================== */
+    @media (max-width: 1024px) {
+      .produtos-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .categorias-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .footer-top {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-nav,
+      .header-cta {
+        display: none;
+      }
+
+      .header-menu-btn {
+        display: flex;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+      }
+
+      .hero-image-wrap {
+        order: -1;
+      }
+
+      .hero-shirt-visual {
+        width: 260px;
+        height: 300px;
+      }
+
+      .hero-eyebrow {
+        justify-content: center;
+      }
+
+      .hero-cta-group {
+        justify-content: center;
+      }
+
+      .hero-subheadline {
+        justify-content: center;
+      }
+
+      .hero-badges {
+        justify-content: center;
+      }
+
+      .trust-items {
+        justify-content: center;
+      }
+
+      .trust-sep {
+        display: none;
+      }
+
+      .produtos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .categorias-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .depoimentos-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .beneficios-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-top {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .countdown {
+        gap: 4px;
+      }
+
+      .countdown-block {
+        padding: 12px 14px;
+        min-width: 60px;
+      }
+
+      .countdown-num {
+        font-size: 2rem;
+      }
+
+      .wpp-float .wpp-label {
+        display: none;
+      }
+
+      .wpp-float {
+        padding: 14px;
+        border-radius: 50%;
+      }
+
+      #toast-container {
+        bottom: 80px;
+        right: 16px;
+        max-width: 240px;
+      }
+
+      .popup-box {
+        padding: 36px 24px;
+      }
+
+      .popup-form {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .produtos-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .produto-info {
+        padding: 12px;
+      }
+
+      .beneficios-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .categorias-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =====================================================
+       STICKY HEADER
+  ===================================================== -->
+  <header id="header">
+    <!-- Barra de frete grátis -->
+    <div class="frete-bar">
+      <div class="container">
+        <div class="frete-bar-inner">
+          <span>🚚</span>
+          <span id="frete-text">Faltam <span class="highlight">R$ 49,00</span> para frete grátis!</span>
+          <div class="frete-progress-track">
+            <div class="frete-progress-fill" id="frete-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="header-inner">
+        <a href="#" class="logo">CAMPO<span> CHEIO</span></a>
+
+        <nav>
+          <ul class="header-nav">
+            <li><a href="#categorias">Categorias</a></li>
+            <li><a href="#produtos">Produtos</a></li>
+            <li><a href="#prova-social">Avaliações</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </nav>
+
+        <a href="#produtos" class="btn-primary header-cta">Ver Coleção</a>
+
+        <button class="header-menu-btn" aria-label="Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================
+       HERO
+  ===================================================== -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="hero-eyebrow">⚽ Temporada 2024/25</div>
+
+          <h1 class="hero-headline">
+            Vista as cores<br>
+            <span class="green">que você defende</span>
+          </h1>
+
+          <p class="hero-subheadline">
+            <span class="pill">⚡ Entrega em 24h</span>
+            <span class="pill">🚚 Frete grátis +R$149</span>
+            <span class="pill">🔒 Compra segura</span>
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#produtos" class="btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+              Ver Coleção Agora
+            </a>
+
+            <div class="hero-social-proof">
+              <div class="hero-avatars">
+                <div class="avatar avatar-a">M</div>
+                <div class="avatar avatar-b">R</div>
+                <div class="avatar avatar-c">C</div>
+                <div class="avatar avatar-d">L</div>
+              </div>
+              <div class="hero-social-text">
+                <span class="count">+12.000</span> pedidos entregues
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-badges">
+            <span class="badge badge-green">⭐ 4.9 / 5.0 avaliação</span>
+            <span class="badge badge-red">🔥 +500 vendidos essa semana</span>
+          </div>
+        </div>
+
+        <!-- Camisa hero visual -->
+        <div class="hero-image-wrap">
+          <div class="hero-shirt-visual">
+
+            <!-- Camisa Brasil SVG -->
+            <div class="shirt-svg-wrap">
+              <svg width="280" height="320" viewBox="0 0 280 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Corpo da camisa -->
+                <path d="M80 40 L60 80 L20 70 L30 140 L50 140 L50 280 L230 280 L230 140 L250 140 L260 70 L220 80 L200 40 Q175 20 140 20 Q105 20 80 40Z" fill="#1A9B4B" stroke="#157A3C" stroke-width="1.5"/>
+                <!-- Gola -->
+                <path d="M110 40 Q140 55 170 40 Q165 25 140 22 Q115 25 110 40Z" fill="#1A8040" stroke="#157A3C" stroke-width="1"/>
+                <!-- Manga esquerda -->
+                <path d="M80 40 L60 80 L50 80 L50 120 L30 140 L30 80 Q45 60 60 50Z" fill="#1A9B4B" stroke="#157A3C" stroke-width="1"/>
+                <!-- Manga direita -->
+                <path d="M200 40 L220 80 L230 80 L230 120 L250 140 L250 80 Q235 60 220 50Z" fill="#1A9B4B" stroke="#157A3C" stroke-width="1"/>
+                <!-- Losango amarelo CBF -->
+                <path d="M140 80 L200 150 L140 220 L80 150 Z" fill="#FFDF00" stroke="#1A9B4B" stroke-width="1"/>
+                <!-- Círculo azul -->
+                <circle cx="140" cy="150" r="35" fill="#1B4DB8"/>
+                <!-- Texto CBF simulado -->
+                <circle cx="140" cy="150" r="28" fill="none" stroke="#FFDF00" stroke-width="1.5"/>
+                <!-- Estrelas -->
+                <text x="125" y="148" font-size="8" fill="#FFDF00" font-family="Arial" text-anchor="middle">★★★★★</text>
+                <text x="155" y="148" font-size="8" fill="#FFDF00" font-family="Arial" text-anchor="middle">★</text>
+                <!-- Nike logo area -->
+                <path d="M210 90 Q225 85 215 100" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <!-- Número 10 simulado -->
+                <text x="140" y="250" font-size="32" font-weight="bold" fill="rgba(255,255,255,0.15)" font-family="Arial Black" text-anchor="middle">10</text>
+                <!-- Bordas das mangas -->
+                <rect x="50" y="108" width="0" height="12" rx="1" fill="#FFDF00"/>
+                <rect x="230" y="108" width="0" height="12" rx="1" fill="#FFDF00"/>
+                <!-- Detalhe azul no pescoço -->
+                <path d="M108 42 Q140 56 172 42" stroke="#1B4DB8" stroke-width="3" fill="none"/>
+              </svg>
+            </div>
+
+            <div class="shirt-tag shirt-tag-top">NOVA TEMPORADA</div>
+            <div class="shirt-tag shirt-tag-bottom">🔥 Mais vendida</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       TRUST BAR
+  ===================================================== -->
+  <section id="trust-bar">
+    <div class="container">
+      <div class="trust-items">
+        <div class="trust-item">
+          <span class="trust-icon">⚡</span>
+          <span>Entrega em 24h</span>
+        </div>
+        <div class="trust-sep"></div>
+        <div class="trust-item">
+          <span class="trust-icon">🔒</span>
+          <span>Pagamento Seguro</span>
+        </div>
+        <div class="trust-sep"></div>
+        <div class="trust-item">
+          <span class="trust-icon">🏆</span>
+          <span>Produto Original</span>
+        </div>
+        <div class="trust-sep"></div>
+        <div class="trust-item">
+          <span class="trust-icon">🔄</span>
+          <span>Troca Grátis</span>
+        </div>
+        <div class="trust-sep"></div>
+        <div class="trust-item">
+          <span class="trust-icon">💳</span>
+          <span>Parcelamento em 12x</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       CATEGORIAS
+  ===================================================== -->
+  <section id="categorias">
+    <div class="container">
+      <h2 class="section-title animate-on-scroll">Explore por <span>Categoria</span></h2>
+      <p class="section-subtitle animate-on-scroll">Do futebol brasileiro ao melhor do mundo</p>
+
+      <div class="categorias-grid">
+        <div class="categoria-card animate-on-scroll">
+          <span class="categoria-flag">🇧🇷</span>
+          <div class="categoria-name">Seleção Brasileira</div>
+          <div class="categoria-count">32 produtos</div>
+        </div>
+        <div class="categoria-card animate-on-scroll">
+          <span class="categoria-flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span>
+          <div class="categoria-name">Premier League</div>
+          <div class="categoria-count">86 produtos</div>
+        </div>
+        <div class="categoria-card animate-on-scroll">
+          <span class="categoria-flag">🇪🇸</span>
+          <div class="categoria-name">La Liga</div>
+          <div class="categoria-count">54 produtos</div>
+        </div>
+        <div class="categoria-card animate-on-scroll">
+          <span class="categoria-flag">⭐</span>
+          <div class="categoria-name">Champions</div>
+          <div class="categoria-count">41 produtos</div>
+        </div>
+        <div class="categoria-card animate-on-scroll">
+          <span class="categoria-flag">🕹️</span>
+          <div class="categoria-name">Coleção Retrô</div>
+          <div class="categoria-count">28 produtos</div>
+        </div>
+        <div class="categoria-card animate-on-scroll">
+          <span class="categoria-flag">🆕</span>
+          <div class="categoria-name">Lançamentos</div>
+          <div class="categoria-count">17 produtos</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       PRODUTOS EM DESTAQUE
+  ===================================================== -->
+  <section id="produtos">
+    <div class="container">
+      <h2 class="section-title animate-on-scroll">Produtos em <span>Destaque</span></h2>
+      <p class="section-subtitle animate-on-scroll">Os mais vendidos da semana com preços especiais</p>
+
+      <div class="produtos-grid" id="produtos-grid">
+        <!-- Produto 1 -->
+        <div class="produto-card animate-on-scroll">
+          <div class="produto-img-wrap">
+            <div class="produto-img-placeholder" style="background:linear-gradient(135deg,#0a3d1a 0%,#1a9b4b 100%)">🇧🇷</div>
+            <span class="badge produto-badge produto-badge-vendido">🏅 Mais Vendido</span>
+            <button class="produto-heart">♡</button>
+          </div>
+          <div class="produto-info">
+            <div class="produto-time">Seleção Brasileira</div>
+            <div class="produto-nome">Camisa Oficial 2024 - Home</div>
+            <div class="produto-stars">
+              <span class="stars">★★★★★</span>
+              <span class="count">(248)</span>
+            </div>
+            <div class="produto-preco">
+              <span class="produto-preco-original">R$ 249</span>
+              <span class="produto-preco-atual">R$ 169</span>
+            </div>
+            <div class="produto-preco-parcela">12x de R$ 14,08 sem juros</div>
+            <button class="produto-btn" onclick="addToCartAnimation(this)">Comprar Agora</button>
+          </div>
+        </div>
+
+        <!-- Produto 2 -->
+        <div class="produto-card animate-on-scroll">
+          <div class="produto-img-wrap">
+            <div class="produto-img-placeholder" style="background:linear-gradient(135deg,#0a0a3d 0%,#1a1a9b 100%)">👕</div>
+            <span class="badge produto-badge produto-badge-urgencia">🔴 Últimas 3 unidades!</span>
+            <button class="produto-heart">♡</button>
+          </div>
+          <div class="produto-info">
+            <div class="produto-time">Real Madrid</div>
+            <div class="produto-nome">Camisa Home 24/25 - Torcedor</div>
+            <div class="produto-stars">
+              <span class="stars">★★★★★</span>
+              <span class="count">(192)</span>
+            </div>
+            <div class="produto-preco">
+              <span class="produto-preco-original">R$ 299</span>
+              <span class="produto-preco-atual">R$ 189</span>
+            </div>
+            <div class="produto-preco-parcela">12x de R$ 15,75 sem juros</div>
+            <button class="produto-btn" onclick="addToCartAnimation(this)">Comprar Agora</button>
+          </div>
+        </div>
+
+        <!-- Produto 3 -->
+        <div class="produto-card animate-on-scroll">
+          <div class="produto-img-wrap">
+            <div class="produto-img-placeholder" style="background:linear-gradient(135deg,#1a0a0a 0%,#cc0000 100%)">👕</div>
+            <span class="badge produto-badge produto-badge-novo">✨ Novo</span>
+            <button class="produto-heart">♡</button>
+          </div>
+          <div class="produto-info">
+            <div class="produto-time">Manchester United</div>
+            <div class="produto-nome">Camisa Home 24/25 - Adidas</div>
+            <div class="produto-stars">
+              <span class="stars">★★★★☆</span>
+              <span class="count">(137)</span>
+            </div>
+            <div class="produto-preco">
+              <span class="produto-preco-original">R$ 279</span>
+              <span class="produto-preco-atual">R$ 179</span>
+            </div>
+            <div class="produto-preco-parcela">12x de R$ 14,91 sem juros</div>
+            <button class="produto-btn" onclick="addToCartAnimation(this)">Comprar Agora</button>
+          </div>
+        </div>
+
+        <!-- Produto 4 -->
+        <div class="produto-card animate-on-scroll">
+          <div class="produto-img-wrap">
+            <div class="produto-img-placeholder" style="background:linear-gradient(135deg,#0d1a0a 0%,#2a5c18 100%)">👕</div>
+            <span class="badge produto-badge produto-badge-vendido">🏅 Mais Vendido</span>
+            <button class="produto-heart">♡</button>
+          </div>
+          <div class="produto-info">
+            <div class="produto-time">Barcelona</div>
+            <div class="produto-nome">Camisa Away 24/25 - Nike</div>
+            <div class="produto-stars">
+              <span class="stars">★★★★★</span>
+              <span class="count">(221)</span>
+            </div>
+            <div class="produto-preco">
+              <span class="produto-preco-original">R$ 289</span>
+              <span class="produto-preco-atual">R$ 185</span>
+            </div>
+            <div class="produto-preco-parcela">12x de R$ 15,41 sem juros</div>
+            <button class="produto-btn" onclick="addToCartAnimation(this)">Comprar Agora</button>
+          </div>
+        </div>
+
+        <!-- Produto 5 -->
+        <div class="produto-card animate-on-scroll">
+          <div class="produto-img-wrap">
+            <div class="produto-img-placeholder" style="background:linear-gradient(135deg,#1a1507 0%,#8B6914 100%)">🕹️</div>
+            <span class="badge produto-badge produto-badge-urgencia">⏰ Oferta Limitada</span>
+            <button class="produto-heart">♡</button>
+          </div>
+          <div class="produto-info">
+            <div class="produto-time">Brasil Retrô</div>
+            <div class="produto-nome">Camisa Copa 94 - Retrô Oficial</div>
+            <div class="produto-stars">
+              <span class="stars">★★★★★</span>
+              <span class="count">(312)</span>
+            </div>
+            <div class="produto-preco">
+              <span class="produto-preco-original">R$ 219</span>
+              <span class="produto-preco-atual">R$ 149</span>
+            </div>
+            <div class="produto-preco-parcela">12x de R$ 12,41 sem juros</div>
+            <button class="produto-btn" onclick="addToCartAnimation(this)">Comprar Agora</button>
+          </div>
+        </div>
+
+        <!-- Produto 6 -->
+        <div class="produto-card animate-on-scroll">
+          <div class="produto-img-wrap">
+            <div class="produto-img-placeholder" style="background:linear-gradient(135deg,#07071a 0%,#1B4DB8 100%)">👕</div>
+            <span class="badge produto-badge produto-badge-novo">✨ Novo</span>
+            <button class="produto-heart">♡</button>
+          </div>
+          <div class="produto-info">
+            <div class="produto-time">PSG</div>
+            <div class="produto-nome">Camisa Home 24/25 - Nike</div>
+            <div class="produto-stars">
+              <span class="stars">★★★★☆</span>
+              <span class="count">(98)</span>
+            </div>
+            <div class="produto-preco">
+              <span class="produto-preco-original">R$ 299</span>
+              <span class="produto-preco-atual">R$ 195</span>
+            </div>
+            <div class="produto-preco-parcela">12x de R$ 16,25 sem juros</div>
+            <button class="produto-btn" onclick="addToCartAnimation(this)">Comprar Agora</button>
+          </div>
+        </div>
+
+        <!-- Produto 7 -->
+        <div class="produto-card animate-on-scroll">
+          <div class="produto-img-wrap">
+            <div class="produto-img-placeholder" style="background:linear-gradient(135deg,#1a0a00 0%,#FF6B00 100%)">👕</div>
+            <span class="badge produto-badge produto-badge-urgencia">🔴 Últimas 5 unidades!</span>
+            <button class="produto-heart">♡</button>
+          </div>
+          <div class="produto-info">
+            <div class="produto-time">Flamengo</div>
+            <div class="produto-nome">Camisa Home 24 - Adidas</div>
+            <div class="produto-stars">
+              <span class="stars">★★★★★</span>
+              <span class="count">(445)</span>
+            </div>
+            <div class="produto-preco">
+              <span class="produto-preco-original">R$ 259</span>
+              <span class="produto-preco-atual">R$ 175</span>
+            </div>
+            <div class="produto-preco-parcela">12x de R$ 14,58 sem juros</div>
+            <button class="produto-btn" onclick="addToCartAnimation(this)">Comprar Agora</button>
+          </div>
+        </div>
+
+        <!-- Produto 8 -->
+        <div class="produto-card animate-on-scroll">
+          <div class="produto-img-wrap">
+            <div class="produto-img-placeholder" style="background:linear-gradient(135deg,#0a0f1a 0%,#004B87 100%)">👕</div>
+            <span class="badge produto-badge produto-badge-vendido">🏅 Top 10</span>
+            <button class="produto-heart">♡</button>
+          </div>
+          <div class="produto-info">
+            <div class="produto-time">Chelsea</div>
+            <div class="produto-nome">Camisa Home 25/26 - Nike</div>
+            <div class="produto-stars">
+              <span class="stars">★★★★★</span>
+              <span class="count">(167)</span>
+            </div>
+            <div class="produto-preco">
+              <span class="produto-preco-original">R$ 279</span>
+              <span class="produto-preco-atual">R$ 179</span>
+            </div>
+            <div class="produto-preco-parcela">12x de R$ 14,91 sem juros</div>
+            <button class="produto-btn" onclick="addToCartAnimation(this)">Comprar Agora</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       PROVA SOCIAL
+  ===================================================== -->
+  <section id="prova-social">
+    <div class="container">
+      <div class="social-proof-header animate-on-scroll">
+        <span class="rating-big">98%</span>
+        <div class="stars" style="font-size:1.5rem;margin:8px 0">★★★★★</div>
+        <p class="rating-sub">de satisfação · +5.000 avaliações verificadas</p>
+      </div>
+
+      <div class="depoimentos-grid">
+        <!-- Depoimento 1 -->
+        <div class="depoimento-card animate-on-scroll">
+          <div class="depoimento-header">
+            <div class="depoimento-avatar" style="background:#1a472a;color:#4ade80">GS</div>
+            <div>
+              <div class="depoimento-nome">Gabriel Santos</div>
+              <div class="depoimento-local">📍 São Paulo, SP</div>
+            </div>
+            <div class="verified-badge">✔ Verificado</div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p class="depoimento-texto">
+            "Camisa chegou em 2 dias! Qualidade excepcional, tecido perfeito, costuras bem feitas.
+            É idêntica à que comprei numa loja física por R$100 a mais. Super recomendo o Campo Cheio!"
+          </p>
+          <div class="depoimento-produto">✓ Comprou: Camisa Brasil Home 2024</div>
+        </div>
+
+        <!-- Depoimento 2 -->
+        <div class="depoimento-card animate-on-scroll">
+          <div class="depoimento-header">
+            <div class="depoimento-avatar" style="background:#1e3a5f;color:#60a5fa">RC</div>
+            <div>
+              <div class="depoimento-nome">Rafaela Costa</div>
+              <div class="depoimento-local">📍 Rio de Janeiro, RJ</div>
+            </div>
+            <div class="verified-badge">✔ Verificado</div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p class="depoimento-texto">
+            "Meu marido ficou apaixonado com a camisa do Flamengo! Embalagem impecável, parece presente.
+            Trocamos o tamanho sem nenhuma burocracia. Atendimento via WhatsApp rápido demais!"
+          </p>
+          <div class="depoimento-produto">✓ Comprou: Camisa Flamengo Home 2024</div>
+        </div>
+
+        <!-- Depoimento 3 -->
+        <div class="depoimento-card animate-on-scroll">
+          <div class="depoimento-header">
+            <div class="depoimento-avatar" style="background:#3d1e5f;color:#c084fc">LM</div>
+            <div>
+              <div class="depoimento-nome">Lucas Mendes</div>
+              <div class="depoimento-local">📍 Belo Horizonte, MG</div>
+            </div>
+            <div class="verified-badge">✔ Verificado</div>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p class="depoimento-texto">
+            "Comprei a retrô da Copa 94 pra coleção. Chegou com certificado de autenticidade,
+            muito bem feita. Já fiz 3 pedidos e cada um melhor que o anterior. Minha loja favorita!"
+          </p>
+          <div class="depoimento-produto">✓ Comprou: Camisa Brasil Retrô Copa 94</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       OFERTA ESPECIAL / URGÊNCIA
+  ===================================================== -->
+  <section id="urgencia">
+    <div class="container">
+      <div class="urgencia-inner animate-on-scroll">
+        <div class="urgencia-tag">⚡ Oferta Especial</div>
+        <h2 class="urgencia-title">LEVE 3, <span class="highlight">PAGUE 2</span></h2>
+        <p class="urgencia-sub">Válido para qualquer combinação · Só até domingo à meia-noite</p>
+
+        <!-- Countdown -->
+        <div class="countdown">
+          <div class="countdown-block">
+            <span class="countdown-num" id="cd-h">23</span>
+            <div class="countdown-label">Horas</div>
+          </div>
+          <div class="countdown-sep">:</div>
+          <div class="countdown-block">
+            <span class="countdown-num" id="cd-m">47</span>
+            <div class="countdown-label">Min</div>
+          </div>
+          <div class="countdown-sep">:</div>
+          <div class="countdown-block">
+            <span class="countdown-num" id="cd-s">30</span>
+            <div class="countdown-label">Seg</div>
+          </div>
+        </div>
+
+        <a href="#produtos" class="btn-primary" style="font-size:1.1rem;padding:18px 48px">
+          🛒 Aproveitar Oferta Agora
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       BENEFÍCIOS
+  ===================================================== -->
+  <section id="beneficios">
+    <div class="container">
+      <h2 class="section-title animate-on-scroll">Por que escolher a <span>Campo Cheio</span>?</h2>
+      <p class="section-subtitle animate-on-scroll">Comprometidos com sua experiência do início ao fim</p>
+
+      <div class="beneficios-grid">
+        <div class="beneficio-card animate-on-scroll">
+          <span class="beneficio-icon">🚚</span>
+          <div class="beneficio-titulo">Entrega Expressa</div>
+          <p class="beneficio-desc">Pedidos feitos até as 14h saem no mesmo dia. Receba em até 24h nas capitais.</p>
+        </div>
+        <div class="beneficio-card animate-on-scroll">
+          <span class="beneficio-icon">🔒</span>
+          <div class="beneficio-titulo">Pagamento 100% Seguro</div>
+          <p class="beneficio-desc">SSL 256-bit, Pix, cartão em 12x sem juros, boleto. Seus dados protegidos.</p>
+        </div>
+        <div class="beneficio-card animate-on-scroll">
+          <span class="beneficio-icon">🔄</span>
+          <div class="beneficio-titulo">Troca Sem Burocracia</div>
+          <p class="beneficio-desc">Trocou de ideia? 30 dias para trocar tamanho ou produto. Sem perguntas.</p>
+        </div>
+        <div class="beneficio-card animate-on-scroll">
+          <span class="beneficio-icon">🏆</span>
+          <div class="beneficio-titulo">Produto Original</div>
+          <p class="beneficio-desc">Parceiros oficiais Nike, Adidas e Puma. Cada camisa com certificado de autenticidade.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       FAQ
+  ===================================================== -->
+  <section id="faq">
+    <div class="container">
+      <h2 class="section-title animate-on-scroll">Dúvidas <span>Frequentes</span></h2>
+      <p class="section-subtitle animate-on-scroll">Respostas rápidas para você comprar com confiança</p>
+
+      <div class="faq-list">
+        <div class="faq-item animate-on-scroll">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Quanto tempo demora a entrega?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Pedidos realizados até às 14h (dias úteis) saem no mesmo dia. Para capitais e regiões metropolitanas, o prazo é de 1 a 2 dias úteis. Para demais localidades, entre 3 e 5 dias úteis. Você recebe o código de rastreio por e-mail e WhatsApp assim que o pedido for despachado.
+          </div>
+        </div>
+
+        <div class="faq-item animate-on-scroll">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            O produto é original? Como tenho certeza?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Sim, 100% originais. Somos revendedores autorizados Nike, Adidas e Puma. Cada camisa vem com etiqueta holográfica de autenticidade e nota fiscal eletrônica. Se você receber qualquer produto sem certificação, devolvemos o dinheiro integral imediatamente.
+          </div>
+        </div>
+
+        <div class="faq-item animate-on-scroll">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Posso trocar o tamanho após a compra?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Claro! Você tem até 30 dias após o recebimento para solicitar troca de tamanho ou modelo. Basta enviar uma mensagem no nosso WhatsApp com o número do pedido. O frete da troca é por nossa conta — sem custo algum para você.
+          </div>
+        </div>
+
+        <div class="faq-item animate-on-scroll">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Quais são as formas de pagamento?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Aceitamos: Pix (aprovação imediata + 5% desconto extra), cartão de crédito em até 12x sem juros (todas as bandeiras), cartão de débito, boleto bancário (3 dias úteis para compensação) e PayPal. Todas as transações são 100% seguras.
+          </div>
+        </div>
+
+        <div class="faq-item animate-on-scroll">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Quais tamanhos estão disponíveis?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Trabalhamos com a tabela completa: PP, P, M, G, GG, GGG e tamanhos infantis (4, 6, 8, 10, 12, 14). Consulte a tabela de medidas na página de cada produto para garantir o tamanho ideal. Dúvidas? Nosso time no WhatsApp ajuda você a escolher!
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       FOOTER
+  ===================================================== -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="logo">CAMPO<span> CHEIO</span></div>
+          <p>A maior loja de camisas de futebol originais do Brasil. Clubes nacionais, seleções e os melhores times do mundo.</p>
+          <a href="https://wa.me/5511999999999" class="footer-wpp" target="_blank" rel="noopener noreferrer">
+            💬 WhatsApp Atendimento
+          </a>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Navegação</div>
+          <ul class="footer-links">
+            <li><a href="#hero">Início</a></li>
+            <li><a href="#categorias">Categorias</a></li>
+            <li><a href="#produtos">Produtos</a></li>
+            <li><a href="#prova-social">Avaliações</a></li>
+            <li><a href="#urgencia">Ofertas</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Atendimento</div>
+          <ul class="footer-links">
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#">Política de Trocas</a></li>
+            <li><a href="#">Rastrear Pedido</a></li>
+            <li><a href="#">Fale Conosco</a></li>
+            <li><a href="#">Minha Conta</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Institucional</div>
+          <ul class="footer-links">
+            <li><a href="#">Sobre Nós</a></li>
+            <li><a href="#">Política de Privacidade</a></li>
+            <li><a href="#">Termos de Uso</a></li>
+            <li><a href="#">Seja um Revendedor</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Campo Cheio. CNPJ 00.000.000/0001-00 · Todos os direitos reservados.</p>
+        <div class="footer-pay-icons">
+          <span class="pay-badge pix">PIX</span>
+          <span class="pay-badge">VISA</span>
+          <span class="pay-badge">MASTER</span>
+          <span class="pay-badge">AMEX</span>
+          <span class="pay-badge">BOLETO</span>
+          <span class="pay-badge">12x</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =====================================================
+       WHATSAPP FLUTUANTE
+  ===================================================== -->
+  <a href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20uma%20camisa."
+     class="wpp-float"
+     target="_blank"
+     rel="noopener noreferrer"
+     title="Tire suas dúvidas pelo WhatsApp">
+    <span class="wpp-icon">💬</span>
+    <span class="wpp-label">Tire suas dúvidas</span>
+  </a>
+
+  <!-- =====================================================
+       TOAST CONTAINER
+  ===================================================== -->
+  <div id="toast-container"></div>
+
+  <!-- =====================================================
+       EXIT POPUP
+  ===================================================== -->
+  <div id="exit-popup">
+    <div class="popup-box">
+      <button class="popup-close" onclick="closePopup()">✕</button>
+      <div class="popup-tag">🎁 Oferta Exclusiva</div>
+      <h3 class="popup-title">Espera! <span>10% OFF</span></h3>
+      <p class="popup-sub">No seu primeiro pedido. Só precisa do seu e-mail.</p>
+      <form class="popup-form" onsubmit="handlePopupSubmit(event)">
+        <input type="email" class="popup-input" placeholder="seu@email.com" required />
+        <button type="submit" class="btn-primary" style="white-space:nowrap">Quero 10% OFF</button>
+      </form>
+      <p class="popup-skip" onclick="closePopup()">Não, prefiro pagar o preço cheio</p>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ===================================================== -->
+  <script>
+    // ============================================================
+    // SCROLL: sticky header + animações de entrada
+    // ============================================================
+    const header = document.getElementById('header');
+    const animEls = document.querySelectorAll('.animate-on-scroll');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          // Stagger leve para cards em grid
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, (entry.target.dataset.delay || 0));
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    animEls.forEach((el, i) => {
+      // Stagger baseado na posição no grid
+      const parent = el.parentElement;
+      const siblings = parent ? [...parent.children].filter(c => c.classList.contains('animate-on-scroll')) : [];
+      const idx = siblings.indexOf(el);
+      el.dataset.delay = idx * 80;
+      observer.observe(el);
+    });
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // ============================================================
+    // COUNTDOWN TIMER
+    // ============================================================
+    function getCountdownTarget() {
+      const key = 'cc_countdown_target';
+      let stored = localStorage.getItem(key);
+      if (!stored) {
+        // Próximo domingo à meia-noite
+        const now = new Date();
+        const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
+        const target = new Date(now);
+        target.setDate(now.getDate() + daysUntilSunday);
+        target.setHours(23, 59, 59, 0);
+        stored = target.getTime().toString();
+        localStorage.setItem(key, stored);
+      }
+      return parseInt(stored, 10);
+    }
+
+    const countdownTarget = getCountdownTarget();
+
+    function updateCountdown() {
+      const now = Date.now();
+      const diff = Math.max(0, countdownTarget - now);
+
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+
+      document.getElementById('cd-h').textContent = String(h).padStart(2, '0');
+      document.getElementById('cd-m').textContent = String(m).padStart(2, '0');
+      document.getElementById('cd-s').textContent = String(s).padStart(2, '0');
+
+      if (diff === 0) {
+        localStorage.removeItem('cc_countdown_target');
+      }
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // ============================================================
+    // TOAST NOTIFICATIONS (compras recentes simuladas)
+    // ============================================================
+    const toastData = [
+      { name: 'João', city: 'SP', shirt: 'Camisa do Brasil', avatar: '⚽', delay: 4000 },
+      { name: 'Ana', city: 'RJ', shirt: 'Camisa do Flamengo', avatar: '🔴', delay: 11000 },
+      { name: 'Pedro', city: 'MG', shirt: 'Real Madrid Away', avatar: '⚪', delay: 18000 },
+      { name: 'Carla', city: 'RS', shirt: 'Barcelona Home', avatar: '🔵', delay: 25000 },
+      { name: 'Lucas', city: 'CE', shirt: 'Camisa Retrô 94', avatar: '🟡', delay: 32000 },
+      { name: 'Fernanda', city: 'BA', shirt: 'PSG Home 24/25', avatar: '🌟', delay: 39000 },
+      { name: 'Marcos', city: 'PR', shirt: 'Manchester United', avatar: '🔴', delay: 46000 },
+      { name: 'Juliana', city: 'GO', shirt: 'Camisa do Brasil', avatar: '🇧🇷', delay: 53000 },
+    ];
+
+    const minutesAgo = [3, 5, 7, 2, 12, 8, 4, 6];
+
+    function showToast({ name, city, shirt, avatar }, minutes) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `
+        <div class="toast-avatar">${avatar}</div>
+        <div class="toast-text">
+          <div class="toast-name">${name} de ${city}</div>
+          <div class="toast-msg">comprou ${shirt}</div>
+        </div>
+        <div class="toast-time">${minutes}min atrás</div>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('out');
+        setTimeout(() => toast.remove(), 400);
+      }, 5000);
+    }
+
+    // Agenda os toasts
+    toastData.forEach((data, i) => {
+      setTimeout(() => {
+        showToast(data, minutesAgo[i % minutesAgo.length]);
+      }, data.delay);
+    });
+
+    // Loop após o último
+    setInterval(() => {
+      const idx = Math.floor(Math.random() * toastData.length);
+      const mins = Math.floor(Math.random() * 15) + 1;
+      showToast(toastData[idx], mins);
+    }, 60000);
+
+    // ============================================================
+    // EXIT INTENT POPUP
+    // ============================================================
+    let popupShown = sessionStorage.getItem('cc_popup_shown');
+
+    if (!popupShown) {
+      document.addEventListener('mouseleave', (e) => {
+        if (e.clientY < 10 && !popupShown) {
+          popupShown = true;
+          sessionStorage.setItem('cc_popup_shown', '1');
+          document.getElementById('exit-popup').classList.add('show');
+        }
+      });
+
+      // Mobile: mostra depois de 30s sem interação
+      let mobileTimer = setTimeout(() => {
+        if (!popupShown) {
+          popupShown = true;
+          sessionStorage.setItem('cc_popup_shown', '1');
+          document.getElementById('exit-popup').classList.add('show');
+        }
+      }, 30000);
+
+      // Cancela timer se houve interação
+      ['touchstart', 'scroll', 'click'].forEach(evt => {
+        document.addEventListener(evt, () => clearTimeout(mobileTimer), { once: true });
+      });
+    }
+
+    function closePopup() {
+      document.getElementById('exit-popup').classList.remove('show');
+    }
+
+    function handlePopupSubmit(e) {
+      e.preventDefault();
+      const input = e.target.querySelector('input');
+      // Aqui integraria com sua plataforma de e-mail
+      closePopup();
+      showToast({ name: 'Você', city: 'Brasil', shirt: '10% OFF aplicado!', avatar: '🎉' }, 0);
+    }
+
+    // Fechar ao clicar fora
+    document.getElementById('exit-popup').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('exit-popup')) closePopup();
+    });
+
+    // ============================================================
+    // FAQ ACCORDION
+    // ============================================================
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+
+      // Fecha todos
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+
+      // Abre o clicado se estava fechado
+      if (!isOpen) {
+        item.classList.add('open');
+      }
+    }
+
+    // ============================================================
+    // BARRA DE FRETE DINÂMICA
+    // ============================================================
+    const freteData = [
+      { value: 90, text: 'Faltam <span class="highlight">R$ 59,00</span> para frete grátis!' },
+      { value: 60, text: 'Faltam <span class="highlight">R$ 89,00</span> para frete grátis!' },
+      { value: 75, text: 'Faltam <span class="highlight">R$ 74,00</span> para frete grátis!' },
+      { value: 100, text: '<span class="highlight">🎉 Frete grátis desbloqueado!</span>' },
+    ];
+
+    let freteIdx = 0;
+    const freteText = document.getElementById('frete-text');
+    const freteFill = document.getElementById('frete-fill');
+
+    setInterval(() => {
+      freteIdx = (freteIdx + 1) % freteData.length;
+      const d = freteData[freteIdx];
+      freteFill.style.width = d.value + '%';
+      freteText.innerHTML = d.text;
+    }, 8000);
+
+    // ============================================================
+    // BOTÃO COMPRAR (feedback visual)
+    // ============================================================
+    function addToCartAnimation(btn) {
+      const original = btn.textContent;
+      btn.style.background = 'var(--accent-green)';
+      btn.style.color = '#000';
+      btn.textContent = '✔ Adicionado!';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.textContent = original;
+        btn.disabled = false;
+      }, 2000);
+    }
+
+    // ============================================================
+    // HEART / WISHLIST
+    // ============================================================
+    document.querySelectorAll('.produto-heart').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.textContent === '♡') {
+          btn.textContent = '♥';
+          btn.style.color = '#FF3B3B';
+        } else {
+          btn.textContent = '♡';
+          btn.style.color = '';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
