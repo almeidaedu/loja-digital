@@ -26,7 +26,7 @@ export default function PaymentSuccess() {
     }
     orderService
       .getOrder(orderId)
-      .then(setOrder)
+      .then(({ order: fetched }) => setOrder(fetched))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [orderId]);
@@ -60,16 +60,16 @@ export default function PaymentSuccess() {
             {order.items?.map((item) => (
               <div key={item.id} className="success-item-row">
                 <span>
-                  {item.name}
+                  {item.productName}
                   {item.size && <span className="success-item-size"> [{item.size}]</span>}
                   <span className="success-item-qty"> × {item.quantity}</span>
                 </span>
-                <span>{formatCurrency(parseFloat(item.price) * item.quantity)}</span>
+                <span>{formatCurrency(parseFloat(item.unitPrice) * item.quantity)}</span>
               </div>
             ))}
             <div className="success-total-row">
               <span>TOTAL</span>
-              <span>{formatCurrency(parseFloat(order.total))}</span>
+              <span>{formatCurrency(parseFloat(order.totalAmount))}</span>
             </div>
           </div>
         )}

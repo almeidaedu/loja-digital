@@ -43,7 +43,7 @@ export default function ProductCard({ product, onAddToCart }) {
     badge,
     rating,
     reviewCount,
-    category_name,
+    categoryName,
   } = product;
 
   const installment = price / 12;
@@ -92,8 +92,8 @@ export default function ProductCard({ product, onAddToCart }) {
       </div>
 
       <div className="produto-info">
-        {category_name && (
-          <span className="produto-time">{category_name}</span>
+        {categoryName && (
+          <span className="produto-time">{categoryName}</span>
         )}
         <h3 className="produto-name">{name}</h3>
 
