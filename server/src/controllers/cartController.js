@@ -16,12 +16,12 @@ async function getCart(req, res, next) {
       id: ci.id,
       quantity: ci.quantity,
       size: ci.size,
-      product_id: product.id,
+      productId: product.id,
       name: product.name,
       slug: product.slug,
       price: product.price,
-      original_price: product.originalPrice,
-      image_url: product.imageUrl,
+      originalPrice: product.originalPrice,
+      imageUrl: product.imageUrl,
       stock: product.stock,
       badge: product.badge,
     }));
@@ -34,18 +34,18 @@ async function getCart(req, res, next) {
 
 async function addItem(req, res, next) {
   try {
-    const { product_id, quantity = 1, size } = req.body;
+    const { productId, quantity = 1, size } = req.body;
     const normalizedSize = size || 'M';
 
     const product = await prisma.product.findFirst({
-      where: { id: product_id, active: true },
+      where: { id: productId, active: true },
       select: { stock: true },
     });
     if (!product) return res.status(404).json({ message: 'Produto não encontrado.' });
     if (product.stock < quantity) return res.status(400).json({ message: 'Estoque insuficiente.' });
 
     const existing = await prisma.cartItem.findUnique({
-      where: { userId_productId_size: { userId: req.user.id, productId: product_id, size: normalizedSize } },
+      where: { userId_productId_size: { userId: req.user.id, productId, size: normalizedSize } },
     });
 
     const item = existing
@@ -54,7 +54,7 @@ async function addItem(req, res, next) {
           data: { quantity: existing.quantity + quantity },
         })
       : await prisma.cartItem.create({
-          data: { userId: req.user.id, productId: product_id, quantity, size: normalizedSize },
+          data: { userId: req.user.id, productId, quantity, size: normalizedSize },
         });
 
     res.status(201).json({ item });

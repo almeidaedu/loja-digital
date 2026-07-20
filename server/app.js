@@ -42,9 +42,10 @@ app.use('/api/payments', paymentRoutes);
 // Atalhos de admin — reaproveitam os métodos do orderController diretamente
 const authMiddleware = require('./src/middleware/auth');
 const adminOnly = require('./src/middleware/adminOnly');
-const { adminGetAll, updateStatus } = require('./src/controllers/orderController');
+const { adminGetAll, getStats, updateStatus } = require('./src/controllers/orderController');
 app.get('/api/admin/orders', authMiddleware, adminOnly, adminGetAll);
 app.put('/api/admin/orders/:id/status', authMiddleware, adminOnly, updateStatus);
+app.get('/api/admin/stats', authMiddleware, adminOnly, getStats);
 
 // Health check
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
