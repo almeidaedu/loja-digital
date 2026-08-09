@@ -18,8 +18,8 @@ function formatProduct(p) {
   const { category, ...rest } = p;
   return {
     ...rest,
-    category_name: category?.name ?? null,
-    category_slug: category?.slug ?? null,
+    categoryName: category?.name ?? null,
+    categorySlug: category?.slug ?? null,
   };
 }
 
@@ -80,24 +80,51 @@ async function getOne(req, res, next) {
   }
 }
 
+async function adminGetAll(req, res, next) {
+  try {
+    const { page = 1, limit = 50 } = req.query;
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        orderBy: { createdAt: 'desc' },
+        skip: (parseInt(page) - 1) * parseInt(limit),
+        take: parseInt(limit),
+        ...productWithCategory,
+      }),
+      prisma.product.count(),
+    ]);
+
+    res.json({
+      products: products.map(formatProduct),
+      total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function create(req, res, next) {
   try {
-    const { category_id, name, description, price, original_price, stock, image_url, badge, featured } = req.body;
+    const { categoryId, name, description, price, originalPrice, stock, imageUrl, badge, featured, active } = req.body;
     const product = await prisma.product.create({
       data: {
-        categoryId: category_id,
+        categoryId,
         name,
         slug: buildSlug(name),
-        description,
+        description: description || null,
         price,
-        originalPrice: original_price ?? null,
-        stock,
-        imageUrl: image_url ?? null,
-        badge: badge ?? null,
+        originalPrice: originalPrice || null,
+        stock: stock || 0,
+        imageUrl: imageUrl || null,
+        badge: badge || null,
         featured: featured ?? false,
+        active: active ?? true,
       },
+      ...productWithCategory,
     });
-    res.status(201).json({ product });
+    res.status(201).json({ product: formatProduct(product) });
   } catch (err) {
     next(err);
   }
@@ -105,24 +132,28 @@ async function create(req, res, next) {
 
 async function update(req, res, next) {
   try {
-    const { category_id, name, description, price, original_price, stock, image_url, badge, featured, active } = req.body;
+    const { categoryId, name, description, price, originalPrice, stock, imageUrl, badge, featured, active } = req.body;
+
+    // Atualização parcial: campo ausente não é tocado; string vazia limpa o campo
+    const data = {
+      ...(categoryId !== undefined && { categoryId }),
+      ...(name !== undefined && { name, slug: buildSlug(name) }),
+      ...(description !== undefined && { description: description || null }),
+      ...(price !== undefined && { price }),
+      ...(originalPrice !== undefined && { originalPrice: originalPrice || null }),
+      ...(stock !== undefined && { stock: stock || 0 }),
+      ...(imageUrl !== undefined && { imageUrl: imageUrl || null }),
+      ...(badge !== undefined && { badge: badge || null }),
+      ...(featured !== undefined && { featured }),
+      ...(active !== undefined && { active }),
+    };
+
     const product = await prisma.product.update({
       where: { id: parseInt(req.params.id) },
-      data: {
-        categoryId: category_id,
-        name,
-        slug: buildSlug(name),
-        description,
-        price,
-        originalPrice: original_price ?? null,
-        stock,
-        imageUrl: image_url ?? null,
-        badge: badge ?? null,
-        featured,
-        active,
-      },
+      data,
+      ...productWithCategory,
     });
-    res.json({ product });
+    res.json({ product: formatProduct(product) });
   } catch (err) {
     next(err);
   }
@@ -140,4 +171,4 @@ async function remove(req, res, next) {
   }
 }
 
-module.exports = { getFeatured, getAll, getOne, create, update, remove };
+module.exports = { getFeatured, getAll, getOne, adminGetAll, create, update, remove };

@@ -116,8 +116,8 @@ export default function ProductDetail() {
 
           {/* Info */}
           <div className="detail-info">
-            {product.category_name && (
-              <span className="detail-category-badge">{product.category_name}</span>
+            {product.categoryName && (
+              <span className="detail-category-badge">{product.categoryName}</span>
             )}
 
             <h1 className="detail-title">{product.name}</h1>

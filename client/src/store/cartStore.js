@@ -20,7 +20,7 @@ export const useCartStore = create((set, get) => ({
 
   addItem: async (productId, quantity = 1, size = 'M') => {
     try {
-      await cartService.addItem({ product_id: productId, quantity, size });
+      await cartService.addItem({ productId, quantity, size });
       await get().fetchCart(); // Re-sincroniza com o servidor
     } catch (err) {
       throw err;

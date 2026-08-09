@@ -24,35 +24,29 @@ function statusClass(status) {
 }
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    api
-      .get('/orders/admin/all?limit=5')
-      .then((r) => {
-        const list = Array.isArray(r.data) ? r.data : r.data.orders ?? [];
-        setOrders(list);
+    Promise.all([
+      api.get('/admin/stats').then((r) => r.data),
+      api.get('/orders/admin/all?limit=5').then((r) => r.data.orders ?? []),
+    ])
+      .then(([statsData, orderList]) => {
+        setStats(statsData);
+        setOrders(orderList);
       })
-      .catch(() => setError('Erro ao carregar pedidos.'))
+      .catch(() => setError('Erro ao carregar dados.'))
       .finally(() => setLoading(false));
   }, []);
 
-  const totalOrders = orders.length;
-  const revenue = orders
-    .filter((o) => o.status === 'approved' || o.status === 'delivered')
-    .reduce((sum, o) => sum + parseFloat(o.total ?? 0), 0);
-  const pending = orders.filter(
-    (o) => o.status === 'pending' || o.status === 'waiting_payment'
-  ).length;
-  const delivered = orders.filter((o) => o.status === 'delivered').length;
-
-  const stats = [
-    { label: 'Total de Pedidos',   value: totalOrders,          Icon: PackageIcon,    accent: false },
-    { label: 'Receita (aprovados)', value: formatCurrency(revenue), Icon: PaymentsIcon, accent: true },
-    { label: 'Pendentes',          value: pending,              Icon: PackageIcon,    accent: false },
-    { label: 'Entregues',          value: delivered,            Icon: CheckCircleIcon, accent: false },
+  const statCards = [
+    { label: 'Total de Pedidos',    value: stats?.totalOrders ?? 0,             Icon: PackageIcon,     accent: false },
+    { label: 'Receita (aprovados)', value: formatCurrency(stats?.revenue ?? 0), Icon: PaymentsIcon,    accent: true },
+    { label: 'Pendentes',           value: stats?.pending ?? 0,                 Icon: PackageIcon,     accent: false },
+    { label: 'Entregues',           value: stats?.delivered ?? 0,               Icon: CheckCircleIcon, accent: false },
   ];
 
   function formatDate(dateStr) {
@@ -66,7 +60,7 @@ export default function AdminDashboard() {
 
       {/* Stat cards */}
       <div className="stat-cards">
-        {stats.map((s) => (
+        {statCards.map((s) => (
           <div key={s.label} className={`stat-card${s.accent ? ' stat-card--accent' : ''}`}>
             <span className="stat-icon"><s.Icon sx={{ fontSize: '28px' }} /></span>
             <div className="stat-value">{loading ? <span className="skeleton" style={{ width: 60, height: 28, display: 'block' }} /> : s.value}</div>
@@ -101,14 +95,14 @@ export default function AdminDashboard() {
                 {orders.map((order) => (
                   <tr key={order.id}>
                     <td className="mono">#{order.id?.slice(0, 8).toUpperCase()}</td>
-                    <td>{order.user_name ?? order.customer_name ?? '—'}</td>
-                    <td>{formatCurrency(parseFloat(order.total ?? 0))}</td>
+                    <td>{order.customerName ?? '—'}</td>
+                    <td>{formatCurrency(parseFloat(order.totalAmount ?? 0))}</td>
                     <td>
                       <span className={`badge ${statusClass(order.status)}`}>
                         {STATUS_LABELS[order.status] ?? order.status}
                       </span>
                     </td>
-                    <td>{formatDate(order.created_at)}</td>
+                    <td>{formatDate(order.createdAt)}</td>
                   </tr>
                 ))}
                 {orders.length === 0 && (

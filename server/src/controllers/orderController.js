@@ -4,7 +4,7 @@ const VALID_STATUSES = ['pending', 'waiting_payment', 'approved', 'in_process', 
 
 async function createOrder(req, res, next) {
   try {
-    const { shipping_address } = req.body;
+    const { shippingAddress } = req.body;
 
     const cartItems = await prisma.cartItem.findMany({
       where: { userId: req.user.id, product: { active: true } },
@@ -28,7 +28,7 @@ async function createOrder(req, res, next) {
         data: {
           userId: req.user.id,
           totalAmount: total,
-          shippingAddress: shipping_address,
+          shippingAddress,
           items: {
             create: cartItems.map((ci) => ({
               productId: ci.product.id,
@@ -114,11 +114,34 @@ async function adminGetAll(req, res, next) {
 
     const result = orders.map(({ user, ...o }) => ({
       ...o,
-      customer_name: user.name,
-      customer_email: user.email,
+      customerName: user.name,
+      customerEmail: user.email,
     }));
 
     res.json({ orders: result, total, page: parseInt(page), limit: parseInt(limit) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getStats(req, res, next) {
+  try {
+    const [totalOrders, revenueAgg, pending, delivered] = await Promise.all([
+      prisma.order.count(),
+      prisma.order.aggregate({
+        _sum: { totalAmount: true },
+        where: { status: { in: ['approved', 'delivered'] } },
+      }),
+      prisma.order.count({ where: { status: { in: ['pending', 'waiting_payment'] } } }),
+      prisma.order.count({ where: { status: 'delivered' } }),
+    ]);
+
+    res.json({
+      totalOrders,
+      revenue: Number(revenueAgg._sum.totalAmount ?? 0),
+      pending,
+      delivered,
+    });
   } catch (err) {
     next(err);
   }
@@ -142,4 +165,4 @@ async function updateStatus(req, res, next) {
   }
 }
 
-module.exports = { createOrder, getMyOrders, getOneOrder, adminGetAll, updateStatus };
+module.exports = { createOrder, getMyOrders, getOneOrder, adminGetAll, getStats, updateStatus };

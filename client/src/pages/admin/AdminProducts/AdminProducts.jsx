@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../../../services/api';
 import { formatCurrency } from '../../../utils/formatCurrency';
 import { CheckCircleIcon, CancelIcon } from '../../../components/ui/Icons';
@@ -12,18 +12,33 @@ const BADGE_OPTIONS = [
 ];
 
 const EMPTY_FORM = {
-  category_id: '',
+  categoryId: '',
   name: '',
-  slug: '',
   price: '',
-  original_price: '',
+  originalPrice: '',
   stock: '',
   badge: '',
   featured: false,
   active: true,
   description: '',
-  image_url: '',
+  imageUrl: '',
 };
+
+// Converte o produto vindo da API para os valores do formulário
+function toFormValues(p) {
+  return {
+    categoryId: p.categoryId ?? '',
+    name: p.name ?? '',
+    price: p.price ?? '',
+    originalPrice: p.originalPrice ?? '',
+    stock: p.stock ?? '',
+    badge: p.badge ?? '',
+    featured: !!p.featured,
+    active: !!p.active,
+    description: p.description ?? '',
+    imageUrl: p.imageUrl ?? '',
+  };
+}
 
 function ProductForm({ initial, categories, onSave, onCancel, saving, saveError }) {
   const [form, setForm] = useState(initial ?? EMPTY_FORM);
@@ -57,22 +72,11 @@ function ProductForm({ initial, categories, onSave, onCancel, saving, saveError 
         </div>
 
         <div className="form-group">
-          <label className="form-label">Slug (URL)</label>
-          <input
-            name="slug"
-            className="form-input"
-            placeholder="camisa-flamengo-2024"
-            value={form.slug}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="form-group">
           <label className="form-label">Categoria *</label>
           <select
-            name="category_id"
+            name="categoryId"
             className="form-input"
-            value={form.category_id}
+            value={form.categoryId}
             onChange={handleChange}
             required
           >
@@ -101,13 +105,13 @@ function ProductForm({ initial, categories, onSave, onCancel, saving, saveError 
         <div className="form-group">
           <label className="form-label">Preço original (R$)</label>
           <input
-            name="original_price"
+            name="originalPrice"
             type="number"
             step="0.01"
             min="0"
             className="form-input"
             placeholder="199.90"
-            value={form.original_price}
+            value={form.originalPrice}
             onChange={handleChange}
           />
         </div>
@@ -142,10 +146,10 @@ function ProductForm({ initial, categories, onSave, onCancel, saving, saveError 
         <div className="form-group" style={{ gridColumn: 'span 2' }}>
           <label className="form-label">URL da imagem</label>
           <input
-            name="image_url"
+            name="imageUrl"
             className="form-input"
             placeholder="https://..."
-            value={form.image_url}
+            value={form.imageUrl}
             onChange={handleChange}
           />
         </div>
@@ -214,7 +218,7 @@ export default function AdminProducts() {
 
   useEffect(() => {
     Promise.all([
-      api.get('/products?limit=50').then((r) => Array.isArray(r.data) ? r.data : r.data.products ?? []),
+      api.get('/products/admin/all?limit=100').then((r) => r.data.products ?? []),
       api.get('/categories').then((r) => r.data),
     ])
       .then(([prods, cats]) => {
@@ -244,7 +248,7 @@ export default function AdminProducts() {
   }
 
   async function handleSave(formData) {
-    if (!formData.name || !formData.price || !formData.category_id) {
+    if (!formData.name || !formData.price || !formData.categoryId) {
       setSaveError('Nome, preço e categoria são obrigatórios.');
       return;
     }
@@ -268,14 +272,26 @@ export default function AdminProducts() {
     }
   }
 
-  async function handleDelete(id) {
-    if (!window.confirm('Deletar este produto?')) return;
+  async function handleDeactivate(id) {
+    if (!window.confirm('Desativar este produto? Ele some da loja, mas pode ser reativado aqui.')) return;
     setDeletingId(id);
     try {
       await api.delete(`/products/${id}`);
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+      setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, active: false } : p)));
     } catch {
-      alert('Erro ao deletar produto.');
+      alert('Erro ao desativar produto.');
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  async function handleReactivate(id) {
+    setDeletingId(id);
+    try {
+      const { data } = await api.put(`/products/${id}`, { active: true });
+      setProducts((prev) => prev.map((p) => (p.id === id ? (data.product ?? { ...p, active: true }) : p)));
+    } catch {
+      alert('Erro ao reativar produto.');
     } finally {
       setDeletingId(null);
     }
@@ -314,9 +330,9 @@ export default function AdminProducts() {
               </thead>
               <tbody>
                 {products.map((p) => (
-                  <tr key={p.id}>
+                  <tr key={p.id} style={p.active ? undefined : { opacity: 0.45 }}>
                     <td style={{ fontWeight: 600 }}>{p.name}</td>
-                    <td style={{ color: 'var(--text-muted)' }}>{p.category_name ?? '—'}</td>
+                    <td style={{ color: 'var(--text-muted)' }}>{p.categoryName ?? '—'}</td>
                     <td>{formatCurrency(parseFloat(p.price ?? 0))}</td>
                     <td>{p.stock ?? '—'}</td>
                     <td>
@@ -336,13 +352,23 @@ export default function AdminProducts() {
                         >
                           Editar
                         </button>
-                        <button
-                          className="action-btn action-btn--delete"
-                          onClick={() => handleDelete(p.id)}
-                          disabled={deletingId === p.id}
-                        >
-                          {deletingId === p.id ? '...' : 'Deletar'}
-                        </button>
+                        {p.active ? (
+                          <button
+                            className="action-btn action-btn--delete"
+                            onClick={() => handleDeactivate(p.id)}
+                            disabled={deletingId === p.id}
+                          >
+                            {deletingId === p.id ? '...' : 'Desativar'}
+                          </button>
+                        ) : (
+                          <button
+                            className="action-btn action-btn--edit"
+                            onClick={() => handleReactivate(p.id)}
+                            disabled={deletingId === p.id}
+                          >
+                            {deletingId === p.id ? '...' : 'Reativar'}
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -368,7 +394,7 @@ export default function AdminProducts() {
               {editingProduct ? 'Editar Produto' : 'Novo Produto'}
             </h3>
             <ProductForm
-              initial={editingProduct}
+              initial={editingProduct ? toFormValues(editingProduct) : null}
               categories={categories}
               onSave={handleSave}
               onCancel={closeModal}

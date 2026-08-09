@@ -33,9 +33,9 @@ export default function CartItem({ item }) {
     <div className={`cart-item${loading ? ' cart-item--loading' : ''}`}>
       {/* Image */}
       <div className="cart-item-img-wrapper">
-        {item.image_url ? (
+        {item.imageUrl ? (
           <img
-            src={item.image_url}
+            src={item.imageUrl}
             alt={item.name}
             className="cart-item-img"
             loading="lazy"

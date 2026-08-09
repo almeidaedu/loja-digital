@@ -81,7 +81,7 @@ export default function Orders() {
             >
               <div>
                 <div className="order-id">Pedido #{order.id?.slice(0, 8).toUpperCase()}</div>
-                <div className="order-date">{formatDate(order.created_at)}</div>
+                <div className="order-date">{formatDate(order.createdAt)}</div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -92,7 +92,7 @@ export default function Orders() {
                   <div className="order-items-count">
                     {order.items?.length ?? 0} ite{order.items?.length === 1 ? 'm' : 'ns'}
                   </div>
-                  <div className="order-total">{formatCurrency(parseFloat(order.total ?? 0))}</div>
+                  <div className="order-total">{formatCurrency(parseFloat(order.totalAmount ?? 0))}</div>
                 </div>
                 <span className="order-chevron">{expanded === order.id ? '▲' : '▼'}</span>
               </div>
@@ -104,21 +104,21 @@ export default function Orders() {
                   order.items.map((item) => (
                     <div key={item.id} className="order-item-row">
                       <div className="order-item-img">
-                        {item.image_url ? (
-                          <img src={item.image_url} alt={item.name} />
+                        {item.productImage ? (
+                          <img src={item.productImage} alt={item.productName} />
                         ) : (
                           <ShirtIcon sx={{ fontSize: '28px', opacity: 0.3 }} />
                         )}
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div className="order-item-name">{item.name}</div>
+                        <div className="order-item-name">{item.productName}</div>
                         {item.size && (
                           <div className="order-item-meta">Tamanho: {item.size}</div>
                         )}
                       </div>
                       <div className="order-item-qty">× {item.quantity}</div>
                       <div className="order-item-price">
-                        {formatCurrency(parseFloat(item.price) * item.quantity)}
+                        {formatCurrency(parseFloat(item.unitPrice) * item.quantity)}
                       </div>
                     </div>
                   ))

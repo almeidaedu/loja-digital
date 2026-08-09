@@ -128,12 +128,12 @@ export default function AdminOrders() {
                 {displayed.map((order) => (
                   <tr key={order.id}>
                     <td className="mono">#{order.id?.slice(0, 8).toUpperCase()}</td>
-                    <td>{order.user_name ?? order.customer_name ?? '—'}</td>
+                    <td>{order.customerName ?? '—'}</td>
                     <td style={{ fontWeight: 700 }}>
-                      {formatCurrency(parseFloat(order.total ?? 0))}
+                      {formatCurrency(parseFloat(order.totalAmount ?? 0))}
                     </td>
                     <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                      {order.payment_method ?? '—'}
+                      {order.paymentMethod ?? '—'}
                     </td>
                     <td>
                       <span className={`badge ${statusClass(order.status)}`}>
@@ -141,7 +141,7 @@ export default function AdminOrders() {
                       </span>
                     </td>
                     <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                      {formatDate(order.created_at)}
+                      {formatDate(order.createdAt)}
                     </td>
                     <td>
                       <select
