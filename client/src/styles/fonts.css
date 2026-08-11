@@ -1,2 +1,5 @@
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500;600&display=swap');
+/* Stack de sistema (definida em globals.css) — sem fontes web para carregar */
+html {
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+}
