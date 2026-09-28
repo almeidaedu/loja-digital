@@ -105,6 +105,33 @@ Mesma regra: ícone é MUI. Estes são `<svg>` cravados no JSX.
   track com `overflow: hidden` — o scaleX exigiria contra-escala para não deformar as
   pontas arredondadas. Exceção documentada no próprio CSS.
 
+## Hotfix da Fase 6 — os dois bugs da pill
+
+Reportados pelo usuário depois da entrega da fase. Sintomas parecidos, causas sem
+relação nenhuma. Levou três rodadas — as duas primeiras erraram, registro abaixo.
+
+| Sintoma | Causa | Correção |
+|---|---|---|
+| Pill entra "de baixo" ao ir de seção rolada → `/produtos` | `measurePageBox` soma o `scrollY` da página na medição, a não ser que um ancestral seja scroll root — e o motion só testa isso (`position: fixed`) em nó com `layoutScroll`. Trocar de rota muda a altura do documento, o browser clampa o `scrollY` entre snapshot e medição, e o delta vira deslocamento vertical | `Layout.jsx`: `<motion.div layoutScroll>` no `.chrome` |
+| De `/produtos`, clicar FAQ faz a pill percorrer Início → Categorias → Avaliações → FAQ | `scrollIntoView` suave emite dezenas de eventos; o scroll-spy reescreve o hash em cada um e a pill segue a URL | `Header.jsx`: trava com alvo — `lockSpy(target)`, libera ao chegar (`getActiveSection() === target`), `wheel`/`touchstart` cancelam, timeout de 1200ms de rede |
+
+**Tentativas erradas (registradas por serem instrutivas):** `layoutRoot` sozinho e
+depois `layout layoutRoot` no `.chrome` — nenhuma mudou o sintoma, porque
+`layoutRoot` é projeção relativa entre nós que animam, não espaço de coordenadas
+de medição. E a primeira versão da trava do spy renovava por evento (debounce de
+150ms), o que congelava o spy enquanto o usuário rolava com o mouse: evento de
+roda é indistinguível de evento de scroll suave. Detalhe completo em G-05 e G-06
+do `gotchas.md`.
+
+## Achado da Fase 6: sem restauração de scroll → Fase 7a
+
+Nenhuma rota reseta o scroll. Saindo da home rolada para `/produtos`, a página abre
+no meio. Foi o que expôs o bug da pill (`layoutScroll`, corrigido), mas é bug próprio:
+o usuário chega no catálogo sem ver o topo. Cuidado na correção — a home usa hash
+(`/#faq`) para navegar entre seções, então o reset precisa ignorar navegação com hash
+e não pode atropelar o `scrollIntoView` do `handleHashLink`. `App/AppRouter` são da
+**Fase 7a**.
+
 ## Fases
 
 | # | Título | Arquivos |
@@ -199,7 +226,7 @@ arquitetura (persist local + merge no login), candidata a item do Estágio G.
 - [x] H1 — Hotfix "Adicionar ao Carrinho" *(verificado no navegador)*
 - [x] 5a — CartDrawer sheet *(verificado no navegador)*
 - [x] 5b — CartItem + FreteBar + limpeza *(verificado no navegador)*
-- [x] 6 — Header *(diagnostics limpos; falta verificação no navegador)*
+- [x] 6 — Header + hotfix da pill *(diagnostics limpos; falta verificação no navegador)*
 - [ ] 7a — Shell · [ ] 7b — ExitPopup
 - [ ] 8 — Home · [ ] 9 — Hero/FAQ
 - [ ] 10 — Catálogo · [ ] 11 — PDP+Checkout · [ ] 12 — Resultados · [ ] 13 — Auth

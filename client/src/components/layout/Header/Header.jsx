@@ -53,6 +53,30 @@ export default function Header() {
   const navigateRef = useRef(null);
   const locationHashRef = useRef('');
 
+  // Scroll programático (scrollIntoView / scrollTo) emite dezenas de eventos até
+  // chegar no alvo. Sem trava, o spy reescreve o hash em cada um e a pill percorre
+  // todas as seções do caminho. A trava não pode ser por tempo: evento de scroll
+  // suave é indistinguível do da roda do mouse, e renovar a trava a cada evento
+  // congela o spy justamente enquanto o usuário rola. Então ela dura até o alvo —
+  // e input de scroll do usuário cancela na hora.
+  const spyTargetRef = useRef(null);
+  const spyTimeoutRef = useRef(null);
+
+  const releaseSpy = () => {
+    spyTargetRef.current = null;
+    clearTimeout(spyTimeoutRef.current);
+  };
+
+  // Rede de segurança: o alvo pode nunca casar — seção curta no fim da página, ou
+  // scroll que nem acontece porque o destino já estava visível.
+  const lockSpy = (target) => {
+    spyTargetRef.current = target;
+    clearTimeout(spyTimeoutRef.current);
+    spyTimeoutRef.current = setTimeout(releaseSpy, 1200);
+  };
+
+  useEffect(() => releaseSpy, []);
+
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === '/';
@@ -86,8 +110,15 @@ export default function Header() {
       if (rafId) return;
       rafId = requestAnimationFrame(() => {
         rafId = null;
-        const section = getActiveSection();
-        const newHash = section ? `#${section}` : '';
+        const key = getActiveSection() ?? 'inicio';
+
+        // Travado: só observa. Chegou no alvo do clique, devolve o controle.
+        if (spyTargetRef.current) {
+          if (key === spyTargetRef.current) releaseSpy();
+          return;
+        }
+
+        const newHash = key === 'inicio' ? '' : `#${key}`;
         if (locationHashRef.current !== newHash) {
           navigateRef.current(
             newHash ? { hash: newHash } : { pathname: '/', hash: '' },
@@ -98,8 +129,12 @@ export default function Header() {
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('wheel', releaseSpy, { passive: true });
+    window.addEventListener('touchstart', releaseSpy, { passive: true });
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('wheel', releaseSpy);
+      window.removeEventListener('touchstart', releaseSpy);
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, [isHome]);
@@ -130,6 +165,7 @@ export default function Header() {
 
   const handleHashLink = (hash) => {
     setMobileMenuOpen(false);
+    lockSpy(hash);
     if (isHome) {
       // Mesma página: atualiza hash + scrolla
       navigate({ hash: `#${hash}` }, { replace: true });
@@ -144,6 +180,7 @@ export default function Header() {
 
   const handleScrollTop = () => {
     setMobileMenuOpen(false);
+    lockSpy('inicio');
     if (isHome) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (location.hash) navigate({ pathname: '/', hash: '' }, { replace: true });

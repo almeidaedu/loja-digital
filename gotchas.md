@@ -44,3 +44,66 @@ inicial — sem erro, sem log, sem mudança visual.
 
 **Regra:** handler que é a razão de existir do componente não é opcional. Ou
 falha alto, ou o componente busca a dependência sozinho.
+
+## G-05 — Medição do motion é `layoutScroll`, não `layoutRoot`
+
+**O que aconteceu:** troquei a pill do header de medição manual para `layoutId`
+(Fase 6). Saindo de uma seção rolada para `/produtos`, a pill entrava deslizando
+de baixo. Errei **duas** correções antes de acertar: `layoutRoot` sozinho, depois
+`layout layoutRoot`. Nenhuma mudou o sintoma em nada.
+
+**Causa real** (`motion-dom/dist/es/projection/node/`):
+
+- `HTMLProjectionNode.mjs:24` — `checkIsScrollRoot: (instance) =>
+  getComputedStyle(instance).position === "fixed"`. O motion **entende**
+  `position: fixed`.
+- `create-projection-node.mjs:656` — `measurePageBox()` mede em coordenadas de
+  viewport e, se `!wasInScrollRoot`, **soma o `scrollY` da página** para converter
+  em coordenadas de documento.
+- `create-projection-node.mjs:597` — `updateScroll()` só roda com
+  `Boolean(this.options.layoutScroll && this.instance)`. Sem `layoutScroll`, o
+  ancestral `fixed` **nunca é testado** como scroll root.
+
+Resultado: a pill era medida com o `scrollY` somado. Ao trocar de rota a altura do
+documento muda, o browser clampa o `scrollY` entre o snapshot e a nova medição, e
+esse delta vira o deslocamento vertical. Do topo o delta é zero — por isso o teste
+inicial passou.
+
+**Onde meu modelo estava errado:** tratei `layoutRoot` como "define o espaço de
+coordenadas da medição". Não define. `layoutRoot` governa **projeção relativa
+entre nós que animam**; o espaço de coordenadas é decidido em `measurePageBox`,
+por scroll root. São dois subsistemas, e eu confundi os dois duas vezes seguidas.
+
+**Regra:** container `position: fixed` (ou `sticky`) com layout animation dentro
+leva **`layoutScroll`**. Não precisa de `layout` junto — `willUpdate` (`:423-434`)
+chama `updateScroll("snapshot")` em todo o `path`, com ou sem `layout`. E teste de
+animação ligada a rota tem que sair de scroll ≠ 0.
+
+**Regra de processo:** correção de API que não muda o sintoma **em nada** não é
+"quase lá", é modelo errado. Segunda tentativa já vai na fonte em `node_modules`,
+não na segunda variação da mesma ideia.
+
+## G-06 — Trava por tempo não distingue scroll programático de scroll do usuário
+
+**O que aconteceu, parte 1:** estando em `/produtos` e clicando "FAQ", a pill
+viajava por Início → Categorias → Avaliações → FAQ.
+`scrollIntoView({ behavior: 'smooth' })` emite dezenas de eventos no caminho, o
+spy reescreve o hash em cada um, e a pill segue a URL. A animação estava certa; o
+estado é que estava sendo pilotado pelo spy.
+
+**Parte 2 — a correção virou bug pior:** travei o spy e **renovei a trava a cada
+evento de scroll** (debounce de 150ms). Só que evento de roda do mouse é idêntico
+a evento de scroll suave. Rolando com o mouse, os eventos chegam a ~16ms e renovam
+a trava indefinidamente: o spy congelava exatamente enquanto o usuário rolava. Eu
+troquei um bug visível por um pior, e só apareceu porque o usuário testou de novo.
+
+**Correção:** a trava guarda o **alvo** do clique e dura até chegar nele
+(`getActiveSection() === target`), com `wheel`/`touchstart` cancelando na hora e
+timeout de 1200ms como rede. Condição de saída baseada em estado, não em silêncio
+de eventos.
+
+**Regra:** spy de scroll e scroll programático são dois donos do mesmo estado. A
+trava entre eles precisa de condição de saída **observável** (cheguei no alvo) ou
+de sinal que só o usuário produz (`wheel`, `touchstart`). Nunca "parou de chegar
+evento" — o usuário produz os mesmos eventos. E ao suprimir eventos de um
+listener, perguntar sempre: *quem mais depende deste listener?*

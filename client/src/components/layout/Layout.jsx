@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { motion } from 'motion/react';
 import FreteBar from './FreteBar/FreteBar';
 import Header from './Header/Header';
 import Footer from './Footer/Footer';
@@ -20,10 +21,15 @@ export default function Layout() {
 
   return (
     <>
-      <div className={`chrome${scrolled ? ' chrome--scrolled' : ''}`}>
+      {/* `layoutScroll`: o chrome é `position: fixed`, e é essa prop que faz o motion
+          testá-lo como scroll root (`checkIsScrollRoot` = `position === 'fixed'`). Sem
+          ela, `measurePageBox` soma o `scrollY` da página na medição da pill do header
+          — e como a altura do documento muda ao trocar de rota, o scroll é clampado
+          entre o snapshot e a medição. Esse delta é a pill "vindo de baixo". */}
+      <motion.div layoutScroll className={`chrome${scrolled ? ' chrome--scrolled' : ''}`}>
         <FreteBar />
         <Header />
-      </div>
+      </motion.div>
 
       <main className="layout-main">
         <Outlet />
