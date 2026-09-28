@@ -64,15 +64,31 @@ fase remove os do arquivo que ela toca — a Fase 16 confere que a lista zerou.
 
 | Arquivo | Glifo | Fase |
 |---|---|---|
-| `CartItem.jsx:45`, `:69` | `⚽`, `−` | 5 |
-| `CartDrawer.jsx:63`, `:92` | `🛒`, `🎉` | 5 |
-| `FreteBar.jsx:20` | `🎉` | 6 |
+| ~~`CartItem.jsx:45`, `:69`~~ | ~~`⚽`, `−`~~ | ✅ 5b |
+| ~~`CartDrawer.jsx:63`, `:92`~~ | ~~`🛒`, `🎉`~~ | ✅ 5a |
+| ~~`FreteBar.jsx:20`~~ | ~~`🎉`~~ | ✅ 5b |
 | `ExitPopup.jsx:43` | `✕` | 7b |
 | `Checkout.jsx:214` | `←` | 11 |
 | `ProductDetail.jsx:88`, `:103`, `:175` | `←`, `−` | 11 |
 | `PaymentSuccess.jsx:37`, `PaymentFailure.jsx:15`,`:42`, `PaymentPending.jsx:101`,`:123` | `✓`, `✕`, `💬`, `📋`, `⏰` | 12 |
 | `Orders.jsx:97` | `▲` / `▼` | 14 |
 | `AdminProducts.jsx:392` | `✕` | 15 |
+
+## SVG inline (achado da Fase 5b)
+
+Mesma regra: ícone é MUI. Estes são `<svg>` cravados no JSX.
+
+| Arquivo | O quê | Fase |
+|---|---|---|
+| `Header.jsx:218` | carrinho | 6 |
+| `Layout.jsx:26`, `Footer.jsx:55` | WhatsApp (mesmo path duplicado nos dois) | 6, 16 |
+| `Hero.jsx:62` | ornamento do hero | 9 |
+
+## Threshold de frete fora do storeConfig (achado da Fase 5b)
+
+`Hero.jsx:30` escreve "Frete grátis +R$149" em texto. `CartDrawer` e `FreteBar` já leem
+`storeConfig.shipping.freeThreshold` via `useFreteProgress`; este é o último cravado.
+Correção de uma linha, **Fase 9** é dona do arquivo.
 
 ## Fases
 
@@ -166,8 +182,8 @@ arquitetura (persist local + merge no login), candidata a item do Estágio G.
 - [x] 3 — Fundação de motion
 - [x] 4 — Toasts
 - [x] H1 — Hotfix "Adicionar ao Carrinho" *(verificado no navegador)*
-- [x] 5a — CartDrawer sheet *(diagnostics limpos; falta conferir arraste e reduced-motion)*
-- [ ] 5b — CartItem + FreteBar + limpeza
+- [x] 5a — CartDrawer sheet *(verificado no navegador)*
+- [x] 5b — CartItem + FreteBar + limpeza *(diagnostics limpos; falta verificação no navegador)*
 - [ ] 6 — Header
 - [ ] 7a — Shell · [ ] 7b — ExitPopup
 - [ ] 8 — Home · [ ] 9 — Hero/FAQ

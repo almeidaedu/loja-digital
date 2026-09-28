@@ -3,12 +3,9 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { CloseIcon } from '../Icons';
 import useScrollLock from '../../../hooks/useScrollLock';
+import useFocusTrap from '../../../hooks/useFocusTrap';
 import { fade, popIn, spring, tween, withReducedMotion } from '../../../styles/motion';
 import './Modal.css';
-
-const FOCUSABLE =
-  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), ' +
-  'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 // Diálogo em portal com scrim, trava de scroll, Escape, foco preso e devolvido.
 // Scrim e painel saem juntos pelo AnimatePresence — o backdrop não some antes.
@@ -24,12 +21,12 @@ export default function Modal({
 }) {
   const reduced = useReducedMotion();
   const dialogRef = useRef(null);
-  const restoreFocusRef = useRef(null);
   const baseId = useId();
   const titleId = `${baseId}-title`;
   const descriptionId = `${baseId}-desc`;
 
   useScrollLock(open);
+  useFocusTrap(open, dialogRef);
 
   const dismiss = useCallback(() => {
     if (dismissible) onClose?.();
@@ -38,35 +35,8 @@ export default function Modal({
   useEffect(() => {
     if (!open) return undefined;
 
-    restoreFocusRef.current = document.activeElement;
-    const dialog = dialogRef.current;
-    (dialog?.querySelector(FOCUSABLE) ?? dialog)?.focus();
-
-    return () => restoreFocusRef.current?.focus?.();
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return undefined;
-
     const onKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        dismiss();
-        return;
-      }
-      if (event.key !== 'Tab') return;
-
-      const nodes = dialogRef.current?.querySelectorAll(FOCUSABLE);
-      if (!nodes?.length) return;
-
-      const first = nodes[0];
-      const last = nodes[nodes.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
+      if (event.key === 'Escape') dismiss();
     };
 
     document.addEventListener('keydown', onKeyDown);
