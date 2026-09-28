@@ -29,3 +29,4 @@ export { default as CartIcon }            from '@mui/icons-material/ShoppingCart
 export { default as PlusIcon }            from '@mui/icons-material/Add';
 export { default as MinusIcon }           from '@mui/icons-material/Remove';
 export { default as TrashIcon }           from '@mui/icons-material/DeleteOutline';
+export { default as WhatsAppIcon }        from '@mui/icons-material/WhatsApp';

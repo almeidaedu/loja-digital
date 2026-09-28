@@ -1,9 +1,14 @@
-import { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useCartStore } from '../../../store/cartStore';
 import { useUiStore } from '../../../store/uiStore';
 import { useAuthStore } from '../../../store/authStore';
 import { authService } from '../../../services/authService';
+import { storeConfig } from '../../../config/storeConfig';
+import { popIn, spring, tween } from '../../../styles/motion';
+import Button from '../../ui/Button/Button';
+import { CartIcon } from '../../ui/Icons';
 import './Header.css';
 
 const SCROLL_SECTIONS = [
@@ -26,6 +31,8 @@ const NAV_LINKS = [
   { key: 'faq',          label: 'FAQ',        hash: 'faq' },
 ];
 
+const [brandPrefix, brandSuffix] = storeConfig.brand.nameParts;
+
 function getActiveSection() {
   const threshold = window.innerHeight * 0.45;
   for (const { id, nav } of SCROLL_SECTIONS) {
@@ -36,14 +43,11 @@ function getActiveSection() {
 }
 
 export default function Header() {
-  const [scrolled, setScrolled] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [pill, setPill] = useState({ left: 0, width: 0, visible: false });
 
   const userMenuRef = useRef(null);
-  const navRef = useRef(null);
-  const linkRefs = useRef({});
+  const reduced = useReducedMotion();
 
   // Refs para evitar re-criar o effect de scroll ao mudar navigate/hash
   const navigateRef = useRef(null);
@@ -56,37 +60,26 @@ export default function Header() {
   navigateRef.current = navigate;
   locationHashRef.current = location.hash;
 
-  // Pill position driven by URL — atualiza atomicamente com a rota,
-  // sem estado intermediário que causava o desvio por 'inicio'
+  const user = useAuthStore((s) => s.user);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const items = useCartStore((s) => s.items);
+  const toggleCart = useUiStore((s) => s.toggleCart);
+
+  const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
+  const userInitial = user?.name?.charAt(0).toUpperCase() ?? '?';
+
+  // A pill acompanha a URL. Antes era medida por getBoundingClientRect com
+  // dependência [activeKey] — desalinhava em qualquer resize (B5). Agora é
+  // layoutId: o motion interpola a posição sozinho, sem medir nada. (B5)
   const activeKey = (() => {
     if (location.pathname.startsWith('/produtos')) return 'produtos';
     if (isHome) return HASH_TO_KEY[location.hash] ?? 'inicio';
     return null;
   })();
 
-  // Move pill to active link
-  useLayoutEffect(() => {
-    const navEl = navRef.current;
-    const linkEl = linkRefs.current[activeKey];
-    if (!navEl || !linkEl || !activeKey) {
-      setPill((p) => ({ ...p, visible: false }));
-      return;
-    }
-    const navRect = navEl.getBoundingClientRect();
-    const linkRect = linkEl.getBoundingClientRect();
-    setPill({ left: linkRect.left - navRect.left, width: linkRect.width, visible: true });
-  }, [activeKey]);
-
-  // Header scroll shadow
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   // Scroll tracking: atualiza o hash na URL conforme o usuário scrolla
   useEffect(() => {
-    if (!isHome) return;
+    if (!isHome) return undefined;
 
     let rafId = null;
     const onScroll = () => {
@@ -111,15 +104,29 @@ export default function Header() {
     };
   }, [isHome]);
 
-  // Close user dropdown on outside click
+  // Fecha o dropdown ao clicar fora
   useEffect(() => {
+    if (!userMenuOpen) return undefined;
     const handler = (e) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target))
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
         setUserMenuOpen(false);
+      }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, []);
+  }, [userMenuOpen]);
+
+  // Escape fecha o que estiver aberto
+  useEffect(() => {
+    if (!userMenuOpen && !mobileMenuOpen) return undefined;
+    const onKeyDown = (e) => {
+      if (e.key !== 'Escape') return;
+      setUserMenuOpen(false);
+      setMobileMenuOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [userMenuOpen, mobileMenuOpen]);
 
   const handleHashLink = (hash) => {
     setMobileMenuOpen(false);
@@ -153,118 +160,150 @@ export default function Header() {
     }
   };
 
-  const setLinkRef = (key) => (el) => { linkRefs.current[key] = el; };
-
-  const isLinkActive = (link) => activeKey === link.key;
-
   const renderNavLink = (link, mobile = false) => {
-    const cls = `${mobile ? 'mobile-nav-link' : 'nav-link'}${isLinkActive(link) ? ' active' : ''}`;
+    const active = activeKey === link.key;
+    const props = {
+      className: `${mobile ? 'mobile-nav-link' : 'nav-link'}${active ? ' active' : ''}`,
+      'aria-current': active ? 'page' : undefined,
+    };
 
-    if (link.scrollTop) {
+    const content = (
+      <>
+        {active && !mobile && (
+          <motion.span
+            className="nav-pill"
+            layoutId="nav-pill"
+            transition={reduced ? { duration: 0 } : spring.snappy}
+            aria-hidden="true"
+          />
+        )}
+        <span className="nav-link-label">{link.label}</span>
+      </>
+    );
+
+    if (link.to) {
       return (
-        <button key={link.key} ref={!mobile ? setLinkRef(link.key) : undefined}
-          className={cls} onClick={handleScrollTop} type="button">
-          {link.label}
-        </button>
+        <Link key={link.key} to={link.to} {...props} onClick={() => setMobileMenuOpen(false)}>
+          {content}
+        </Link>
       );
     }
-    if (link.hash) {
-      return (
-        <button key={link.key} ref={!mobile ? setLinkRef(link.key) : undefined}
-          className={cls} onClick={() => handleHashLink(link.hash)} type="button">
-          {link.label}
-        </button>
-      );
-    }
+
     return (
-      <NavLink key={link.key} ref={!mobile ? setLinkRef(link.key) : undefined}
-        to={link.to}
-        className={({ isActive }) => `${mobile ? 'mobile-nav-link' : 'nav-link'}${isActive ? ' active' : ''}`}
-        onClick={() => setMobileMenuOpen(false)}
+      <button
+        key={link.key}
+        type="button"
+        {...props}
+        onClick={link.scrollTop ? handleScrollTop : () => handleHashLink(link.hash)}
       >
-        {link.label}
-      </NavLink>
+        {content}
+      </button>
     );
   };
 
-  const { user, isAuthenticated } = useAuthStore();
-  const userInitial = user?.name?.charAt(0).toUpperCase() ?? '?';
-  const items = useCartStore((s) => s.items);
-  const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
-  const toggleCart = useUiStore((s) => s.toggleCart);
-
   return (
-    <header className={`header${scrolled ? ' scrolled' : ''}`}>
+    <header>
       <div className="container">
         <div className="header-inner">
-          <button className="logo" onClick={handleScrollTop} aria-label="Campo Cheio - Voltar ao início" type="button">
-            CAMPO <span>CHEIO</span>
+          <button
+            type="button"
+            className="logo"
+            onClick={handleScrollTop}
+            aria-label={`${storeConfig.brand.name} — voltar ao início`}
+          >
+            {brandPrefix} <span>{brandSuffix}</span>
           </button>
 
-          <nav ref={navRef} className="header-nav" aria-label="Navegação principal">
-            {pill.visible && (
-              <span
-                className="nav-pill"
-                style={{ left: pill.left, width: pill.width }}
-                aria-hidden="true"
-              />
-            )}
+          <nav className="header-nav" aria-label="Navegação principal">
             {NAV_LINKS.map((link) => renderNavLink(link))}
           </nav>
 
           <div className="header-actions">
-            <button className="cart-btn" onClick={toggleCart}
-              aria-label={`Carrinho com ${cartCount} ${cartCount === 1 ? 'item' : 'itens'}`}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-              </svg>
+            <button
+              type="button"
+              className="cart-btn"
+              onClick={toggleCart}
+              aria-label={`Carrinho com ${cartCount} ${cartCount === 1 ? 'item' : 'itens'}`}
+            >
+              <CartIcon sx={{ fontSize: '1.25rem' }} />
               {cartCount > 0 && (
                 <span className="cart-count" aria-hidden="true">{cartCount > 99 ? '99+' : cartCount}</span>
               )}
             </button>
 
-            <Link to="/produtos" className="btn-primary header-cta">Ver Coleção</Link>
+            <Button to="/produtos" size="sm" className="header-cta">Ver Coleção</Button>
 
             {isAuthenticated ? (
               <div className="user-menu-wrapper" ref={userMenuRef}>
-                <button className="user-avatar" onClick={() => setUserMenuOpen((o) => !o)}
-                  aria-label="Menu do usuário" aria-expanded={userMenuOpen}>
+                <button
+                  type="button"
+                  className="user-avatar"
+                  onClick={() => setUserMenuOpen((o) => !o)}
+                  aria-label="Menu do usuário"
+                  aria-haspopup="menu"
+                  aria-expanded={userMenuOpen}
+                >
                   {userInitial}
                 </button>
-                {userMenuOpen && (
-                  <div className="user-dropdown" role="menu">
-                    <div className="user-dropdown-name">{user.name}</div>
-                    <Link to="/minha-conta" className="user-dropdown-item" role="menuitem" onClick={() => setUserMenuOpen(false)}>Minha Conta</Link>
-                    <Link to="/meus-pedidos" className="user-dropdown-item" role="menuitem" onClick={() => setUserMenuOpen(false)}>Meus Pedidos</Link>
-                    {user.role === 'admin' && (
-                      <Link to="/admin" className="user-dropdown-item user-dropdown-admin" role="menuitem" onClick={() => setUserMenuOpen(false)}>Admin</Link>
-                    )}
-                    <button className="user-dropdown-item user-dropdown-logout" role="menuitem" onClick={handleLogout}>Sair</button>
-                  </div>
-                )}
+
+                <AnimatePresence>
+                  {userMenuOpen && (
+                    <motion.div
+                      className="user-dropdown"
+                      role="menu"
+                      variants={popIn}
+                      initial="hidden"
+                      animate="visible"
+                      exit="hidden"
+                      transition={reduced ? tween.fast : spring.snappy}
+                    >
+                      <div className="user-dropdown-name">{user?.name}</div>
+                      <Link to="/minha-conta" className="user-dropdown-item" role="menuitem" onClick={() => setUserMenuOpen(false)}>Minha Conta</Link>
+                      <Link to="/meus-pedidos" className="user-dropdown-item" role="menuitem" onClick={() => setUserMenuOpen(false)}>Meus Pedidos</Link>
+                      {user?.role === 'admin' && (
+                        <Link to="/admin" className="user-dropdown-item user-dropdown-admin" role="menuitem" onClick={() => setUserMenuOpen(false)}>Admin</Link>
+                      )}
+                      <button type="button" className="user-dropdown-item user-dropdown-logout" role="menuitem" onClick={handleLogout}>Sair</button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <Link to="/login" className="header-login-link">Entrar</Link>
             )}
 
-            <button className={`hamburger${mobileMenuOpen ? ' open' : ''}`}
+            <button
+              type="button"
+              className={`hamburger${mobileMenuOpen ? ' open' : ''}`}
               onClick={() => setMobileMenuOpen((o) => !o)}
-              aria-label="Abrir menu" aria-expanded={mobileMenuOpen}>
+              aria-label={mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+              aria-controls="mobile-nav"
+              aria-expanded={mobileMenuOpen}
+            >
               <span /><span /><span />
             </button>
           </div>
         </div>
 
-        {mobileMenuOpen && (
-          <nav className="mobile-nav" aria-label="Navegação mobile">
-            {NAV_LINKS.map((link) => renderNavLink(link, true))}
-            <Link to="/produtos" className="btn-primary mobile-nav-cta" onClick={() => setMobileMenuOpen(false)}>
-              Ver Coleção
-            </Link>
-          </nav>
-        )}
+        <AnimatePresence initial={false}>
+          {mobileMenuOpen && (
+            <motion.div
+              id="mobile-nav"
+              className="mobile-nav-wrap"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={reduced ? { duration: 0 } : tween.base}
+            >
+              <nav className="mobile-nav" aria-label="Navegação mobile">
+                {NAV_LINKS.map((link) => renderNavLink(link, true))}
+                <Button to="/produtos" fullWidth className="mobile-nav-cta" onClick={() => setMobileMenuOpen(false)}>
+                  Ver Coleção
+                </Button>
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );

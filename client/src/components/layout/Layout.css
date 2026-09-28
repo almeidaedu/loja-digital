@@ -1,43 +1,66 @@
+/* ── Chrome: FreteBar + Header como um material só ──
+   As duas barras eram `position: fixed` independentes, com dois backgrounds,
+   dois blurs e z-index em disputa. Agora é uma camada; elas são filhas estáticas. */
+.chrome {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-header);
+  background: var(--material-chrome);
+  backdrop-filter: blur(var(--blur-chrome));
+  -webkit-backdrop-filter: blur(var(--blur-chrome));
+  border-bottom: 1px solid var(--border-subtle);
+  transition: box-shadow var(--duration-base) var(--ease-standard);
+}
+
+.chrome--scrolled {
+  box-shadow: var(--shadow-md);
+}
+
 .layout-main {
   min-height: 100vh;
   padding-top: var(--header-total);
 }
 
-/* ── WhatsApp floating button ─────────────────────── */
+/* ── Botão flutuante do WhatsApp ──────────────────── */
 .wpp-float {
   position: fixed;
-  bottom: 28px;
-  right: 28px;
-  z-index: 999;
-  background-color: #25D366;
-  color: #fff;
-  font-family: var(--font-condensed);
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 14px 18px;
-  border-radius: 50px;
-  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
+  bottom: var(--space-6);
+  right: var(--space-6);
+  z-index: var(--z-float);
   display: flex;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  text-decoration: none;
-  animation: fadeIn 1s 2s both;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-full);
+  /* Verde da marca WhatsApp — não é token do tema de propósito */
+  background-color: #25D366;
+  color: #fff;
+  font-size: var(--text-caption-size);
+  font-weight: 700;
+  letter-spacing: var(--text-label-tracking);
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
+  animation: fadeIn var(--duration-slow) 2s both;
+  transition: transform var(--duration-base) var(--ease-standard),
+              box-shadow var(--duration-base) var(--ease-standard);
 }
 
 .wpp-float:hover {
-  transform: translateY(-3px) scale(1.03);
+  transform: translateY(-3px);
   box-shadow: 0 8px 32px rgba(37, 211, 102, 0.55);
 }
 
-.wpp-label {
-  display: inline;
+.wpp-float:active {
+  transform: translateY(0);
 }
 
 @media (max-width: 480px) {
   .wpp-label {
     display: none;
+  }
+
+  .wpp-float {
+    padding: var(--space-3);
   }
 }

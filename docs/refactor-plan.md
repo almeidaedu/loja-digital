@@ -33,7 +33,7 @@ apontam para lá).
 | B2 | `PaymentPending.jsx:45` | `navigate(path,{search})` não existe no RR6; success perde o `orderId` | 12 |
 | B3 | `AdminLayout.jsx:46` + `.css:150` | CSS esconde `span:last-child` → esconde o ícone, não o label | 14 |
 | B4 | `CartDrawer.jsx:29` | Overlay sem exit; painel com transition 350ms → backdrop some na hora | 5 |
-| B5 | `Header.jsx:68` | Pill medida por rect com dep `[activeKey]` → desalinha no resize | 6 |
+| B5 | ~~`Header.jsx:68`~~ | ~~Pill medida por rect com dep `[activeKey]` → desalinha no resize~~ ✅ `layoutId` | 6 |
 | B6 | `ProductCard.jsx:64` | `<article>` sem `<Link>` → produto não é clicável | 10 |
 | B7 | `ProductCard.css:212` | `margin-top:12px` anula o `margin-top:auto` → CTAs desalinhados | 10 |
 | B8 | `ProtectedRoute.jsx` | `isLoading` → `return null` → tela branca no refresh | 7a |
@@ -80,15 +80,30 @@ Mesma regra: ícone é MUI. Estes são `<svg>` cravados no JSX.
 
 | Arquivo | O quê | Fase |
 |---|---|---|
-| `Header.jsx:218` | carrinho | 6 |
-| `Layout.jsx:26`, `Footer.jsx:55` | WhatsApp (mesmo path duplicado nos dois) | 6, 16 |
+| ~~`Header.jsx:218`~~ | ~~carrinho~~ | ✅ 6 |
+| ~~`Layout.jsx:26`~~ | ~~WhatsApp~~ | ✅ 6 |
+| `Footer.jsx:55` | WhatsApp (mesmo path que estava no Layout) | 16 |
 | `Hero.jsx:62` | ornamento do hero | 9 |
 
-## Threshold de frete fora do storeConfig (achado da Fase 5b)
+## Valores cravados fora do storeConfig
 
-`Hero.jsx:30` escreve "Frete grátis +R$149" em texto. `CartDrawer` e `FreteBar` já leem
-`storeConfig.shipping.freeThreshold` via `useFreteProgress`; este é o último cravado.
-Correção de uma linha, **Fase 9** é dona do arquivo.
+| Valor | Onde | Fase |
+|---|---|---|
+| `149` | `Hero.jsx:30` ("Frete grátis +R$149" em texto) | 9 |
+| ~~`5511999999999`~~ | ~~`Layout.jsx:20`~~ | ✅ 6 |
+| `5511999999999` | `Footer.jsx:50` | 16 |
+| `5511999999999` | `PaymentFailure.jsx:4` (`WHATSAPP_NUMBER` local) | 12 |
+
+`storeConfig.contact.whatsapp` e `storeConfig.shipping.freeThreshold` já existem — é só consumir.
+
+## Dívidas conscientes da Fase 6
+
+- `.highlight` em `FreteBar.jsx` é classe sem prefixo em JSX. Só existe como
+  `.frete-bar-inner .highlight`, então não colide de fato; renomear custaria um 6º
+  arquivo na fase. Vai na **Fase 16**.
+- `.frete-progress-fill` anima `width`, não `transform`. Barra de 4px dentro de um
+  track com `overflow: hidden` — o scaleX exigiria contra-escala para não deformar as
+  pontas arredondadas. Exceção documentada no próprio CSS.
 
 ## Fases
 
@@ -101,7 +116,7 @@ Correção de uma linha, **Fase 9** é dona do arquivo.
 | 4 | Toasts tipados | `uiStore.js`, `Toast.jsx`, `ToastContainer.jsx`, `Toast.css`, `Icons.jsx` (+1 linha em `ProductGrid.jsx`: call site do toast) |
 | 5a | CartDrawer como sheet arrastável (B4) | `hooks/useFreteProgress.js`, `hooks/useFocusTrap.js`, `Icons.jsx`, `CartDrawer.{jsx,css}` |
 | 5b | CartItem, FreteBar e limpeza | `CartItem.{jsx,css}`, `FreteBar.jsx`, `Modal.jsx` (usa `useFocusTrap`), `globals.css` (del. alias `.badge-green`) |
-| 6 | Header/FreteBar um material; pill `layoutId` (B5) | `Header.{jsx,css}`, `FreteBar.css`, `Layout.{jsx,css}` |
+| 6 | Header/FreteBar um material; pill `layoutId` (B5) | `Header.{jsx,css}`, `FreteBar.css`, `Layout.{jsx,css}` (+1 linha em `Icons.jsx`: `WhatsAppIcon`) |
 | 7a | Shell honesto e boot (B8) | `App.jsx`, `AppRouter.jsx`, `ProtectedRoute.jsx`, `AdminRoute.jsx` |
 | 7b | ExitPopup sobre `Modal` | `ExitPopup.{jsx,css}` |
 | 8 | Home: de-dup, reveals, prova social honesta (B9) | `Home.{jsx,css}`, `Categories.{jsx,css}`, `Testimonials.jsx` |
@@ -183,8 +198,8 @@ arquitetura (persist local + merge no login), candidata a item do Estágio G.
 - [x] 4 — Toasts
 - [x] H1 — Hotfix "Adicionar ao Carrinho" *(verificado no navegador)*
 - [x] 5a — CartDrawer sheet *(verificado no navegador)*
-- [x] 5b — CartItem + FreteBar + limpeza *(diagnostics limpos; falta verificação no navegador)*
-- [ ] 6 — Header
+- [x] 5b — CartItem + FreteBar + limpeza *(verificado no navegador)*
+- [x] 6 — Header *(diagnostics limpos; falta verificação no navegador)*
 - [ ] 7a — Shell · [ ] 7b — ExitPopup
 - [ ] 8 — Home · [ ] 9 — Hero/FAQ
 - [ ] 10 — Catálogo · [ ] 11 — PDP+Checkout · [ ] 12 — Resultados · [ ] 13 — Auth

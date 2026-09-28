@@ -1,41 +1,40 @@
+/* Faixa superior do chrome — sem material próprio, o `.chrome` é quem pinta. */
 .frete-bar {
-  background: #111;
-  border-bottom: 1px solid var(--border);
-  padding: 8px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1001;
   height: var(--frete-bar-height);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .frete-bar-inner {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-family: var(--font-condensed);
-  font-size: 0.85rem;
+  gap: var(--space-3);
+  font-size: var(--text-caption-size);
+  letter-spacing: var(--text-caption-tracking);
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--ink-muted);
   white-space: nowrap;
 }
 
 .frete-bar-inner .highlight {
-  color: var(--accent-green);
+  color: var(--brand-accent);
 }
 
 .frete-progress-track {
   flex: 1;
   height: 4px;
-  background: var(--border);
-  border-radius: 2px;
+  background: var(--border-subtle);
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
+/* Barra de 4px dentro de um track com overflow hidden: animar `width` aqui
+   custa menos que o scaleX + contra-escala que seria preciso para manter
+   as pontas arredondadas. Exceção consciente à regra de transform/opacity. */
 .frete-progress-fill {
   height: 100%;
-  background: var(--accent-green);
-  border-radius: 2px;
-  transition: width 0.8s ease;
+  background: var(--brand-accent);
+  border-radius: var(--radius-full);
+  transition: width var(--duration-slow) var(--ease-out);
 }
