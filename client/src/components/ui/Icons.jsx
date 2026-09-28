@@ -22,3 +22,10 @@ export { default as CheckCircleIcon }     from '@mui/icons-material/CheckCircle'
 export { default as CancelIcon }          from '@mui/icons-material/Cancel';
 export { default as SecurityIcon }        from '@mui/icons-material/Security';
 export { default as PaymentsIcon }        from '@mui/icons-material/Payments';
+export { default as CloseIcon }           from '@mui/icons-material/Close';
+export { default as InfoIcon }            from '@mui/icons-material/InfoOutlined';
+export { default as WarningIcon }         from '@mui/icons-material/WarningAmberRounded';
+export { default as CartIcon }            from '@mui/icons-material/ShoppingCartOutlined';
+export { default as PlusIcon }            from '@mui/icons-material/Add';
+export { default as MinusIcon }           from '@mui/icons-material/Remove';
+export { default as TrashIcon }           from '@mui/icons-material/DeleteOutline';

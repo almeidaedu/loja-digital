@@ -210,13 +210,6 @@
   padding: 8px 0;
 }
 
-.detail-added-msg {
-  font-family: var(--font-condensed);
-  font-size: 0.9rem;
-  color: var(--accent-green);
-  margin-bottom: 12px;
-}
-
 /* Actions */
 .detail-actions {
   display: flex;

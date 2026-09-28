@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { productService } from '../../services/productService';
 import { categoryService } from '../../services/categoryService';
+import useAddToCart from '../../hooks/useAddToCart';
 import ProductCard from '../../components/home/ProductCard/ProductCard';
 import './ProductListing.css';
 
 export default function ProductListing() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
 
   const activeCategory = searchParams.get('category') || '';
   const [page, setPage] = useState(1);
+
+  const addToCart = useAddToCart();
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -102,7 +104,7 @@ export default function ProductListing() {
             ) : (
               <div className="products-grid">
                 {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
                 ))}
               </div>
             )}

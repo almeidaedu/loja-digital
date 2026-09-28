@@ -1,98 +1,96 @@
-/* ── Container ────────────────────────────────────── */
 .toast-container {
   position: fixed;
-  bottom: 90px;
-  right: 28px;
-  z-index: 998;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  z-index: var(--z-toast);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-width: 280px;
+  align-items: flex-end;
+  gap: var(--space-2);
+  width: min(360px, calc(100vw - var(--space-10)));
   pointer-events: none;
 }
 
-/* ── Individual toast ─────────────────────────────── */
 .toast {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent-green);
-  border-radius: 6px;
-  padding: 12px 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   display: flex;
-  align-items: center;
-  gap: 10px;
-  max-width: 280px;
-  animation: toastIn 0.4s ease both;
-  cursor: pointer;
-  pointer-events: all;
-  transition: opacity 0.2s;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  background: var(--material-sheet);
+  backdrop-filter: blur(var(--blur-chrome));
+  -webkit-backdrop-filter: blur(var(--blur-chrome));
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--tone, var(--border-strong));
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg), var(--edge-highlight);
+  pointer-events: auto;
 }
 
-.toast:hover {
-  opacity: 0.9;
-}
+.toast--success { --tone: var(--brand-accent); }
+.toast--error   { --tone: var(--brand-danger); }
+.toast--warning { --tone: var(--brand-warning); }
+.toast--info    { --tone: var(--brand-info); }
 
-/* ── Avatar ───────────────────────────────────────── */
-.toast-avatar {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  background: var(--bg-dark);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
+.toast-icon {
   flex-shrink: 0;
-  color: var(--accent-green);
-  font-family: var(--font-condensed);
-  font-weight: 700;
+  margin-top: 1px;
 }
 
-/* ── Text ─────────────────────────────────────────── */
 .toast-text {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
-.toast-name {
+.toast-title {
   font-family: var(--font-condensed);
-  font-size: 0.85rem;
+  font-size: var(--text-caption-size);
   font-weight: 700;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--text-label-tracking);
+  color: var(--ink-primary);
+  overflow-wrap: anywhere;
 }
 
-.toast-msg {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-top: 2px;
-  line-height: 1.4;
+.toast-message {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+  color: var(--ink-secondary);
+  overflow-wrap: anywhere;
 }
 
-/* ── Time ─────────────────────────────────────────── */
-.toast-time {
-  font-size: 0.7rem;
-  color: var(--text-muted);
+/* Sem título a mensagem é a fala principal */
+.toast-message:only-child { color: var(--ink-primary); }
+
+.toast-dismiss {
   flex-shrink: 0;
-  white-space: nowrap;
-  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  color: var(--ink-muted);
+  background: transparent;
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
 }
 
-@media (max-width: 480px) {
-  .toast-container {
-    left: 16px;
-    right: 16px;
-    bottom: 80px;
-    max-width: none;
-  }
+.toast-dismiss:hover {
+  background: var(--surface-raised-hover);
+  color: var(--ink-primary);
+}
 
-  .toast {
-    max-width: none;
-    width: 100%;
+.toast-dismiss:active { transform: scale(0.9); }
+
+@media (max-width: 600px) {
+  .toast-container {
+    right: var(--space-4);
+    left: var(--space-4);
+    bottom: var(--space-4);
+    width: auto;
   }
 }

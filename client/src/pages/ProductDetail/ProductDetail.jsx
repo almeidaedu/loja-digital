@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { productService } from '../../services/productService';
-import { useCartStore } from '../../store/cartStore';
+import useAddToCart from '../../hooks/useAddToCart';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { StarFilledIcon, ShirtIcon } from '../../components/ui/Icons';import './ProductDetail.css';
 
@@ -11,7 +11,7 @@ export default function ProductDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
 
-  const addItem = useCartStore((s) => s.addItem);
+  const addToCart = useAddToCart();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,6 @@ export default function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
-  const [addedMsg, setAddedMsg] = useState('');
 
   useEffect(() => {
     if (!slug) return;
@@ -38,27 +37,16 @@ export default function ProductDetail() {
   async function handleAddToCart() {
     if (!product) return;
     setAddingToCart(true);
-    try {
-      await addItem(product.id, quantity, selectedSize);
-      setAddedMsg('Adicionado ao carrinho!');
-      setTimeout(() => setAddedMsg(''), 2000);
-    } catch {
-      setAddedMsg('Erro ao adicionar.');
-      setTimeout(() => setAddedMsg(''), 2000);
-    } finally {
-      setAddingToCart(false);
-    }
+    await addToCart(product, { quantity, size: selectedSize });
+    setAddingToCart(false);
   }
 
   async function handleBuyNow() {
     if (!product) return;
     setAddingToCart(true);
-    try {
-      await addItem(product.id, quantity, selectedSize);
-      navigate('/checkout');
-    } catch {
-      setAddingToCart(false);
-    }
+    const added = await addToCart(product, { quantity, size: selectedSize });
+    setAddingToCart(false);
+    if (added) navigate('/checkout');
   }
 
   if (loading) {
@@ -184,10 +172,6 @@ export default function ProductDetail() {
                 </button>
               </div>
             </div>
-
-            {addedMsg && (
-              <p className="detail-added-msg">{addedMsg}</p>
-            )}
 
             <div className="detail-actions">
               <button

@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../../store/authStore';
-import { useCartStore } from '../../../store/cartStore';
 import { useUiStore } from '../../../store/uiStore';
+import useAddToCart from '../../../hooks/useAddToCart';
 import ProductCard from '../ProductCard/ProductCard';
 import './ProductGrid.css';
 
@@ -25,10 +23,8 @@ export default function ProductGrid() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate();
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const addItem = useCartStore((s) => s.addItem);
   const addToast = useUiStore((s) => s.addToast);
+  const addToCart = useAddToCart();
 
   useEffect(() => {
     let cancelled = false;
@@ -52,19 +48,6 @@ export default function ProductGrid() {
     return () => { cancelled = true; };
   }, [addToast]);
 
-  const handleAddToCart = async (product) => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    try {
-      await addItem(product.id, 1, 'M');
-      addToast({ name: product.name, message: 'adicionado ao carrinho!', avatar: '🛒' });
-    } catch {
-      addToast({ type: 'error', message: 'Erro ao adicionar ao carrinho.' });
-    }
-  };
-
   return (
     <section className="product-grid-section" id="produtos">
       <div className="container">
@@ -80,7 +63,7 @@ export default function ProductGrid() {
                 <ProductCard
                   key={p.id}
                   product={p}
-                  onAddToCart={handleAddToCart}
+                  onAddToCart={addToCart}
                 />
               ))}
         </div>
