@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__client__problems"
+    ]
+  }
+}
