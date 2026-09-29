@@ -158,3 +158,33 @@ nenhum.
 falha, acerta o alvo errado e o diagnostics não vê nada. Dar classe ao que se
 quer estilizar. E ao tocar um CSS, conferir se cada seletor ainda casa com algo:
 regra morta não dá erro, só ocupa espaço e mente sobre a intenção.
+
+## G-09 — `mcp__client__problems` trava; o gate é o ESLint
+
+**O que aconteceu:** duas vezes na mesma sessão a chamada de diagnostics do VS
+Code ficou pendurada e voltou como "interrupted", com o usuário tendo que
+perguntar por que eu estava parado. As duas vezes o lint e os testes **já tinham
+rodado e passado** — a verificação estava completa, faltava só a confirmação
+redundante.
+
+**Regra:** desde a T1 o projeto tem `eslint .` e `vitest run`, que são o gate de
+verdade e rodam no terminal. Diagnostics do editor viraram opcional: usar no
+máximo uma vez, e ao primeiro travamento abandonar a ferramenta pelo resto da
+sessão em vez de tentar de novo. Ferramenta que pendura não é lentidão, é
+ausência de resultado — não vale um segundo tiro.
+
+## G-10 — Primitiva construída e nunca consumida
+
+**O que aconteceu (Fase 7b):** o `ui/Modal` foi escrito na Fase 3 — portal,
+scrim, trava de scroll, foco preso, Escape, animação de saída — e ficou **quatro
+fases sem um único import**. Enquanto isso o `ExitPopup` seguia com um diálogo
+à mão que não tinha nada disso, e o `AdminProducts` ainda segue. As classes
+`.modal-overlay` / `.modal-box` do `globals.css` continuaram vivas ao lado das
+`.modal-scrim` / `.modal-panel` da primitiva: duas implementações do mesmo
+componente no mesmo projeto.
+
+**Regra:** primitiva sem consumidor não é fundação, é código morto com boa
+intenção — e enquanto ela não é adotada, o padrão antigo se espalha. Ao criar
+uma, migrar **na mesma fase** pelo menos um call site real; e ao migrar o
+último, deletar o CSS legado no mesmo commit. Um `grep` por `from '.*ui/X'` que
+volta vazio é um alarme, não um detalhe.

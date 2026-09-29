@@ -67,7 +67,7 @@ fase remove os do arquivo que ela toca — a Fase 16 confere que a lista zerou.
 | ~~`CartItem.jsx:45`, `:69`~~ | ~~`⚽`, `−`~~ | ✅ 5b |
 | ~~`CartDrawer.jsx:63`, `:92`~~ | ~~`🛒`, `🎉`~~ | ✅ 5a |
 | ~~`FreteBar.jsx:20`~~ | ~~`🎉`~~ | ✅ 5b |
-| `ExitPopup.jsx:43` | `✕` | 7b |
+| ~~`ExitPopup.jsx:43`~~ | ~~`✕`~~ | ✅ 7b |
 | `Checkout.jsx:214` | `←` | 11 |
 | `ProductDetail.jsx:88`, `:103`, `:175` | `←`, `−` | 11 |
 | `PaymentSuccess.jsx:37`, `PaymentFailure.jsx:15`,`:42`, `PaymentPending.jsx:101`,`:123` | `✓`, `✕`, `💬`, `📋`, `⏰` | 12 |
@@ -155,6 +155,29 @@ servir um 404 que nenhum link do app alcança seria antecipar escopo.
 Agora `<Route element={<ProtectedRoute />}>` é o pai de `<AdminRoute />`, que
 ficou só com o check de papel. Um dono para autenticação.
 
+## Achados e dívidas da Fase 7b
+
+O `ui/Modal` foi construído na Fase 3 e **não tinha nenhum consumidor** até aqui.
+O `ExitPopup` era um diálogo escrito à mão: sem portal, sem trava de scroll, sem
+foco preso, sem Escape e sem animação de saída — tudo isso já existia pronto na
+primitiva. O popup passou a montar `<Modal>` e perdeu ~50 linhas de CSS.
+
+O layout mudou de propósito: o título e o botão de fechar agora vivem no
+`.modal-header` da primitiva (alinhados à esquerda), e a pílula "Oferta
+Exclusiva" desceu para o corpo, acima do formulário. Era isso ou brigar com a
+primitiva no CSS para reproduzir o bloco centrado antigo. A única discordância
+que sobrou é o tamanho do título (`--text-display-size`), documentada no CSS.
+
+| O quê | Onde | Fase |
+|---|---|---|
+| `storeConfig.leadCapture.enabled` não é lido por ninguém: o popup monta e arma os listeners de saída mesmo com a campanha desligada. Consertar exige um 3º arquivo (gate em `App.jsx` ou guarda `if (!onExit) return;` no hook) — fora da lista da fase | `App.jsx:33`, `useExitIntent.js:6` | a combinar |
+| `useExitIntent` registra `touchstart`/`scroll`/`click` com `{ once: true }` e **não os remove** no cleanup. Se nunca dispararem, sobrevivem ao unmount | `useExitIntent.js:28` | 16 |
+| Chave de sessionStorage `cc_popup_shown` tem a marca do cliente cravada num template revendável | `useExitIntent.js:7` | 16 |
+| `.modal-overlay` / `.modal-box` no `globals.css` ficaram com **um único** consumidor. Quando a Fase 15 migrar o modal de produtos, as três regras viram lixo | `globals.css:548-580`, `AdminProducts.jsx:390` | 17 |
+
+`storeConfig.leadCapture.discount` passou a alimentar o título, o botão e o texto
+do toast — antes `10% OFF` estava cravado três vezes no JSX.
+
 ## Fases
 
 | # | Título | Arquivos |
@@ -234,21 +257,27 @@ na árvore inteira — custo alto para um projeto que vai virar TS no `sdk/`.
 
 ### Ratchet de acessibilidade
 
-As 26 ocorrências restantes são de cinco regras do `jsx-a11y`, todas em arquivos de fases
-futuras. Corrigir tudo agora seria editar sete arquivos fora de fase, então elas estão
+As 26 ocorrências restantes eram de cinco regras do `jsx-a11y`, todas em arquivos de fases
+futuras. Corrigir tudo na T1 seria editar sete arquivos fora de fase, então elas ficaram
 como `warn`: o lint sai com código 0 e já pode virar gate, e os achados continuam
 visíveis. **Qualquer outra regra de a11y segue como erro** — código novo não entra torto.
+
+**A regra que chega a zero volta para `error` na hora, não na Fase 16.** Um `warn` que
+já não acusa nada só serve para deixar entrar código novo torto. A Fase 7b zerou
+`no-noninteractive-element-interactions` (era só o overlay do ExitPopup) e a devolveu
+para `error`. Restam **24 ocorrências de quatro regras**, mais o `exhaustive-deps` do
+`useCountdown` — 25 warnings no total.
 
 | Arquivo | Ocorrências | O quê | Fase |
 |---|---|---|---|
 | `Checkout.jsx` | 9 | `<label>` sem `htmlFor` e `<input>` sem `id` — clicar no rótulo não foca o campo, em **todo o checkout** | 11 |
 | `AdminProducts.jsx` | 10 | 8× o mesmo `<label>` solto + `<div onClick>` sem teclado | 15 |
 | `Account.jsx` | 3 | `<label>` sem `htmlFor` | 13 |
-| `ExitPopup.jsx` | 2 | overlay com `onClick` sem equivalente de teclado | 7b |
+| ~~`ExitPopup.jsx`~~ | ~~2~~ | ~~overlay com `onClick` sem equivalente de teclado~~ | ✅ 7b |
 | `Orders.jsx` | 2 | `role="button"` sem `tabIndex` nem handler de tecla | 14 |
 | `useCountdown.js` | 1 | `exhaustive-deps`: falta `calc` | 16 |
 
-A Fase 16 devolve as cinco regras para `error` e liga `--max-warnings 0`.
+A Fase 16 fecha as regras que ainda sobrarem e liga `--max-warnings 0`.
 
 **`format:all` não deve ser rodado agora.** Reformatar `src/` inteiro no meio de um
 refactor de 17 fases produz um diff que ninguém revisa e enterra as mudanças reais. O
@@ -262,6 +291,8 @@ clientes do template. Decisão para o Estágio G, junto do item de CI.
 ## T2 — testes de regressão
 
 **16 testes, 4 arquivos, todos passando.** Um por bug que já mordeu mais de uma vez.
+A partir daqui cada fase que mexe em comportamento traz os seus: a 7b somou 6
+(`ExitPopup.test.jsx`), fechando em **22 testes, 5 arquivos**.
 
 | Arquivo | Cobre |
 |---|---|
@@ -269,6 +300,7 @@ clientes do template. Decisão para o Estágio G, junto do item de CI.
 | `router/ProtectedRoute.test.jsx` | B8 (spinner no boot, sem redirect prematuro) + query string do destino preservada e codificada |
 | `hooks/useScrollRestoration.test.jsx` | As três regras: não rola ao montar, rola no PUSH com pathname novo, não rola com hash, não rola em POP |
 | `hooks/useFreteProgress.test.js` | `price` como string (Decimal do Prisma), limite exato libera, `fillPct` não passa de 100 |
+| `components/home/ExitPopup/ExitPopup.test.jsx` | O popup é `ui/Modal`: dialog com nome acessível, Escape fecha, recusa é `<button>` de verdade, desconto vem do `storeConfig`, e-mail vazio não dispara toast |
 
 Os testes de rota usam os mesmos `future` flags do `App.jsx` — `v7_startTransition` muda
 a prioridade da atualização de rota e foi a causa do G-07; router configurado diferente
@@ -345,9 +377,9 @@ continua entregue.
 - [x] 5a — CartDrawer sheet *(verificado no navegador)*
 - [x] 5b — CartItem + FreteBar + limpeza *(verificado no navegador)*
 - [x] 6 — Header + hotfix da pill *(verificado no navegador)*
-- [x] 7a — Shell *(diagnostics limpos; falta verificação no navegador)* · [ ] 7b — ExitPopup
+- [x] 7a — Shell *(diagnostics limpos; falta verificação no navegador)* · [x] 7b — ExitPopup sobre `Modal` *(lint 0 erros, 22 testes passando; falta verificação no navegador)*
 - [x] H2 — Hotfix saída do painel admin + B3 *(diagnostics limpos; falta verificação no navegador)*
-- [x] T1 — Ferramental do frontend *(lint 0 erros / 27 warnings, exit 0)* · [x] T2 — 16 testes de regressão passando
+- [x] T1 — Ferramental do frontend *(lint 0 erros / 25 warnings, exit 0)* · [x] T2 — 22 testes de regressão passando
 - [ ] 8 — Home · [ ] 9 — Hero/FAQ
 - [ ] 10 — Catálogo · [ ] 11 — PDP+Checkout · [ ] 12 — Resultados · [ ] 13 — Auth
 - [ ] 14 — Pedidos+Admin shell · [ ] 15 — Admin CRUD

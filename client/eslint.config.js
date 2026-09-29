@@ -43,19 +43,21 @@ export default [
       // é lida em outro arquivo não deve acusar.
       'no-unused-vars': ['error', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
 
-      // Ratchet de acessibilidade. Na primeira passada estas cinco regras
-      // acusaram 26 erros, todos em arquivos de fases futuras (Checkout,
-      // Account, AdminProducts, Orders, ExitPopup) — corrigir tudo agora seria
-      // editar sete arquivos fora de fase. Como `warn`, o `eslint .` sai com
-      // código 0 e pode virar gate agora, e os achados continuam na saída.
-      // Cada fase zera os do arquivo que ela toca; a Fase 16 devolve as cinco
-      // para `error` e liga `--max-warnings 0`. Qualquer OUTRA regra de a11y
-      // segue como erro, então código novo não entra torto.
-      'jsx-a11y/label-has-associated-control': 'warn',
-      'jsx-a11y/click-events-have-key-events': 'warn',
-      'jsx-a11y/no-static-element-interactions': 'warn',
-      'jsx-a11y/no-noninteractive-element-interactions': 'warn',
-      'jsx-a11y/interactive-supports-focus': 'warn',
+      // Ratchet de acessibilidade. Na primeira passada estas regras acusaram 26
+      // erros, todos em arquivos de fases futuras (Checkout, Account,
+      // AdminProducts, Orders, ExitPopup) — corrigir tudo agora seria editar
+      // sete arquivos fora de fase. Como `warn`, o `eslint .` sai com código 0
+      // e pode virar gate agora, e os achados continuam na saída.
+      // Cada fase zera os do arquivo que ela toca e a regra que chegar a zero
+      // volta para `error` na hora — é isso que impede código novo de entrar
+      // torto. A Fase 16 fecha o que sobrar e liga `--max-warnings 0`.
+      // Qualquer OUTRA regra de a11y já é erro.
+      'jsx-a11y/label-has-associated-control': 'warn', // Checkout(9), AdminProducts(8), Account(3)
+      'jsx-a11y/click-events-have-key-events': 'warn', // AdminProducts(1), Orders(1)
+      'jsx-a11y/no-static-element-interactions': 'warn', // AdminProducts(1)
+      'jsx-a11y/interactive-supports-focus': 'warn', // Orders(1)
+      // Zerada na Fase 7b: era só o overlay do ExitPopup, que virou `ui/Modal`.
+      'jsx-a11y/no-noninteractive-element-interactions': 'error',
     },
   },
 
