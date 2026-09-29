@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
+import { useScrollRestoration } from '../hooks/useScrollRestoration';
 
 import Home from '../pages/Home/Home';
 import ProductListing from '../pages/ProductListing/ProductListing';
@@ -21,6 +22,8 @@ import AdminProducts from '../pages/admin/AdminProducts/AdminProducts';
 import AdminOrders from '../pages/admin/AdminOrders/AdminOrders';
 
 export default function AppRouter() {
+  useScrollRestoration();
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -40,14 +43,20 @@ export default function AppRouter() {
         </Route>
       </Route>
 
-      <Route element={<AdminRoute />}>
-        <Route element={<AdminLayout />}>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/produtos" element={<AdminProducts />} />
-          <Route path="/admin/pedidos" element={<AdminOrders />} />
+      {/* Admin é restrição sobre autenticado, não um portão paralelo: o
+          ProtectedRoute resolve boot e sessão, o AdminRoute só olha o papel. */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AdminRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/produtos" element={<AdminProducts />} />
+            <Route path="/admin/pedidos" element={<AdminOrders />} />
+          </Route>
         </Route>
       </Route>
 
+      {/* TODO Fase 12: renderiza o chrome com `<main>` vazio — 404 em branco.
+          Vira `<NotFound />` sobre o `ui/ResultPage` quando ele nascer. */}
       <Route path="*" element={<Layout />} />
     </Routes>
   );

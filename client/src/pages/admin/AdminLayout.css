@@ -29,7 +29,14 @@
   margin-bottom: 20px;
 }
 
-.admin-logo span {
+.admin-logo-accent {
+  color: var(--accent-green);
+}
+
+/* Só uma das duas aparece; o display:none já tira a outra da árvore de
+   acessibilidade, então não precisa de aria. */
+.admin-logo-short {
+  display: none;
   color: var(--accent-green);
 }
 
@@ -69,18 +76,23 @@
 .admin-nav-icon {
   font-size: 1rem;
   flex-shrink: 0;
+  display: flex;
 }
 
-.admin-logout-btn {
-  margin: 12px;
-  padding: 10px 12px;
-  font-family: var(--font-condensed);
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-align: left;
-  border-radius: 6px;
-  transition: all 0.15s;
+/* Rodapé: trocar de visão e encerrar a sessão. A borda separa do bloco de
+   navegação — nenhuma das duas leva a uma página do painel. */
+.admin-sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.admin-view-switch:hover {
+  background: var(--accent-green-dim);
+  color: var(--accent-green);
 }
 
 .admin-logout-btn:hover {
@@ -136,28 +148,31 @@
   }
 
   .admin-logo {
-    font-size: 0;
     padding: 0 8px 20px;
+    text-align: center;
   }
 
-  .admin-logo::after {
-    content: 'CC';
-    font-family: var(--font-display);
+  .admin-logo-full { display: none; }
+
+  .admin-logo-short {
+    display: inline;
     font-size: 1rem;
-    color: var(--accent-green);
   }
 
-  .admin-nav-item span:last-child {
-    display: none;
-  }
+  /* B3: a regra antiga era `.admin-nav-item span:last-child`, e como o label era
+     texto solto o único span era o do ícone — escondia o ícone e deixava a
+     palavra espremida em 60px. Agora o label tem classe própria, e as cinco
+     linhas do menu (nav + rodapé) colapsam pela mesma regra. O `title` de cada
+     item continua dando nome acessível com o label escondido. */
+  .admin-nav-label { display: none; }
 
   .admin-nav-item {
     justify-content: center;
     padding: 10px;
   }
 
-  .admin-logout-btn span:last-child {
-    display: none;
+  .admin-sidebar-footer {
+    padding: 12px 8px;
   }
 
   .admin-main {

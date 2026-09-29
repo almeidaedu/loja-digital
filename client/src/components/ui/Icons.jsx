@@ -30,3 +30,5 @@ export { default as PlusIcon }            from '@mui/icons-material/Add';
 export { default as MinusIcon }           from '@mui/icons-material/Remove';
 export { default as TrashIcon }           from '@mui/icons-material/DeleteOutline';
 export { default as WhatsAppIcon }        from '@mui/icons-material/WhatsApp';
+export { default as StorefrontIcon }      from '@mui/icons-material/Storefront';
+export { default as LogoutIcon }          from '@mui/icons-material/Logout';

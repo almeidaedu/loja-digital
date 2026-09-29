@@ -4,7 +4,6 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useCartStore } from '../../../store/cartStore';
 import { useUiStore } from '../../../store/uiStore';
 import { useAuthStore } from '../../../store/authStore';
-import { authService } from '../../../services/authService';
 import { storeConfig } from '../../../config/storeConfig';
 import { popIn, spring, tween } from '../../../styles/motion';
 import Button from '../../ui/Button/Button';
@@ -86,6 +85,7 @@ export default function Header() {
 
   const user = useAuthStore((s) => s.user);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const logout = useAuthStore((s) => s.logout);
   const items = useCartStore((s) => s.items);
   const toggleCart = useUiStore((s) => s.toggleCart);
 
@@ -189,12 +189,12 @@ export default function Header() {
     }
   };
 
-  const handleLogout = async () => {
-    try { await authService.logout(); } catch { /* ignore */ } finally {
-      useAuthStore.getState().clearUser();
-      useCartStore.getState().clearLocal();
-      setUserMenuOpen(false);
-    }
+  // Um dono só para o logout, no authStore. Aqui o bug era o mesmo do painel,
+  // só que mais silencioso: sair a partir de `/meus-pedidos` ou `/minha-conta`
+  // fazia o ProtectedRoute capturar a rota e o login seguinte voltar para ela.
+  const handleLogout = () => {
+    setUserMenuOpen(false);
+    logout();
   };
 
   const renderNavLink = (link, mobile = false) => {

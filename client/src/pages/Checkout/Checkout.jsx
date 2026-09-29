@@ -7,7 +7,6 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { LockIcon, BoltIcon } from '../../components/ui/Icons';
 import './Checkout.css';
 
-const SIZES = ['PP', 'P', 'M', 'G', 'GG', 'GGG'];
 const SHIPPING_THRESHOLD = 149;
 const SHIPPING_COST = 15;
 

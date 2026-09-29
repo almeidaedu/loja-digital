@@ -10,20 +10,18 @@ import ExitPopup from './components/home/ExitPopup/ExitPopup';
 import RouteTransition from './components/ui/RouteTransition/RouteTransition';
 
 export default function App() {
-  const { setUser, clearUser, setLoading } = useAuthStore();
-  const { fetchCart } = useCartStore();
-
-  // Hidrata o authStore a partir do cookie existente no boot
+  // Hidrata o authStore a partir do cookie existente no boot. Via `getState()`:
+  // assinar a store aqui re-renderizaria a árvore inteira a cada login, logout
+  // ou item adicionado ao carrinho.
   useEffect(() => {
+    const { setUser, clearUser } = useAuthStore.getState();
     authService
       .getMe()
       .then(({ user }) => {
         setUser(user);
-        fetchCart();
+        useCartStore.getState().fetchCart();
       })
-      .catch(() => {
-        clearUser();
-      });
+      .catch(() => clearUser());
   }, []);
 
   return (

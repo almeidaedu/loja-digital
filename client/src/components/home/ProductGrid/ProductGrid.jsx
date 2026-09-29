@@ -35,7 +35,7 @@ export default function ProductGrid() {
         if (!res.ok) throw new Error('Falha ao carregar produtos');
         const data = await res.json();
         if (!cancelled) setProducts(data.products ?? []);
-      } catch (err) {
+      } catch {
         if (!cancelled) {
           addToast({ type: 'error', message: 'Não foi possível carregar os produtos.' });
         }
