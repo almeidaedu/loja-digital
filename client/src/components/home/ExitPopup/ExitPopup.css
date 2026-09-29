@@ -1,75 +1,36 @@
-/* modal-overlay and modal-box base styles assumed in globals.css */
+/* Scrim, portal, trava de scroll, foco preso, Escape e a animação de saída são
+   do `ui/Modal`. Sobra aqui só o que é da campanha de captura. */
 
-.popup-box {
-  position: relative;
-  max-width: 480px;
-  width: 100%;
-  text-align: center;
-  padding: 40px 36px 32px;
+/* Um popup de saída é peça de marketing: o título é display, não o título de
+   diálogo padrão. É o único ponto em que a campanha discorda da primitiva. */
+.popup .modal-title {
+  font-size: var(--text-display-size);
+  letter-spacing: var(--text-display-tracking);
+  line-height: var(--text-display-leading);
 }
 
-.popup-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 28px;
-  height: 28px;
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: color 0.2s;
-}
-
-.popup-close:hover {
-  color: var(--text-primary);
-}
+.popup-accent { color: var(--brand-accent); }
 
 .popup-tag {
-  display: inline-block;
-  background: var(--accent-green);
-  color: #000;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.75rem;
+  /* `.modal-body` é coluna flex: sem isto a pílula esticaria na largura toda */
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--brand-accent);
+  color: var(--ink-on-accent);
+  font-family: var(--font-condensed);
+  font-size: var(--text-label-size);
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--text-label-tracking);
   text-transform: uppercase;
-  padding: 4px 14px;
-  border-radius: 20px;
-  margin-bottom: 16px;
-}
-
-.popup-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
-  line-height: 1.1;
-  color: var(--text-primary);
-  letter-spacing: 0.03em;
-  margin: 0 0 12px;
-}
-
-.popup-title span {
-  color: var(--accent-green);
-}
-
-.popup-subtitle {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin: 0 0 24px;
 }
 
 .popup-form {
   display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: var(--space-3);
 }
 
 .popup-input {
@@ -78,30 +39,20 @@
 }
 
 .popup-submit {
-  white-space: nowrap;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .popup-skip {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.78rem;
-  color: var(--text-muted);
+  align-self: flex-start;
+  color: var(--ink-muted);
+  font-size: var(--text-caption-size);
   text-decoration: underline;
-  cursor: pointer;
-  transition: color 0.2s;
-  display: inline-block;
+  transition: color var(--duration-fast) var(--ease-standard);
 }
 
-.popup-skip:hover {
-  color: var(--text-primary);
-}
+.popup-skip:hover { color: var(--ink-primary); }
 
 @media (max-width: 480px) {
-  .popup-form {
-    flex-direction: column;
-  }
-
-  .popup-box {
-    padding: 32px 20px 24px;
-  }
+  .popup-form { flex-direction: column; }
 }
