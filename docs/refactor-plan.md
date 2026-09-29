@@ -31,12 +31,12 @@ apontam para lá).
 |---|---|---|---|
 | B1 | `ProductListing.jsx:35` | Lê `data.totalPages`; API devolve `{products,total,page,limit}`. Paginação nunca renderiza | 10 |
 | B2 | `PaymentPending.jsx:45` | `navigate(path,{search})` não existe no RR6; success perde o `orderId` | 12 |
-| B3 | `AdminLayout.jsx:46` + `.css:150` | CSS esconde `span:last-child` → esconde o ícone, não o label | 14 |
+| B3 | `AdminLayout.jsx` + `.css` | ~~CSS esconde `span:last-child` → esconde o ícone, não o label~~ ✅ label ganhou classe própria | H2 |
 | B4 | `CartDrawer.jsx:29` | Overlay sem exit; painel com transition 350ms → backdrop some na hora | 5 |
 | B5 | ~~`Header.jsx:68`~~ | ~~Pill medida por rect com dep `[activeKey]` → desalinha no resize~~ ✅ `layoutId` | 6 |
 | B6 | `ProductCard.jsx:64` | `<article>` sem `<Link>` → produto não é clicável | 10 |
 | B7 | `ProductCard.css:212` | `margin-top:12px` anula o `margin-top:auto` → CTAs desalinhados | 10 |
-| B8 | `ProtectedRoute.jsx` | `isLoading` → `return null` → tela branca no refresh | 7a |
+| B8 | `ProtectedRoute.jsx` | ~~`isLoading` → `return null` → tela branca no refresh~~ ✅ gate com spinner; `AdminRoute` herda | 7a |
 | B9 | `Categories.jsx` | IntersectionObserver monta antes dos dados → cards invisíveis | 8 |
 
 ## Colisões de classe global (achado da Fase 2)
@@ -90,6 +90,7 @@ Mesma regra: ícone é MUI. Estes são `<svg>` cravados no JSX.
 | Valor | Onde | Fase |
 |---|---|---|
 | `149` | `Hero.jsx:30` ("Frete grátis +R$149" em texto) | 9 |
+| `149`, `15` | `Checkout.jsx:10-11` (`SHIPPING_THRESHOLD`, `SHIPPING_COST` locais; o `useFreteProgress` já lê do storeConfig) | 11 |
 | ~~`5511999999999`~~ | ~~`Layout.jsx:20`~~ | ✅ 6 |
 | `5511999999999` | `Footer.jsx:50` | 16 |
 | `5511999999999` | `PaymentFailure.jsx:4` (`WHATSAPP_NUMBER` local) | 12 |
@@ -123,14 +124,36 @@ de medição. E a primeira versão da trava do spy renovava por evento (debounce
 roda é indistinguível de evento de scroll suave. Detalhe completo em G-05 e G-06
 do `gotchas.md`.
 
-## Achado da Fase 6: sem restauração de scroll → Fase 7a
+## Achado da Fase 6: sem restauração de scroll → ✅ Fase 7a
 
-Nenhuma rota reseta o scroll. Saindo da home rolada para `/produtos`, a página abre
-no meio. Foi o que expôs o bug da pill (`layoutScroll`, corrigido), mas é bug próprio:
-o usuário chega no catálogo sem ver o topo. Cuidado na correção — a home usa hash
-(`/#faq`) para navegar entre seções, então o reset precisa ignorar navegação com hash
-e não pode atropelar o `scrollIntoView` do `handleHashLink`. `App/AppRouter` são da
-**Fase 7a**.
+Nenhuma rota resetava o scroll. Saindo da home rolada para `/produtos`, a página
+abria no meio. Foi o que expôs o bug da pill (`layoutScroll`, corrigido), mas era
+bug próprio. Resolvido em `hooks/useScrollRestoration.js`: gatilho no `pathname`
+(nunca na location inteira — o scroll-spy da home reescreve o hash a cada frame e
+jogaria a página ao topo sem parar), pula quando há hash (quem posiciona é o
+`scrollIntoView` do Header) e pula em `POP` (o browser restaura sozinho; forçar o
+topo faria "voltar" do produto perder o lugar no catálogo).
+
+## Dívidas conscientes da Fase 7a
+
+| O quê | Onde | Fase |
+|---|---|---|
+| 404 em branco: `path="*"` renderiza o chrome com `<main>` vazio. `TODO` no código | `AppRouter.jsx:58` | 12 |
+| Tela "ACESSO RESTRITO" com 25 linhas de `style` inline + `--text-muted` (alias legado) + `btn-primary` | `AdminRoute.jsx:16-38` | 12 |
+| ~~`setLoading` no `authStore` ficou sem nenhum consumidor — 1 linha morta~~ | ~~`authStore.js:10`~~ | ✅ H2 |
+| Spinner centrado com `style` inline repetido em 7 lugares (convenção atual do projeto; virou 8 com o gate do ProtectedRoute) | `Orders.jsx:60`, `AdminOrders.jsx:110`, `AdminDashboard.jsx:80`, `AdminProducts.jsx:313`, `ProtectedRoute.jsx:15`, … | 16 |
+| `handlePageChange` não rola ao topo — `page` é state local, não search param, então o `useScrollRestoration` não pega | `ProductListing.jsx:55` | 10 |
+
+Os dois primeiros são a mesma forma (página centrada: título, texto, CTA) e o
+`ui/ResultPage` da Fase 12 é o dono natural dos dois. Construí-lo na 7a só para
+servir um 404 que nenhum link do app alcança seria antecipar escopo.
+
+## Achado da Fase 7a: admin era um portão paralelo
+
+`AdminRoute` duplicava os checks de `isLoading` e `isAuthenticated` do
+`ProtectedRoute` — incluindo o mesmo bug B8 — e cravava `redirect=/admin` à mão.
+Agora `<Route element={<ProtectedRoute />}>` é o pai de `<AdminRoute />`, que
+ficou só com o check de papel. Um dono para autenticação.
 
 ## Fases
 
@@ -144,7 +167,7 @@ e não pode atropelar o `scrollIntoView` do `handleHashLink`. `App/AppRouter` s�
 | 5a | CartDrawer como sheet arrastável (B4) | `hooks/useFreteProgress.js`, `hooks/useFocusTrap.js`, `Icons.jsx`, `CartDrawer.{jsx,css}` |
 | 5b | CartItem, FreteBar e limpeza | `CartItem.{jsx,css}`, `FreteBar.jsx`, `Modal.jsx` (usa `useFocusTrap`), `globals.css` (del. alias `.badge-green`) |
 | 6 | Header/FreteBar um material; pill `layoutId` (B5) | `Header.{jsx,css}`, `FreteBar.css`, `Layout.{jsx,css}` (+1 linha em `Icons.jsx`: `WhatsAppIcon`) |
-| 7a | Shell honesto e boot (B8) | `App.jsx`, `AppRouter.jsx`, `ProtectedRoute.jsx`, `AdminRoute.jsx` |
+| 7a | Shell honesto e boot (B8) | `App.jsx`, `AppRouter.jsx`, `ProtectedRoute.jsx`, `AdminRoute.jsx`, `hooks/useScrollRestoration.js` *(novo)* |
 | 7b | ExitPopup sobre `Modal` | `ExitPopup.{jsx,css}` |
 | 8 | Home: de-dup, reveals, prova social honesta (B9) | `Home.{jsx,css}`, `Categories.{jsx,css}`, `Testimonials.jsx` |
 | 9 | Hero, FAQ spring, promo gated | `Hero.{jsx,css}`, `FAQ.{jsx,css}`, `UrgencyBanner.jsx` |
@@ -152,7 +175,7 @@ e não pode atropelar o `scrollIntoView` do `handleHashLink`. `App/AppRouter` s�
 | 11 | PDP + Checkout | `ProductDetail.{jsx,css}`, `Checkout.{jsx,css}` |
 | 12 | `ResultPage` único (B2) | `ui/ResultPage/{jsx,css}`, `Payment{Success,Failure,Pending}.jsx` |
 | 13 | Auth + Conta | `Login.{jsx,css}`, `Register.{jsx,css}`, `Account.jsx` |
-| 14 | Pedidos + shell do admin (B3) | `Orders.{jsx,css}`, `AdminLayout.{jsx,css}`, `AdminDashboard.css` |
+| 14 | Pedidos + shell do admin | `Orders.{jsx,css}`, `AdminLayout.{jsx,css}`, `AdminDashboard.css` |
 | 15 | CRUD do admin: modais, toasts, preview | `AdminProducts.{jsx,css}`, `AdminOrders.{jsx,css}`, `AdminDashboard.jsx` |
 | 16 | Varredura final | `globals.css`, `Countdown.jsx`, `UrgencyBanner.css`, `ProductGrid.css`, `Footer.jsx` |
 | 17 | Deleção de arquivos mortos | `RouteTransition.*`, `useScrollAnimation.js`, `Payment{Success,Failure}.css`, raiz: `index.html`, `package-lock.json` |
@@ -176,16 +199,80 @@ tudo -> F16 varredura -> F17 delecoes -> [Estagio G]
 | G2 | `problem+json` + validação em products/cart/orders + rota admin canônica | `GET /api/orders/:id` declarada antes de `/admin/all` sombreia a rota; só os aliases do `app.js:46-48` funcionam |
 | G3 | Enums de status no Prisma + `Idempotency-Key` em `POST /api/orders` | Status é `String` livre; dinheiro exige idempotência |
 | G4 | Webhook MP: tolerância de timestamp + log estruturado | Valida HMAC mas aceita payload de ontem |
-| G5 | **ESLint + Prettier + Vitest + CI** | O repo não tem nenhum dos três — maior lacuna de qualidade |
+| G5 | ~~ESLint + Prettier + Vitest~~ ✅ no `client/` (T1) · falta **CI** e o `server/` | O repo não tinha nenhum dos três |
 | G6 | `sdk/` em TS strict + `openapi.yaml` + docs | Capstone do roadmap |
 | G7 | Multi-tenant: theming via `storeConfig` + seed por cliente | Tese do template revendável |
 
 ## Verificação
 
-**Existe:** diagnostics do VS Code nos arquivos tocados + navegador em `localhost:5173`.
-**Não existe:** type-checker, linter, testes (nem em `client/`, nem em `server/`). Nenhuma
-fase é reportada como "testada" — o termo é "diagnostics limpos + verificada no navegador".
-Fechar isso é G5.
+**Existe:** diagnostics do VS Code + navegador em `localhost:5173` + **ESLint e Vitest no
+`client/`** (T1). O node é gerenciado por `fnm` e não está no PATH do shell; rodar exige
+`export PATH="$HOME/AppData/Roaming/fnm/node-versions/v22.15.0/installation:$PATH"` e
+chamar `./node_modules/.bin/{eslint,vitest}`.
+**Ainda não existe:** type-checker (decisão explícita: sem `checkJs`; o `no-undef` do
+ESLint cobre a maior parte do que `tsc` pegaria em JS puro), CI, nada no `server/`.
+
+## T1 — ferramental do frontend (antecipado do G5)
+
+Decidido com o usuário: **sem type-checker**, ESLint no nível *recommended + react-hooks
++ jsx-a11y*, e Vitest com jsdom + Testing Library.
+
+| Arquivo | O quê |
+|---|---|
+| `package.json` | devDeps + scripts `lint`, `lint:fix`, `format:check`, `format:all`, `test`, `test:watch` |
+| `eslint.config.js` *(novo)* | Flat config, ESLint 9. `react`, `react-hooks`, `react-refresh`, `jsx-a11y` |
+| `.prettierrc` + `.prettierignore` *(novos)* | Aspas simples, ponto e vírgula, 100 colunas — o estilo que o código já tem |
+| `vite.config.js` | Bloco `test`: jsdom, `globals: false`, `css: false` |
+| `src/test/setup.js` *(novo)* | `jest-dom` + `cleanup` entre testes |
+
+**Resultado da primeira passada:** 29 problemas. Dois eram código morto e foram
+deletados na hora (`catch (err)` sem uso em `ProductGrid.jsx`, const `SIZES` órfã em
+`Checkout.jsx`). Ficou **0 erro / 27 warnings, exit 0**.
+
+**`react/prop-types` desligado.** Sem type-checker, a alternativa seria anotar propTypes
+na árvore inteira — custo alto para um projeto que vai virar TS no `sdk/`.
+
+### Ratchet de acessibilidade
+
+As 26 ocorrências restantes são de cinco regras do `jsx-a11y`, todas em arquivos de fases
+futuras. Corrigir tudo agora seria editar sete arquivos fora de fase, então elas estão
+como `warn`: o lint sai com código 0 e já pode virar gate, e os achados continuam
+visíveis. **Qualquer outra regra de a11y segue como erro** — código novo não entra torto.
+
+| Arquivo | Ocorrências | O quê | Fase |
+|---|---|---|---|
+| `Checkout.jsx` | 9 | `<label>` sem `htmlFor` e `<input>` sem `id` — clicar no rótulo não foca o campo, em **todo o checkout** | 11 |
+| `AdminProducts.jsx` | 10 | 8× o mesmo `<label>` solto + `<div onClick>` sem teclado | 15 |
+| `Account.jsx` | 3 | `<label>` sem `htmlFor` | 13 |
+| `ExitPopup.jsx` | 2 | overlay com `onClick` sem equivalente de teclado | 7b |
+| `Orders.jsx` | 2 | `role="button"` sem `tabIndex` nem handler de tecla | 14 |
+| `useCountdown.js` | 1 | `exhaustive-deps`: falta `calc` | 16 |
+
+A Fase 16 devolve as cinco regras para `error` e liga `--max-warnings 0`.
+
+**`format:all` não deve ser rodado agora.** Reformatar `src/` inteiro no meio de um
+refactor de 17 fases produz um diff que ninguém revisa e enterra as mudanças reais. O
+uso correto é por arquivo, na fase que já é dona dele:
+`npx prettier --write src/pages/Home/Home.jsx`.
+
+**Sem lockfile commitado:** o `.gitignore` da raiz ignora `*-lock.json`. Enquanto isso
+valer não dá para fazer `npm ci` em CI nem garantir instalação reproduzível entre
+clientes do template. Decisão para o Estágio G, junto do item de CI.
+
+## T2 — testes de regressão
+
+**16 testes, 4 arquivos, todos passando.** Um por bug que já mordeu mais de uma vez.
+
+| Arquivo | Cobre |
+|---|---|
+| `store/authStore.test.js` | G-07: o logout **não** pode deixar a store deslogada antes de navegar. Se alguém trocar de volta por `clearUser()` + `navigate`, o teste cai |
+| `router/ProtectedRoute.test.jsx` | B8 (spinner no boot, sem redirect prematuro) + query string do destino preservada e codificada |
+| `hooks/useScrollRestoration.test.jsx` | As três regras: não rola ao montar, rola no PUSH com pathname novo, não rola com hash, não rola em POP |
+| `hooks/useFreteProgress.test.js` | `price` como string (Decimal do Prisma), limite exato libera, `fillPct` não passa de 100 |
+
+Os testes de rota usam os mesmos `future` flags do `App.jsx` — `v7_startTransition` muda
+a prioridade da atualização de rota e foi a causa do G-07; router configurado diferente
+da produção testa outra coisa.
 
 **Fases 2, 3 e 4 saíram sem diagnostics** na sessão em que foram escritas. A partir do
 restart seguinte `mcp__client__problems` voltou a responder e `client/src` acusou **zero
@@ -217,6 +304,37 @@ escondeu o bug por seis meses. A Fase 10 é dona do arquivo e torna o handler ob
 e não há persistência local — deslogado é impossível adicionar. Habilitar é mudança de
 arquitetura (persist local + merge no login), candidata a item do Estágio G.
 
+## Hotfix H2 — sem saída do painel admin (fora da numeração de fases)
+
+Reportado pelo usuário depois da Fase 7a: *"quando eu estou no painel admin não
+tem como sair de lá"*. O painel não tinha nenhum caminho de volta para a loja, e o
+"Sair" tinha um loop — logout dentro de `/admin`, o guard captura o destino, e o
+login seguinte devolve o usuário ao painel.
+
+| Falha | Onde | Correção |
+|---|---|---|
+| Sem troca de visão: o admin entra no painel e não tem link de volta para a loja | `AdminLayout.jsx` | `<Link to="/">` "Ver loja" no rodapé da sidebar, espelhando o item "Admin" do dropdown do Header |
+| Logout se auto-reverte: volta ao painel no login seguinte (G-07) | `authStore.js`, `AdminLayout.jsx`, `Header.jsx` | `authStore.logout()` com `location.assign('/')`; os dois call sites passam a chamá-lo |
+| Logout do admin não limpava o carrinho local | `AdminLayout.jsx` | Resolvido pelo reload — nada em memória sobrevive |
+| **B3**: `span:last-child` escondia o ícone, não o label (G-08) | `AdminLayout.{jsx,css}` | label com `.admin-nav-label`; ícone com `.admin-nav-icon` |
+| `CAMPO`/`CHEIO` cravados no JSX e `content: 'CC'` cravado no CSS | `AdminLayout.{jsx,css}` | `storeConfig.brand.nameParts`, iniciais derivadas; `.admin-logo-{full,short}` |
+| `setLoading` morto no `authStore` (dívida da 7a) | `authStore.js` | Deletado |
+
+**A primeira correção do logout estava errada** e o usuário pegou no teste:
+reordenar `navigate` antes de `clearUser` não muda nada, porque os dois updates
+vivem em lanes de prioridade diferentes — store externa (`useSyncExternalStore`)
+é síncrona por contrato, `navigate` com `v7_startTransition` é adiável. Sempre
+existe um render deslogado na rota antiga. Detalhe completo em G-07.
+
+B3 entrou junto por necessidade, não por escopo: qualquer item novo na sidebar
+herdava a regra quebrada do mobile. `AdminLayout.{jsx,css}` fica então
+**parcialmente consumido** antes da Fase 14 — sobram para ela os alias legados
+(`--bg-dark`, `--bg-card`, `--accent-green`, `--text-muted`, `--border`,
+`--font-condensed`), o `#ff3b3b` cravado no hover do Sair, o `border-left: 3px`
+do item ativo (que desloca o ícone na sidebar de 60px) e a topbar.
+`Header.jsx` recebeu 3 linhas (a mesma cópia do bug de logout vivia lá) — Fase 6
+continua entregue.
+
 ## Progresso
 
 - [x] 1 — Tokens, primitivas e fontes únicas
@@ -226,8 +344,10 @@ arquitetura (persist local + merge no login), candidata a item do Estágio G.
 - [x] H1 — Hotfix "Adicionar ao Carrinho" *(verificado no navegador)*
 - [x] 5a — CartDrawer sheet *(verificado no navegador)*
 - [x] 5b — CartItem + FreteBar + limpeza *(verificado no navegador)*
-- [x] 6 — Header + hotfix da pill *(diagnostics limpos; falta verificação no navegador)*
-- [ ] 7a — Shell · [ ] 7b — ExitPopup
+- [x] 6 — Header + hotfix da pill *(verificado no navegador)*
+- [x] 7a — Shell *(diagnostics limpos; falta verificação no navegador)* · [ ] 7b — ExitPopup
+- [x] H2 — Hotfix saída do painel admin + B3 *(diagnostics limpos; falta verificação no navegador)*
+- [x] T1 — Ferramental do frontend *(lint 0 erros / 27 warnings, exit 0)* · [x] T2 — 16 testes de regressão passando
 - [ ] 8 — Home · [ ] 9 — Hero/FAQ
 - [ ] 10 — Catálogo · [ ] 11 — PDP+Checkout · [ ] 12 — Resultados · [ ] 13 — Auth
 - [ ] 14 — Pedidos+Admin shell · [ ] 15 — Admin CRUD

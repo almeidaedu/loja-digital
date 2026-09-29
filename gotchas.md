@@ -107,3 +107,54 @@ trava entre eles precisa de condição de saída **observável** (cheguei no alv
 de sinal que só o usuário produz (`wheel`, `touchstart`). Nunca "parou de chegar
 evento" — o usuário produz os mesmos eventos. E ao suprimir eventos de um
 listener, perguntar sempre: *quem mais depende deste listener?*
+
+## G-07 — Logout dentro de rota protegida: corrida que não se ganha por ordem
+
+**O que aconteceu:** no painel admin o "Sair" fazia logout e, ao logar de novo, o
+usuário voltava direto para o painel — sem saída.
+
+**Tentativa errada:** `navigate('/', { replace: true })` **antes** de
+`clearUser()`, achando que era só ordem de chamada. Não mudou nada, e o usuário
+reportou o mesmo sintoma. Ordem de *chamada* não é ordem de *render*.
+
+**Causa real, das duas fontes:**
+
+- zustand v5 assina por `React.useSyncExternalStore`
+  (`node_modules/zustand/esm/react.mjs`). Update de store externa é **síncrono
+  por contrato** — o React não pode adiá-lo, senão haveria tearing.
+- `navigate()` com `v7_startTransition` (ligado no `App.jsx`) vira
+  `startTransitionImpl(() => setStateImpl(newState))`
+  (`react-router-dom/dist/index.js:640`) — lane **adiável**.
+
+Então existe **sempre** um render com `isAuthenticated: false` ainda na rota
+antiga, não importa a ordem das chamadas: o guard vê o usuário deslogado em
+`/admin`, manda para `/login?redirect=%2Fadmin`, e essa navegação atropela a
+transição pendente. O login seguinte honra o `redirect` e desfaz o logout.
+
+**Correção:** um dono só — `authStore.logout()` — que faz `window.location.assign('/')`.
+Navegação dura não tem render intermediário para o guard observar, e de quebra
+nada do usuário anterior sobrevive em memória.
+
+**Regra:** quando dois estados que decidem a mesma navegação vivem em sistemas
+com **prioridades de atualização diferentes** (store externa vs. transição do
+React), não existe ordenação que sincronize os dois. Ou se elimina o render
+intermediário (navegação dura), ou se ensina o guard a reconhecer a situação.
+Reordenar chamadas é tratar sintoma. E: duas cópias do mesmo fluxo (`Header` e
+`AdminLayout` implementavam logout cada um do seu jeito) são duas cópias do
+mesmo bug.
+
+## G-08 — Seletor estrutural em CSS quebra em silêncio quando o JSX muda
+
+**O que aconteceu (B3):** `.admin-nav-item span:last-child { display: none }`
+existia para esconder o label na sidebar colapsada. Mas o JSX renderizava o label
+como texto solto e o ícone dentro de um `<span>` — então `span:last-child` era o
+**ícone**. No mobile a sidebar de 60px mostrava a palavra espremida e nenhum
+ícone, que é o inverso exato da intenção. Junto vivia
+`.admin-logout-btn span:last-child`, regra morta: aquele botão não tinha span
+nenhum.
+
+**Regra:** CSS que depende da **posição** de um elemento (`:last-child`,
+`:nth-child`, `+`, `>`) é um acoplamento invisível com a árvore do JSX — não
+falha, acerta o alvo errado e o diagnostics não vê nada. Dar classe ao que se
+quer estilizar. E ao tocar um CSS, conferir se cada seletor ainda casa com algo:
+regra morta não dá erro, só ocupa espaço e mente sobre a intenção.
