@@ -188,3 +188,29 @@ intenção — e enquanto ela não é adotada, o padrão antigo se espalha. Ao c
 uma, migrar **na mesma fase** pelo menos um call site real; e ao migrar o
 último, deletar o CSS legado no mesmo commit. Um `grep` por `from '.*ui/X'` que
 volta vazio é um alarme, não um detalhe.
+
+## G-11 — Toggle que quebra outra parte da tela não pode sair "com dívida anotada"
+
+**O que aconteceu (8b → H4):** a 8b fez o `seedTestimonials: false` esconder a
+seção de depoimentos. Eu sabia que o link "Avaliações" do Header ia apontar para
+uma âncora inexistente e **registrei isso como dívida da Fase 16**. O usuário
+desligou o flag no primeiro teste e caiu exatamente no bug: o clique virava um
+redirecionamento mudo para a Home.
+
+**Regra:** quem cria ou ativa um flag é dono de **todos** os consumidores dele na
+mesma entrega. Antes de fechar, `grep` pelo id/âncora/rota que o flag faz sumir e
+corrigir quem aponta para lá. Dívida anotada serve para limpeza, não para um
+caminho do usuário que já está quebrado.
+
+## G-12 — Teste não pode depender do valor que está no `storeConfig`
+
+**O que aconteceu (H4):** os testes do `Testimonials` passaram na 8b e quebraram
+logo depois, sem mudança de código: o usuário tinha posto `stats` e
+`seedTestimonials: false` no `storeConfig` para testar no navegador, e os testes
+supunham os valores padrão.
+
+**Regra:** o `storeConfig` é do lojista, e num template revendável cada cliente o
+muda. Teste que depende de um valor do config fixa esse valor (`beforeEach` com
+`Object.assign` + restauração, ou `vi.mock` quando o módulo lê no import). Teste
+que só precisa refletir o valor lê do config (`discount`, `freeThreshold`) em vez
+de cravar o número.

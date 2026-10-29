@@ -26,7 +26,14 @@ const NAV_LINKS = [
   { key: 'inicio',       label: 'Início',     scrollTop: true },
   { key: 'categorias',   label: 'Categorias', hash: 'categorias' },
   { key: 'produtos',     label: 'Produtos',   to: '/produtos' },
-  { key: 'prova-social', label: 'Avaliações', hash: 'prova-social' },
+  // Mesma condição com que o Testimonials decide se a seção existe. Sem ela o
+  // link levava para uma âncora que não está na página.
+  {
+    key: 'prova-social',
+    label: 'Avaliações',
+    hash: 'prova-social',
+    disabled: !storeConfig.social.seedTestimonials,
+  },
   { key: 'faq',          label: 'FAQ',        hash: 'faq' },
 ];
 
@@ -198,7 +205,7 @@ export default function Header() {
   };
 
   const renderNavLink = (link, mobile = false) => {
-    const active = activeKey === link.key;
+    const active = !link.disabled && activeKey === link.key;
     const props = {
       className: `${mobile ? 'mobile-nav-link' : 'nav-link'}${active ? ' active' : ''}`,
       'aria-current': active ? 'page' : undefined,
@@ -231,6 +238,7 @@ export default function Header() {
         key={link.key}
         type="button"
         {...props}
+        disabled={link.disabled}
         onClick={link.scrollTop ? handleScrollTop : () => handleHashLink(link.hash)}
       >
         {content}

@@ -32,8 +32,11 @@ export const storeConfig = {
   },
 
   social: {
-    // null = não exibir números que não temos. Preencher só com dado real.
+    // null = não exibir números que não temos. Preencher só com dado real, no
+    // formato { rating: 4.8, reviews: 1240 } — média de 0 a 5 e total de avaliações.
     stats: null,
+    // Depoimentos de exemplo que acompanham o template. Trocar pelos reais (ou
+    // desligar) antes de ir para produção; desligado, a seção some da Home.
     seedTestimonials: true,
   },
 };

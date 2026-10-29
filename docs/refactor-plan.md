@@ -226,6 +226,60 @@ deixaria os cards presos em `opacity: 0`; e tirar os números inventados do
 | `useScrollAnimation.js` e `.animate-on-scroll` (`globals.css:506-515`) ficaram **sem consumidor** | | 8b / 17 |
 | Bundle único > 500 kB minificado: nenhuma rota usa `lazy()`. Admin e checkout vão para todo visitante da Home | `AppRouter.jsx` | 16 |
 
+## Fase 8b — prova social honesta
+
+**Troca na lista:** o `globals.css` saiu e o `storeConfig.js` entrou. O
+`storeConfig.social` tinha dois campos que ninguém lia, e o `stats: null` prometia
+"não exibir números que não temos" sem dizer o formato do dado real. Agora o
+comentário documenta `{ rating, reviews }`. A deleção do `.animate-on-scroll` foi
+para a Fase 17, junto do `useScrollAnimation.js`, que é o par dela.
+
+- **Números inventados fora:** "98%", "+5.000 avaliações verificadas" (no
+  `Testimonials`) e "Mais de 5.000 pedidos entregues" (no subtítulo da Home).
+  Número só aparece se o lojista preencher `social.stats`, formatado em pt-BR.
+- **Selos de "Verificado" e "Compra verificada" fora:** os depoimentos são de exemplo
+  e ninguém verificou compra nenhuma. O texto dos depoimentos não mudou.
+- `seedTestimonials: false` faz a seção sumir, porque ainda não existe fonte de
+  depoimento real.
+- `Testimonials` é dono da própria seção (`#prova-social`, título, fundo). A Home
+  agora só compõe, e o `Home.css` foi deletado.
+- Card virou `<figure>` + `<blockquote>` + `<figcaption>`. Estrelas com
+  `role="img"` e nome ("5 de 5 estrelas"): antes era `aria-label` num `<div>` sem
+  papel, que leitor de tela ignora. Iniciais derivadas do nome, tons do avatar dos
+  tokens `--brand-*-dim`. `#FFD700` cravado virou `--brand-warning`.
+- `Testimonials.test.jsx` *(novo)*, 5 testes. Rodados contra a versão antiga do
+  componente, **os 5 falham**.
+
+| Achado | Onde | Fase |
+|---|---|---|
+| Hero mostra "4.9 / 5.0 avaliação" cravado. Mesmo caso do 8b: deve ler `social.stats` ou sumir | `Hero.jsx:50` | 9 |
+| Estrelas desenhadas à mão em três lugares, dois deles com `#FFD700` e `rgba` cravados. Candidato a `ui/Rating` quando o `ProductCard` for tocado | `ProductCard.jsx:27`, `ProductDetail.jsx:116`, `Testimonials.jsx` | 10 |
+| ~~Com `seedTestimonials: false` a seção some, mas o link "Avaliações" do Header continua apontando para `#prova-social`~~ | ~~`Header.jsx:29`~~ | ✅ H4 |
+| `Product` tem `reviewCount` no schema. Uma média real por loja poderia vir da API em vez de ser declarada à mão no `storeConfig` | `schema.prisma:48` | G |
+
+## Hotfix H4 — cursor e link de seção desligada (fora da numeração de fases)
+
+Dois relatos do teste no navegador da 8b.
+
+- **Cursor:** o `cursor: auto` do navegador mostrava o I de texto sobre qualquer
+  parágrafo. Agora há uma regra global no reset do `globals.css`: seta por padrão,
+  mão em `a[href]`, `button`, `select`, `summary`, `[role=button]` e inputs de
+  clique, e o I só em `input`, `textarea` e `contenteditable`. O
+  `.trust-item { cursor: default }` do TrustBar era um remendo local para o mesmo
+  problema e saiu.
+- **"Avaliações" com `seedTestimonials: false`:** o link continua no menu (o menu não
+  muda de forma de cliente para cliente), mas como `<button disabled>`, com
+  `opacity: 0.55` (a mesma do `.btn`) e seta. Não navega e não ganha a pill, nem
+  com `#prova-social` na URL. `Header.test.jsx` *(novo)*, 3 testes, todos falham
+  com o Header antigo.
+- **Testes presos ao config:** os do `Testimonials` quebraram porque o
+  `storeConfig` em disco estava com os valores do teste manual. Agora cada teste
+  fixa o próprio ponto de partida. G-12.
+
+| Pendente | Onde |
+|---|---|
+| Desabilitado usa `cursor: not-allowed` em 8 regras (`.btn`, `.btn-primary`, `.form-input`, `CartItem`, `ProductDetail`, `ProductListing`, `AdminProducts`); o `ProductCard` e o novo link do Header usam a seta. A regra "não clicável = seta" pede unificar. **Decisão do usuário** | `Button.css:94`, `globals.css:283,468`, … |
+
 ## Fases
 
 | # | Título | Arquivos |
@@ -241,7 +295,7 @@ deixaria os cards presos em `opacity: 0`; e tirar os números inventados do
 | 7a | Shell honesto e boot (B8) | `App.jsx`, `AppRouter.jsx`, `ProtectedRoute.jsx`, `AdminRoute.jsx`, `hooks/useScrollRestoration.js` *(novo)* |
 | 7b | ExitPopup sobre `Modal` | `ExitPopup.{jsx,css}` |
 | 8a | Home: de-dup, reveals (B9) | `Home.{jsx,css}`, `Categories.{jsx,css}`, `Benefits.jsx` |
-| 8b | Prova social honesta + limpeza do reveal antigo | `Testimonials.{jsx,css}`, `Home.{jsx,css}`, `globals.css` (del. `.animate-on-scroll`) |
+| 8b | Prova social honesta | `Testimonials.{jsx,css}`, `Home.jsx`, `Home.css` (del), `config/storeConfig.js` |
 | 9 | Hero, FAQ spring, promo gated | `Hero.{jsx,css}`, `FAQ.{jsx,css}`, `UrgencyBanner.jsx` (+1 linha em `Home.jsx`: `id="faq"` entra no FAQ e o `<div>` embrulho sai) |
 | 10 | Catálogo: card link, paginação real (B1,B6,B7) | `ProductCard.{jsx,css}`, `ProductListing.{jsx,css}`, `ProductGrid.jsx` |
 | 11 | PDP + Checkout | `ProductDetail.{jsx,css}`, `Checkout.{jsx,css}` |
@@ -250,7 +304,7 @@ deixaria os cards presos em `opacity: 0`; e tirar os números inventados do
 | 14 | Pedidos + shell do admin | `Orders.{jsx,css}`, `AdminLayout.{jsx,css}`, `AdminDashboard.css` |
 | 15 | CRUD do admin: modais, toasts, preview | `AdminProducts.{jsx,css}`, `AdminOrders.{jsx,css}`, `AdminDashboard.jsx` |
 | 16 | Varredura final | `globals.css`, `Countdown.jsx`, `UrgencyBanner.css`, `ProductGrid.css`, `Footer.jsx` |
-| 17 | Deleção de arquivos mortos | `RouteTransition.*`, `useScrollAnimation.js`, `Payment{Success,Failure}.css`, raiz: `index.html`, `package-lock.json` |
+| 17 | Deleção de arquivos mortos | `RouteTransition.*`, `useScrollAnimation.js` + `.animate-on-scroll` do `globals.css`, `Payment{Success,Failure}.css`, raiz: `index.html`, `package-lock.json` |
 
 ## Grafo de dependências
 
@@ -341,8 +395,9 @@ clientes do template. Decisão para o Estágio G, junto do item de CI.
 
 **16 testes, 4 arquivos, todos passando.** Um por bug que já mordeu mais de uma vez.
 A partir daqui cada fase que mexe em comportamento traz os seus: a 7b somou 6
-(`ExitPopup.test.jsx`), o H3 mais 6 (`useExitIntent.test.js`) e a 8a mais 5
-(`Categories.test.jsx`), fechando em **33 testes, 7 arquivos**.
+(`ExitPopup.test.jsx`), o H3 mais 6 (`useExitIntent.test.js`), a 8a mais 5
+(`Categories.test.jsx`), a 8b mais 5 (`Testimonials.test.jsx`) e o H4 mais 3
+(`Header.test.jsx`), fechando em **41 testes, 9 arquivos**.
 
 | Arquivo | Cobre |
 |---|---|
@@ -351,6 +406,8 @@ A partir daqui cada fase que mexe em comportamento traz os seus: a 7b somou 6
 | `hooks/useScrollRestoration.test.jsx` | As três regras: não rola ao montar, rola no PUSH com pathname novo, não rola com hash, não rola em POP |
 | `hooks/useFreteProgress.test.js` | `price` como string (Decimal do Prisma), limite exato libera, `fillPct` não passa de 100 |
 | `components/home/Categories/Categories.test.jsx` | Skeleton sem links, link com slug codificado, contagem flexionada, filtro de vazias e corte em seis, falha da API some em vez de girar |
+| `components/layout/Header/Header.test.jsx` | Com `seedTestimonials: false`: "Avaliações" desabilitado, o clique não navega, sem pill mesmo com o hash na URL |
+| `components/home/Testimonials/Testimonials.test.jsx` | Sem `stats` não aparece número nem selo de verificado; com `stats`, nota e total em pt-BR; `seedTestimonials: false` some; uma `<section id="prova-social">` com um `h2` só |
 | `hooks/useExitIntent.test.js` | Topo dispara, laterais não; uma vez por sessão; timer de 30s e seu cancelamento; cleanup remove **todos** os listeners |
 | `components/home/ExitPopup/ExitPopup.test.jsx` | O popup é `ui/Modal`: dialog com nome acessível, Escape fecha, recusa é `<button>` de verdade, desconto vem do `storeConfig`, e-mail vazio não dispara toast |
 
@@ -430,10 +487,11 @@ continua entregue.
 - [x] 5b — CartItem + FreteBar + limpeza *(verificado no navegador)*
 - [x] 6 — Header + hotfix da pill *(verificado no navegador)*
 - [x] 7a — Shell *(diagnostics limpos; falta verificação no navegador)* · [x] 7b — ExitPopup sobre `Modal` *(lint 0 erros, 22 testes passando; falta verificação no navegador)*
+- [x] H4 — Cursor global + "Avaliações" desabilitado *(41 testes; falta verificação no navegador)*
 - [x] H3 — Gate do `leadCapture` + vazamento do `useExitIntent` *(28 testes passando)*
 - [x] H2 — Hotfix saída do painel admin + B3 *(diagnostics limpos; falta verificação no navegador)*
-- [x] T1 — Ferramental do frontend *(lint 0 erros / 25 warnings, exit 0)* · [x] T2 — 33 testes de regressão passando
-- [x] 8a — Home: reveals + de-dup (B9) *(lint 0 erros, 33 testes, build ok; falta verificação no navegador)* · [ ] 8b — Prova social
+- [x] T1 — Ferramental do frontend *(lint 0 erros / 25 warnings, exit 0)* · [x] T2 — 41 testes de regressão passando
+- [x] 8a — Home: reveals + de-dup (B9) *(lint 0 erros, 33 testes, build ok; falta verificação no navegador)* · [x] 8b — Prova social honesta *(lint 0 erros, 38 testes, build ok; falta verificação no navegador)*
 - [ ] 9 — Hero/FAQ
 - [ ] 10 — Catálogo · [ ] 11 — PDP+Checkout · [ ] 12 — Resultados · [ ] 13 — Auth
 - [ ] 14 — Pedidos+Admin shell · [ ] 15 — Admin CRUD

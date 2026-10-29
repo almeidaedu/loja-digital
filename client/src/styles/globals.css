@@ -160,6 +160,19 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 input, select, textarea { font-family: inherit; }
 ul, ol { list-style: none; }
 
+/* Cursor por intenção, não por conteúdo. O `auto` do navegador mostra o I de
+   texto sobre qualquer parágrafo, como se fosse editável; aqui a seta é o
+   padrão, a mão fica para o que é clicável e o I só onde se digita. */
+body { cursor: default; }
+input, textarea, [contenteditable='true'] { cursor: text; }
+a[href],
+select,
+summary,
+[role='button'],
+input:is([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='submit'], [type='button']) {
+  cursor: pointer;
+}
+
 /* Foco visível único para todo o app — teclado vê, mouse não */
 :focus-visible {
   outline: 2px solid var(--brand-accent);

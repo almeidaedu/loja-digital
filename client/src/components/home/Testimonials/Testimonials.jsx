@@ -1,80 +1,109 @@
-import { StarFilledIcon, StarEmptyIcon } from '../../ui/Icons';import './Testimonials.css';
+import { storeConfig } from '../../../config/storeConfig';
+import Reveal from '../../ui/Reveal/Reveal';
+import { StarFilledIcon, StarEmptyIcon } from '../../ui/Icons';
+import './Testimonials.css';
 
-const TESTIMONIALS = [
+// Depoimentos de exemplo do template. Não levam selo de "verificado": ninguém
+// verificou compra nenhuma, e o selo era a parte desonesta da seção.
+const SEED_TESTIMONIALS = [
   {
-    initials: 'GS',
-    avatarMod: 'av-green',
     name: 'Gabriel Silva',
     city: 'São Paulo, SP',
     stars: 5,
     text: 'Produto chegou em menos de 24h, qualidade impecável. A camisa é idêntica à original, tecido leve e o bordado do escudo ficou perfeito. Com certeza vou comprar de novo!',
-    productBadge: 'Compra verificada',
   },
   {
-    initials: 'RC',
-    avatarMod: 'av-blue',
     name: 'Rafael Costa',
     city: 'Rio de Janeiro, RJ',
     stars: 5,
     text: 'Atendimento top, fui bem orientado sobre o tamanho e a camisa ficou perfeita. Recebi em 2 dias, embalagem excelente. Recomendo muito a loja para todos os torcedores!',
-    productBadge: 'Compra verificada',
   },
   {
-    initials: 'LM',
-    avatarMod: 'av-orange',
     name: 'Lucas Martins',
     city: 'Belo Horizonte, MG',
     stars: 5,
     text: 'Melhor loja para camisas de futebol! Preço justo, produto original com nota fiscal, entrega super rápida. Já comprei 3 camisas e todas chegaram em perfeito estado.',
-    productBadge: 'Compra verificada',
   },
 ];
 
-function Stars({ count }) {
+const AVATAR_TONES = ['accent', 'info', 'warning'];
+
+const ratingFormat = new Intl.NumberFormat('pt-BR', {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+const countFormat = new Intl.NumberFormat('pt-BR');
+
+function initials(name) {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join('');
+}
+
+function Stars({ value, size }) {
+  const filled = Math.round(value);
   return (
-    <div className="depo-stars" aria-label={`${count} estrelas`}>
-      {Array.from({ length: 5 }).map((_, i) =>
-        i < count
-          ? <StarFilledIcon key={i} sx={{ fontSize: '16px', color: '#FFD700' }} />
-          : <StarEmptyIcon  key={i} sx={{ fontSize: '16px', color: 'rgba(255,255,255,0.15)' }} />
+    <span className="testimonial-stars" role="img" aria-label={`${filled} de 5 estrelas`}>
+      {Array.from({ length: 5 }, (_, i) =>
+        i < filled ? (
+          <StarFilledIcon key={i} sx={{ fontSize: size }} />
+        ) : (
+          <StarEmptyIcon key={i} className="testimonial-star--empty" sx={{ fontSize: size }} />
+        )
       )}
-    </div>
+    </span>
   );
 }
 
 export default function Testimonials() {
+  const { stats, seedTestimonials } = storeConfig.social;
+
+  // Ainda não existe fonte de depoimento real; sem os de exemplo não há o que mostrar.
+  if (!seedTestimonials) return null;
+
   return (
-    <section className="testimonials-section">
+    <section id="prova-social" className="section testimonials-section">
       <div className="container">
-        <div className="testimonials-header">
-          <div className="testimonials-stat">
-            <span className="testimonials-percent">98%</span>
-            <div className="testimonials-header-stars">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <StarFilledIcon key={i} sx={{ fontSize: '20px', color: '#FFD700' }} />
-              ))}
+        <div className="section-header">
+          <h2 className="section-title">O Que Dizem Nossos Clientes</h2>
+          <p className="section-subtitle">Quem já comprou conta como foi</p>
+
+          {/* Antes: "98%" e "+5.000 avaliações verificadas" cravados no JSX, e
+              "Mais de 5.000 pedidos" no subtítulo da Home. Agora só aparece
+              número que o lojista declarou no storeConfig. */}
+          {stats && (
+            <div className="testimonials-rating">
+              <span className="testimonials-rating-value">{ratingFormat.format(stats.rating)}</span>
+              <Stars value={stats.rating} size="20px" />
+              <span className="testimonials-rating-count">
+                {countFormat.format(stats.reviews)} avaliações
+              </span>
             </div>
-            <p className="testimonials-label">+5.000 avaliações verificadas</p>
-          </div>
+          )}
         </div>
 
-        <div className="testimonials-grid">
-          {TESTIMONIALS.map((t) => (
-            <div key={t.name} className="depo-card">
-              <div className="depo-header">
-                <div className={`depo-avatar ${t.avatarMod}`}>{t.initials}</div>
-                <div className="depo-meta">
-                  <span className="depo-name">{t.name}</span>
-                  <span className="depo-city">{t.city}</span>
-                </div>
-                <span className="depo-verified">Verificado</span>
-              </div>
-              <Stars count={t.stars} />
-              <p className="depo-text">{t.text}</p>
-              <span className="depo-product-badge">{t.productBadge}</span>
-            </div>
+        <Reveal className="testimonials-grid">
+          {SEED_TESTIMONIALS.map((t, i) => (
+            <figure key={t.name} className="testimonial-card">
+              <Stars value={t.stars} size="16px" />
+              <blockquote className="testimonial-text">{t.text}</blockquote>
+              <figcaption className="testimonial-author">
+                <span
+                  className={`testimonial-avatar testimonial-avatar--${AVATAR_TONES[i % AVATAR_TONES.length]}`}
+                  aria-hidden="true"
+                >
+                  {initials(t.name)}
+                </span>
+                <span className="testimonial-meta">
+                  <span className="testimonial-name">{t.name}</span>
+                  <span className="testimonial-city">{t.city}</span>
+                </span>
+              </figcaption>
+            </figure>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );
