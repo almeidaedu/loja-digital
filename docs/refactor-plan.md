@@ -37,7 +37,7 @@ apontam para lá).
 | B6 | `ProductCard.jsx:64` | `<article>` sem `<Link>` → produto não é clicável | 10 |
 | B7 | `ProductCard.css:212` | `margin-top:12px` anula o `margin-top:auto` → CTAs desalinhados | 10 |
 | B8 | `ProtectedRoute.jsx` | ~~`isLoading` → `return null` → tela branca no refresh~~ ✅ gate com spinner; `AdminRoute` herda | 7a |
-| B9 | `Categories.jsx` | IntersectionObserver monta antes dos dados → cards invisíveis | 8 |
+| B9 | `Categories.jsx` | ~~IntersectionObserver monta antes dos dados → cards invisíveis~~ ✅ `ui/Reveal` na grade | 8a |
 
 ## Colisões de classe global (achado da Fase 2)
 
@@ -54,8 +54,8 @@ globals não tem. Deletar o bloco duplicado quando a fase dona tocar o arquivo.
 | `.badge`, `.badge--yellow` | `AdminProducts.css:148` | 15 |
 | `.badge`, `.badge--{green,yellow,red}` | `AdminDashboard.css:114` | 14 |
 | `.form-label` | `Login.css:68`, `Register.css:50` | 13 |
-| `.section-title`, `.section-subtitle` | `Categories.css:11,19` | 8 |
-| `.skeleton` | `Categories.css:85`, `ProductGrid.css:36` | 8, 10 |
+| ~~`.section-title`, `.section-subtitle`~~ | ~~`Categories.css:11,19`~~ | ✅ 8a |
+| `.skeleton` | ~~`Categories.css:85`~~ ✅ 8a, `ProductGrid.css:36` | 10 |
 
 ## Emoji e glifos como ícone (varredura da Fase 4)
 
@@ -170,13 +170,61 @@ que sobrou é o tamanho do título (`--text-display-size`), documentada no CSS.
 
 | O quê | Onde | Fase |
 |---|---|---|
-| `storeConfig.leadCapture.enabled` não é lido por ninguém: o popup monta e arma os listeners de saída mesmo com a campanha desligada. Consertar exige um 3º arquivo (gate em `App.jsx` ou guarda `if (!onExit) return;` no hook) — fora da lista da fase | `App.jsx:33`, `useExitIntent.js:6` | a combinar |
-| `useExitIntent` registra `touchstart`/`scroll`/`click` com `{ once: true }` e **não os remove** no cleanup. Se nunca dispararem, sobrevivem ao unmount | `useExitIntent.js:28` | 16 |
-| Chave de sessionStorage `cc_popup_shown` tem a marca do cliente cravada num template revendável | `useExitIntent.js:7` | 16 |
+| ~~`storeConfig.leadCapture.enabled` não é lido por ninguém: o popup monta e arma os listeners de saída mesmo com a campanha desligada~~ | ~~`App.jsx:33`~~ | ✅ H3 |
+| ~~`useExitIntent` registra `touchstart`/`scroll`/`click` com `{ once: true }` e **não os remove** no cleanup~~ | ~~`useExitIntent.js:28`~~ | ✅ H3 |
+| ~~Chave de sessionStorage `cc_popup_shown` tem a marca do cliente cravada num template revendável~~ | ~~`useExitIntent.js:7`~~ | ✅ H3 |
 | `.modal-overlay` / `.modal-box` no `globals.css` ficaram com **um único** consumidor. Quando a Fase 15 migrar o modal de produtos, as três regras viram lixo | `globals.css:548-580`, `AdminProducts.jsx:390` | 17 |
 
 `storeConfig.leadCapture.discount` passou a alimentar o título, o botão e o texto
 do toast — antes `10% OFF` estava cravado três vezes no JSX.
+
+## Hotfix H3 — pendências do exit intent (fora da numeração de fases)
+
+Os três primeiros itens da tabela acima, fechados antes da Fase 8.
+
+- **Gate da campanha no `App.jsx`**, não no hook. Com `leadCapture.enabled: false`
+  o `ExitPopup` nem monta, então nenhum listener é armado. A alternativa, um
+  `if (!onExit) return` no hook, é o bail silencioso que o G-04 proíbe.
+- **Vazamento:** o cleanup agora remove os três listeners de interação. `once` só
+  tira o listener que chegou a disparar.
+- **Chave neutra:** `cc_popup_shown` → `exit-popup-shown`.
+- `useExitIntent.test.js` *(novo)*, 6 testes. O de cleanup foi rodado contra a
+  versão antiga do hook e **falha** nela, ou seja, pega o bug de verdade.
+
+## Fase 8a — reveals e de-dup da Home
+
+**A Fase 8 virou 8a + 8b.** A lista original (5 arquivos) não fechava: `Benefits.jsx`
+também usava `animate-on-scroll`, então aposentar o `useScrollAnimation` sem migrá-lo
+deixaria os cards presos em `opacity: 0`; e tirar os números inventados do
+`Testimonials.jsx` deixa CSS morto no `Testimonials.css`. Sete arquivos.
+
+- **B9:** `Categories` e `Benefits` revelam a **grade** com `ui/Reveal`. Na grade e não
+  em cada card: o motion deixa `transform` inline no elemento que anima, e isso
+  anularia o `:hover { transform }` dos cards. A grade do skeleton é a mesma dos
+  dados, então a troca não anima de novo.
+- **De-dup:** a Home embrulhava `Benefits` e `FAQ` numa segunda `<section>` com um
+  segundo `h2` ("POR QUE CAMPO CHEIO?" sobre "Por Que Comprar Aqui?", "DÚVIDAS
+  FREQUENTES" sobre "Perguntas Frequentes") e padding vertical em dobro. Agora cada
+  bloco é dono da própria seção e a Home só compõe. O título com a marca cravada saiu
+  junto.
+- **Colisão global desfeita:** o `Categories.css` redefinia `.section-title`,
+  `.section-subtitle` e `.skeleton`, e por ser importado depois do `globals.css` ditava
+  o estilo de **toda** seção da Home. Com isso fora, os títulos passam a seguir o
+  `globals.css` (tipografia de sistema, `--text-display-size`). **Mudança visível de
+  propósito.**
+- `Categories` busca os próprios dados (como o `ProductGrid`), e a Home perdeu o
+  estado. O `.catch(() => {})` da Home deixava o skeleton girando para sempre; agora
+  falha ou lista vazia escondem a seção. Categoria sem produto ativo não vira card.
+- Card de categoria virou `<Link>` (antes `<button>` + `navigate`, sem href e com slug
+  sem `encodeURIComponent`). Contagem flexiona ("1 produto").
+- `src/test/setup.js` ganhou stub de `IntersectionObserver`: o jsdom não tem e o
+  `whileInView` quebra no mount. Stub mudo, então teste nenhum afirma reveal.
+
+| Achado | Onde | Fase |
+|---|---|---|
+| A API devolve `flagEmoji` (spread do Prisma em camelCase) e o card lia `flag_emoji`: a bandeira **nunca** apareceu. Como emoji é proibido no projeto, a leitura saiu e o ícone ficou fixo. A coluna `flag_emoji` no banco e no CRUD de categorias continua lá sem uso no front | `categoryController.js:10`, `schema.prisma:28` | 15 / G |
+| `useScrollAnimation.js` e `.animate-on-scroll` (`globals.css:506-515`) ficaram **sem consumidor** | | 8b / 17 |
+| Bundle único > 500 kB minificado: nenhuma rota usa `lazy()`. Admin e checkout vão para todo visitante da Home | `AppRouter.jsx` | 16 |
 
 ## Fases
 
@@ -192,8 +240,9 @@ do toast — antes `10% OFF` estava cravado três vezes no JSX.
 | 6 | Header/FreteBar um material; pill `layoutId` (B5) | `Header.{jsx,css}`, `FreteBar.css`, `Layout.{jsx,css}` (+1 linha em `Icons.jsx`: `WhatsAppIcon`) |
 | 7a | Shell honesto e boot (B8) | `App.jsx`, `AppRouter.jsx`, `ProtectedRoute.jsx`, `AdminRoute.jsx`, `hooks/useScrollRestoration.js` *(novo)* |
 | 7b | ExitPopup sobre `Modal` | `ExitPopup.{jsx,css}` |
-| 8 | Home: de-dup, reveals, prova social honesta (B9) | `Home.{jsx,css}`, `Categories.{jsx,css}`, `Testimonials.jsx` |
-| 9 | Hero, FAQ spring, promo gated | `Hero.{jsx,css}`, `FAQ.{jsx,css}`, `UrgencyBanner.jsx` |
+| 8a | Home: de-dup, reveals (B9) | `Home.{jsx,css}`, `Categories.{jsx,css}`, `Benefits.jsx` |
+| 8b | Prova social honesta + limpeza do reveal antigo | `Testimonials.{jsx,css}`, `Home.{jsx,css}`, `globals.css` (del. `.animate-on-scroll`) |
+| 9 | Hero, FAQ spring, promo gated | `Hero.{jsx,css}`, `FAQ.{jsx,css}`, `UrgencyBanner.jsx` (+1 linha em `Home.jsx`: `id="faq"` entra no FAQ e o `<div>` embrulho sai) |
 | 10 | Catálogo: card link, paginação real (B1,B6,B7) | `ProductCard.{jsx,css}`, `ProductListing.{jsx,css}`, `ProductGrid.jsx` |
 | 11 | PDP + Checkout | `ProductDetail.{jsx,css}`, `Checkout.{jsx,css}` |
 | 12 | `ResultPage` único (B2) | `ui/ResultPage/{jsx,css}`, `Payment{Success,Failure,Pending}.jsx` |
@@ -292,7 +341,8 @@ clientes do template. Decisão para o Estágio G, junto do item de CI.
 
 **16 testes, 4 arquivos, todos passando.** Um por bug que já mordeu mais de uma vez.
 A partir daqui cada fase que mexe em comportamento traz os seus: a 7b somou 6
-(`ExitPopup.test.jsx`), fechando em **22 testes, 5 arquivos**.
+(`ExitPopup.test.jsx`), o H3 mais 6 (`useExitIntent.test.js`) e a 8a mais 5
+(`Categories.test.jsx`), fechando em **33 testes, 7 arquivos**.
 
 | Arquivo | Cobre |
 |---|---|
@@ -300,6 +350,8 @@ A partir daqui cada fase que mexe em comportamento traz os seus: a 7b somou 6
 | `router/ProtectedRoute.test.jsx` | B8 (spinner no boot, sem redirect prematuro) + query string do destino preservada e codificada |
 | `hooks/useScrollRestoration.test.jsx` | As três regras: não rola ao montar, rola no PUSH com pathname novo, não rola com hash, não rola em POP |
 | `hooks/useFreteProgress.test.js` | `price` como string (Decimal do Prisma), limite exato libera, `fillPct` não passa de 100 |
+| `components/home/Categories/Categories.test.jsx` | Skeleton sem links, link com slug codificado, contagem flexionada, filtro de vazias e corte em seis, falha da API some em vez de girar |
+| `hooks/useExitIntent.test.js` | Topo dispara, laterais não; uma vez por sessão; timer de 30s e seu cancelamento; cleanup remove **todos** os listeners |
 | `components/home/ExitPopup/ExitPopup.test.jsx` | O popup é `ui/Modal`: dialog com nome acessível, Escape fecha, recusa é `<button>` de verdade, desconto vem do `storeConfig`, e-mail vazio não dispara toast |
 
 Os testes de rota usam os mesmos `future` flags do `App.jsx` — `v7_startTransition` muda
@@ -378,9 +430,11 @@ continua entregue.
 - [x] 5b — CartItem + FreteBar + limpeza *(verificado no navegador)*
 - [x] 6 — Header + hotfix da pill *(verificado no navegador)*
 - [x] 7a — Shell *(diagnostics limpos; falta verificação no navegador)* · [x] 7b — ExitPopup sobre `Modal` *(lint 0 erros, 22 testes passando; falta verificação no navegador)*
+- [x] H3 — Gate do `leadCapture` + vazamento do `useExitIntent` *(28 testes passando)*
 - [x] H2 — Hotfix saída do painel admin + B3 *(diagnostics limpos; falta verificação no navegador)*
-- [x] T1 — Ferramental do frontend *(lint 0 erros / 25 warnings, exit 0)* · [x] T2 — 22 testes de regressão passando
-- [ ] 8 — Home · [ ] 9 — Hero/FAQ
+- [x] T1 — Ferramental do frontend *(lint 0 erros / 25 warnings, exit 0)* · [x] T2 — 33 testes de regressão passando
+- [x] 8a — Home: reveals + de-dup (B9) *(lint 0 erros, 33 testes, build ok; falta verificação no navegador)* · [ ] 8b — Prova social
+- [ ] 9 — Hero/FAQ
 - [ ] 10 — Catálogo · [ ] 11 — PDP+Checkout · [ ] 12 — Resultados · [ ] 13 — Auth
 - [ ] 14 — Pedidos+Admin shell · [ ] 15 — Admin CRUD
 - [ ] 16 — Varredura · [ ] 17 — Deleções

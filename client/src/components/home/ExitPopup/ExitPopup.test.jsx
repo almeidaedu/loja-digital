@@ -13,7 +13,7 @@ function triggerExitIntent() {
 
 describe('ExitPopup', () => {
   beforeEach(() => {
-    // O hook grava `cc_popup_shown` no primeiro disparo e nunca mais abre.
+    // O hook grava `exit-popup-shown` no primeiro disparo e nunca mais abre.
     sessionStorage.clear();
     useUiStore.setState({ toasts: [] });
   });

@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react';
-import { categoryService } from '../../services/categoryService';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import Hero from '../../components/home/Hero/Hero';
 import TrustBar from '../../components/home/TrustBar/TrustBar';
 import Categories from '../../components/home/Categories/Categories';
@@ -11,27 +8,18 @@ import Benefits from '../../components/home/Benefits/Benefits';
 import FAQ from '../../components/home/FAQ/FAQ';
 import './Home.css';
 
+// Cada bloco é dono da própria seção: padding, título e âncora. A Home só
+// compõe. Antes ela embrulhava Benefits e FAQ numa segunda <section> com um
+// segundo título — dois h2 por bloco e o padding vertical em dobro.
 export default function Home() {
-  const [categories, setCategories] = useState([]);
-
-  useScrollAnimation();
-
-  useEffect(() => {
-    categoryService.getAll()
-      .then(({ categories }) => setCategories(categories ?? []))
-      .catch(() => {});
-  }, []);
-
   return (
     <main>
       <Hero />
       <TrustBar />
-      <section id="categorias">
-        <Categories categories={categories} />
-      </section>
+      <Categories />
       <ProductGrid />
 
-      <section id="prova-social" className="home-section home-section--alt animate-on-scroll">
+      <section id="prova-social" className="home-section home-section--alt">
         <div className="container">
           <h2 className="section-title">O QUE DIZEM NOSSOS <span>CLIENTES</span></h2>
           <p className="section-subtitle">Mais de 5.000 pedidos entregues com qualidade</p>
@@ -40,22 +28,13 @@ export default function Home() {
       </section>
 
       <UrgencyBanner />
+      <Benefits />
 
-      <section id="beneficios" className="home-section animate-on-scroll">
-        <div className="container">
-          <h2 className="section-title">POR QUE <span>CAMPO CHEIO</span>?</h2>
-          <p className="section-subtitle">Mais que uma loja — uma paixão pelo futebol</p>
-          <Benefits />
-        </div>
-      </section>
-
-      <section id="faq" className="home-section home-section--alt animate-on-scroll">
-        <div className="container">
-          <h2 className="section-title">DÚVIDAS <span>FREQUENTES</span></h2>
-          <p className="section-subtitle">Respondemos as perguntas mais comuns</p>
-          <FAQ />
-        </div>
-      </section>
+      {/* Só a âncora que o Header e o Footer usam. A Fase 9 passa o id para
+          dentro do FAQ e este div sai. */}
+      <div id="faq">
+        <FAQ />
+      </div>
     </main>
   );
 }

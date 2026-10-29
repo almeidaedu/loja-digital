@@ -4,6 +4,7 @@ import {
   SyncIcon,
   TrophyIcon,
 } from '../../../components/ui/Icons';
+import Reveal from '../../ui/Reveal/Reveal';
 import './Benefits.css';
 
 const BENEFITS = [
@@ -37,9 +38,9 @@ export default function Benefits() {
           <h2 className="section-title">Por Que Comprar Aqui?</h2>
           <p className="section-subtitle">Garantias que você não encontra em qualquer loja</p>
         </div>
-        <div className="benefits-grid">
+        <Reveal className="benefits-grid">
           {BENEFITS.map((b) => (
-            <div key={b.title} className="benefit-card animate-on-scroll">
+            <div key={b.title} className="benefit-card">
               <div className="benefit-icon">
                 <b.Icon sx={{ fontSize: '36px' }} />
               </div>
@@ -47,7 +48,7 @@ export default function Benefits() {
               <p className="benefit-desc">{b.desc}</p>
             </div>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

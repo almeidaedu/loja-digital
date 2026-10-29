@@ -8,6 +8,7 @@ import ToastContainer from './components/ui/Toast/ToastContainer';
 import CartDrawer from './components/cart/CartDrawer/CartDrawer';
 import ExitPopup from './components/home/ExitPopup/ExitPopup';
 import RouteTransition from './components/ui/RouteTransition/RouteTransition';
+import { storeConfig } from './config/storeConfig';
 
 export default function App() {
   // Hidrata o authStore a partir do cookie existente no boot. Via `getState()`:
@@ -30,7 +31,9 @@ export default function App() {
       <AppRouter />
       <CartDrawer />
       <ToastContainer />
-      <ExitPopup />
+      {/* Gate aqui e não dentro do popup: desligado, ele nem monta e o
+          exit intent não arma listener nenhum. */}
+      {storeConfig.leadCapture.enabled && <ExitPopup />}
     </BrowserRouter>
   );
 }
