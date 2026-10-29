@@ -61,6 +61,10 @@ model Order {
   id                String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId            String     @db.Uuid @map("user_id")
   status            String     @default("pending") @db.VarChar(30)
+  // Frete calculado no servidor a partir das configurações da loja, no momento
+  // do pedido. totalAmount = subtotal + shippingCost.
+  subtotal          Decimal    @db.Decimal(10, 2)
+  shippingCost      Decimal    @default(0) @db.Decimal(10, 2) @map("shipping_cost")
   totalAmount       Decimal    @db.Decimal(10, 2) @map("total_amount")
   paymentMethod     String?    @db.VarChar(30) @map("payment_method")
   paymentId         String?    @db.VarChar(100) @map("payment_id")
@@ -107,4 +111,16 @@ model CartItem {
 
   @@unique([userId, productId, size])
   @@map("cart_items")
+}
+
+// Configurações editáveis pelo painel admin (marca, contato, frete, promo, popup,
+// prova social). Uma linha só, sempre id 1. O objeto é Json de propósito: campo
+// novo no template não deve exigir migration. Formato e valores padrão vivem em
+// `src/config/storeDefaults.js`, e a validação em `src/routes/settingsRoutes.js`.
+model StoreSettings {
+  id        Int      @id @default(1)
+  data      Json
+  updatedAt DateTime @updatedAt @db.Timestamptz @map("updated_at")
+
+  @@map("store_settings")
 }

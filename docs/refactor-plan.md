@@ -370,6 +370,44 @@ pedidos). Parei antes de confirmar pedido para não criar cobrança.
 | `normalizeEmail()` do express-validator tira os pontos de e-mail Gmail: entra-se com `eduardo.hpa87@…` e a conta mostra `eduardohpa87@…` | `server/src/routes/authRoutes.js` | G |
 | **O servidor não cobra frete.** `totalAmount` = só os produtos; os R$ 15 existem apenas na tela do checkout | `orderController.js:24`, `Checkout.jsx:10-11` | Configurações (S) |
 
+## Feature S — Configurações da loja no painel admin
+
+Especificação aprovada pelo usuário (arquivo de plano da sessão). O `storeConfig.js`
+estático passa a viver no banco, editável em `/admin/configuracoes`, e **o servidor
+passa a cobrar frete**. Seis fases: S1 banco · S2 API · S3 pedido com frete · S4 base
+do cliente · S5 consumidores · S6 painel.
+
+**S1 — banco** *(migration rodada pelo usuário)*
+- `Order` ganhou `subtotal` e `shipping_cost`; `total_amount` = os dois somados.
+  Migration editada à mão: coluna anulável → `UPDATE orders SET subtotal =
+  total_amount` (pedidos antigos não tinham frete) → `NOT NULL`. O pedido existente
+  ficou com subtotal 1225 / frete 0 / total 1225.
+- `store_settings`: uma linha (`CHECK (id = 1)` no banco), objeto inteiro em `JSONB`.
+
+**S2 — API** · `config/storeDefaults.js`, `services/settings.js`,
+`controllers/settingsController.js`, `routes/settingsRoutes.js`, `app.js`
+- `GET /api/settings` público; `PUT /api/admin/settings` admin, substituição do
+  objeto inteiro, 422 com `{ message, field }`.
+- `withDefaults`: defaults por baixo, banco por cima, guiado pelas chaves dos
+  defaults — campo novo nasce com padrão, campo removido some. Cache em memória
+  invalidado no PUT.
+- Verificado por `curl`: GET, 401 sem login, 7 PUTs inválidos com campo certo, PUT
+  válido; chave desconhecida não chega ao banco; strings saneadas para número; trim.
+- O `shipping.js` saiu da S2 para a S3 (onde é usado) para o controller caber.
+
+**S3 — pedido com frete** · `services/shipping.js`, `orderController.js`, `paymentController.js`
+- `createOrder` lê as configurações vigentes e grava `subtotal`, `shippingCost` e
+  `totalAmount`. Conta em centavos inteiros (`0.1 + 0.2 !== 0.3`, e aqui o resíduo
+  vira cobrança).
+- Checkout Pro: `shipments: { mode: 'not_specified', cost }` quando há frete — a
+  preference cobra pela soma dos itens, e o frete sumia. Pix já usa `totalAmount`.
+- `statement_descriptor: 'CAMPO CHEIO'` (nome na fatura do cartão) estava cravado
+  nos dois pagamentos; agora vem de `brand.name`.
+- Verificado com 2 pedidos reais no banco local (autorizado), mesmo carrinho de
+  R$ 189: limite 149 → 189 / 0 / 189; limite 500 (via PUT) → 189 / 15 / 204.
+  Configuração e carrinho restaurados, pedidos de teste apagados. Nenhum pagamento
+  criado no MP.
+
 ## Fase 9a — Hero honesto e FAQ com spring
 
 **A Fase 9 virou 9a + 9b.** Gate de promo de verdade precisa do `Countdown.jsx` e do
@@ -626,6 +664,7 @@ continua entregue.
 - [x] 5b — CartItem + FreteBar + limpeza *(verificado no navegador)*
 - [x] 6 — Header + hotfix da pill *(verificado no navegador)*
 - [x] 7a — Shell *(diagnostics limpos; falta verificação no navegador)* · [x] 7b — ExitPopup sobre `Modal` *(lint 0 erros, 22 testes passando; falta verificação no navegador)*
+- [x] S1 — Banco (configurações + frete no pedido) · [x] S2 — API de configurações *(verificado por curl)* · [x] S3 — Pedido com frete *(2 pedidos de teste)* · [ ] S4 · [ ] S5 · [ ] S6
 - [x] H7 — Âncoras vindas de outra página + TrustBar *(verificado por mim no navegador)*
 - [x] H6 — Checagem visual: ícone, âncora sob o header, `<main>` duplo, link do Footer *(verificado por mim no navegador)*
 - [x] H5 — Cursor de desabilitado unificado *(falta verificação no navegador)*

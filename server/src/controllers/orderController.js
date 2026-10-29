@@ -1,4 +1,6 @@
 const prisma = require('../config/database');
+const { getSettings } = require('../services/settings');
+const { computeOrderTotals } = require('../services/shipping');
 
 const VALID_STATUSES = ['pending', 'waiting_payment', 'approved', 'in_process', 'rejected', 'cancelled', 'shipped', 'delivered'];
 
@@ -21,13 +23,19 @@ async function createOrder(req, res, next) {
       }
     }
 
-    const total = cartItems.reduce((sum, ci) => sum + Number(ci.product.price) * ci.quantity, 0);
+    // Frete pelas configurações vigentes no momento do pedido. Antes o total era só
+    // a soma dos produtos: o checkout mostrava R$ 15 de frete que ninguém cobrava.
+    const { shipping } = await getSettings();
+    const totals = computeOrderTotals(
+      cartItems.map((ci) => ({ unitPrice: ci.product.price, quantity: ci.quantity })),
+      shipping
+    );
 
     const order = await prisma.$transaction(async (tx) => {
       const newOrder = await tx.order.create({
         data: {
           userId: req.user.id,
-          totalAmount: total,
+          ...totals,
           shippingAddress,
           items: {
             create: cartItems.map((ci) => ({

@@ -11,6 +11,7 @@ const categoryRoutes = require('./src/routes/categoryRoutes');
 const cartRoutes = require('./src/routes/cartRoutes');
 const orderRoutes = require('./src/routes/orderRoutes');
 const paymentRoutes = require('./src/routes/paymentRoutes');
+const settingsRoutes = require('./src/routes/settingsRoutes');
 const errorHandler = require('./src/middleware/errorHandler');
 
 const app = express();
@@ -38,6 +39,8 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
+// GET /api/settings (público) e PUT /api/admin/settings (admin)
+app.use('/api', settingsRoutes);
 
 // Atalhos de admin — reaproveitam os métodos do orderController diretamente
 const authMiddleware = require('./src/middleware/auth');

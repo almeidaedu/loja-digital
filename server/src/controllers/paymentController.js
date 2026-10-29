@@ -1,7 +1,15 @@
 const { Preference, Payment } = require('mercadopago');
 const mpClient = require('../config/mercadopago');
 const prisma = require('../config/database');
+const { getSettings } = require('../services/settings');
 const { verifyMpSignature } = require('../utils/mpSignatureVerify');
+
+// Nome que aparece na fatura do cartão. Vinha cravado como 'CAMPO CHEIO'; agora é
+// a marca configurada no painel. O MP aceita até 22 caracteres.
+async function statementDescriptor() {
+  const { brand } = await getSettings();
+  return brand.name.toUpperCase().slice(0, 22);
+}
 
 async function createPreference(req, res, next) {
   try {
@@ -18,6 +26,7 @@ async function createPreference(req, res, next) {
     if (!order) return res.status(404).json({ message: 'Pedido não encontrado.' });
 
     const preference = new Preference(mpClient);
+    const descriptor = await statementDescriptor();
     const response = await preference.create({
       body: {
         items: order.items.map((i) => ({
@@ -27,6 +36,11 @@ async function createPreference(req, res, next) {
           currency_id: 'BRL',
           picture_url: i.productImage || undefined,
         })),
+        // O Checkout Pro cobra a soma dos itens; o frete vai à parte, senão some da
+        // cobrança. O Pix já cobra `totalAmount`, que inclui o frete.
+        ...(Number(order.shippingCost) > 0 && {
+          shipments: { mode: 'not_specified', cost: Number(order.shippingCost) },
+        }),
         payer: { name: order.user.name, email: order.user.email },
         back_urls: {
           success: `${process.env.CLIENT_URL}/pagamento/sucesso`,
@@ -35,7 +49,7 @@ async function createPreference(req, res, next) {
         },
         auto_return: 'approved',
         external_reference: orderId,
-        statement_descriptor: 'CAMPO CHEIO',
+        statement_descriptor: descriptor,
         notification_url: `${process.env.API_URL || `http://localhost:${process.env.PORT || 3001}`}/api/payments/webhook`,
       },
     });
@@ -66,6 +80,7 @@ async function createPix(req, res, next) {
     if (!order) return res.status(404).json({ message: 'Pedido não encontrado.' });
 
     const payment = new Payment(mpClient);
+    const descriptor = await statementDescriptor();
     const response = await payment.create({
       body: {
         transaction_amount: parseFloat(order.totalAmount),
@@ -75,7 +90,7 @@ async function createPix(req, res, next) {
           identification: { type: 'CPF', number: payerCPF.replace(/\D/g, '') },
         },
         external_reference: orderId,
-        statement_descriptor: 'CAMPO CHEIO',
+        statement_descriptor: descriptor,
       },
     });
 
