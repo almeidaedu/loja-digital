@@ -33,3 +33,4 @@ export { default as TrashIcon }           from '@mui/icons-material/DeleteOutlin
 export { default as WhatsAppIcon }        from '@mui/icons-material/WhatsApp';
 export { default as StorefrontIcon }      from '@mui/icons-material/Storefront';
 export { default as LogoutIcon }          from '@mui/icons-material/Logout';
+export { default as SettingsIcon }        from '@mui/icons-material/Settings';

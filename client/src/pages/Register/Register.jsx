@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { useAuthStore } from '../../store/authStore';
 import { useCartStore } from '../../store/cartStore';
+import { useSettingsStore } from '../../store/settingsStore';
 import './Register.css';
 
 export default function Register() {
   const navigate = useNavigate();
   const setUser = useAuthStore((s) => s.setUser);
   const fetchCart = useCartStore((s) => s.fetchCart);
+  const [brandPrefix, brandSuffix] = useSettingsStore((s) => s.settings.brand.nameParts);
 
   const [form, setForm] = useState({
     name: '',
@@ -58,7 +60,7 @@ export default function Register() {
     <div className="register-page">
       <div className="register-box">
         <div className="register-logo">
-          CAMPO <span>CHEIO</span>
+          {brandPrefix} <span>{brandSuffix}</span>
         </div>
         <p className="register-title">Criar conta</p>
 

@@ -5,10 +5,12 @@ import FreteBar from './FreteBar/FreteBar';
 import Header from './Header/Header';
 import Footer from './Footer/Footer';
 import { WhatsAppIcon } from '../ui/Icons';
-import { storeConfig } from '../../config/storeConfig';
+import { useSettingsStore } from '../../store/settingsStore';
 import './Layout.css';
 
 export default function Layout() {
+  const whatsapp = useSettingsStore((s) => s.settings.contact.whatsapp);
+
   // A elevação é do chrome inteiro, não do header — por isso o estado mora aqui.
   const [scrolled, setScrolled] = useState(false);
 
@@ -38,7 +40,7 @@ export default function Layout() {
       <Footer />
 
       <a
-        href={`https://wa.me/${storeConfig.contact.whatsapp}`}
+        href={`https://wa.me/${whatsapp}`}
         className="wpp-float"
         target="_blank"
         rel="noopener noreferrer"

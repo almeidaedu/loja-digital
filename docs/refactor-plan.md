@@ -408,6 +408,52 @@ do cliente · S5 consumidores · S6 painel.
   Configuração e carrinho restaurados, pedidos de teste apagados. Nenhum pagamento
   criado no MP.
 
+**S4 — cliente: base** · `services/settingsService.js`, `store/settingsStore.js`,
+`App.jsx`, `test/settings.js`, `test/setup.js` (+ `.boot-error` no `globals.css`)
+- `App` carrega configurações e sessão em paralelo; a loja só monta com
+  `status: 'ready'` (spinner de boot; falha → "Tentar de novo"). Título da aba vem
+  de `brand.name`; o `<title>` do `index.html` segue estático (é o que buscador lê).
+- `setSettings()` antes de todo teste, por `import()` dinâmico no setup (G-14).
+- O `SettingsIcon` saiu da S4 para a S6, onde é usado.
+
+**S5 — cliente: consumidores** (3 sub-agentes em paralelo, revisados por mim)
+- Lote A: Header, Footer, Layout, AdminLayout (+ teste do Header). Leituras de topo
+  de módulo entraram nos componentes. Footer: logo, WhatsApp, © e o `<svg>` do
+  WhatsApp (virou `WhatsAppIcon`) vêm das configurações.
+- Lote B: Hero, Testimonials, UrgencyBanner, ExitPopup, `useFreteProgress` (+ testes,
+  agora com `setSettings`, sem `Object.assign` no config).
+- Lote C: Checkout, PaymentFailure, Login, Register — constantes de frete, WhatsApp
+  e logo cravados saíram.
+- Revisão: o cliente somava o subtotal em float e o servidor em centavos — no
+  limite exato os dois podiam discordar do frete. `useFreteProgress` passou a contar
+  em centavos e a ser a única conta de frete do cliente (o Checkout usa o hook);
+  limite 0 ("sempre grátis") não divide mais 0 por 0. +3 testes.
+- **`client/src/config/storeConfig.js` deletado.** Nenhuma referência restante.
+- 77 testes, lint 0 erros, build ok.
+- Navegador: valores trocados pela API (limite R$ 300, promo ligada, logo "LOJA
+  TESTE") apareceram na barra de frete, no Hero, no banner, no Header e no Footer.
+
+**S6 — painel** · `ui/Switch/{jsx,css}` *(novo)*, `pages/admin/AdminSettings/{jsx,css}`
+*(novo)*, `AppRouter.jsx` (+1 item na sidebar do `AdminLayout`, +1 linha no `Icons.jsx`)
+- `/admin/configuracoes`: cinco cartões (Marca e contato · Frete · Promoção · Popup de
+  saída · Prova social), barra de ações fixa com "Descartar"/"Salvar alterações" só
+  ativos com alteração, prévia do logo, aviso de data de término já vencida,
+  `beforeunload` com alteração pendente.
+- 422 do servidor marca o campo (`aria-invalid` + mensagem) e leva o foco até ele;
+  editar o campo limpa o erro.
+- `ui/Switch`: `button role="switch"` + `aria-checked`; o `<label>` aciona.
+- +10 testes (`Switch.test.jsx`, `AdminSettings.test.jsx`): 87 no total.
+- Navegador, logado como admin: salvar limite R$ 250 + promo ligada → toast, e a loja
+  na mesma aba (sem recarregar) mostrou "Faltam R$ 61,00", Hero R$ 250 e o banner;
+  WhatsApp com máscara → campo marcado, mensagem do servidor, foco nele. Tudo
+  desfeito pela própria tela.
+
+| Pendente da feature | Onde | Fase |
+|---|---|---|
+| `brand.name` e `brand.nameParts` são independentes: dá para trocar o logo e esquecer o nome (título da aba, ©, fatura). O painel avisa na dica, mas não amarra | `AdminSettings.jsx` | decisão do usuário |
+| Navegação interna com alteração não salva não avisa (só `beforeunload`): exige data router | `App.jsx` / `AppRouter.jsx` | G |
+| Telas de pedido não mostram subtotal/frete separados | `Orders.jsx`, `AdminOrders.jsx` | 14 |
+
 ## Fase 9a — Hero honesto e FAQ com spring
 
 **A Fase 9 virou 9a + 9b.** Gate de promo de verdade precisa do `Countdown.jsx` e do
@@ -664,7 +710,7 @@ continua entregue.
 - [x] 5b — CartItem + FreteBar + limpeza *(verificado no navegador)*
 - [x] 6 — Header + hotfix da pill *(verificado no navegador)*
 - [x] 7a — Shell *(diagnostics limpos; falta verificação no navegador)* · [x] 7b — ExitPopup sobre `Modal` *(lint 0 erros, 22 testes passando; falta verificação no navegador)*
-- [x] S1 — Banco (configurações + frete no pedido) · [x] S2 — API de configurações *(verificado por curl)* · [x] S3 — Pedido com frete *(2 pedidos de teste)* · [ ] S4 · [ ] S5 · [ ] S6
+- [x] S1 — Banco (configurações + frete no pedido) · [x] S2 — API de configurações *(verificado por curl)* · [x] S3 — Pedido com frete *(2 pedidos de teste)* · [x] S4 · [x] S5 · [x] S6 — painel *(verificado no navegador)*
 - [x] H7 — Âncoras vindas de outra página + TrustBar *(verificado por mim no navegador)*
 - [x] H6 — Checagem visual: ícone, âncora sob o header, `<main>` duplo, link do Footer *(verificado por mim no navegador)*
 - [x] H5 — Cursor de desabilitado unificado *(falta verificação no navegador)*

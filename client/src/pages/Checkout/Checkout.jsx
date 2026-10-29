@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../../store/cartStore';
+import useFreteProgress from '../../hooks/useFreteProgress';
 import { orderService } from '../../services/orderService';
 import { paymentService } from '../../services/paymentService';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { LockIcon, BoltIcon } from '../../components/ui/Icons';
 import './Checkout.css';
-
-const SHIPPING_THRESHOLD = 149;
-const SHIPPING_COST = 15;
 
 const INITIAL_ADDRESS = {
   cep: '',
@@ -23,13 +21,9 @@ const INITIAL_ADDRESS = {
 export default function Checkout() {
   const navigate = useNavigate();
   const items = useCartStore((s) => s.items);
-
-  const subtotal = items.reduce(
-    (sum, i) => sum + parseFloat(i.price) * i.quantity,
-    0
-  );
-  const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  const total = subtotal + shipping;
+  // A mesma conta da FreteBar, em centavos como a do servidor — que é quem cobra.
+  const { total: subtotal, shippingCost, remaining } = useFreteProgress();
+  const total = subtotal + shippingCost;
 
   const [step, setStep] = useState('address');
   const [address, setAddress] = useState(INITIAL_ADDRESS);
@@ -317,16 +311,16 @@ export default function Checkout() {
                 <div className="order-summary-row">
                   <span>Frete</span>
                   <span>
-                    {shipping === 0 ? (
+                    {shippingCost === 0 ? (
                       <span style={{ color: 'var(--accent-green)' }}>GRÁTIS</span>
                     ) : (
-                      formatCurrency(shipping)
+                      formatCurrency(shippingCost)
                     )}
                   </span>
                 </div>
-                {shipping > 0 && (
+                {shippingCost > 0 && (
                   <p className="order-free-shipping-hint">
-                    Falta {formatCurrency(SHIPPING_THRESHOLD - subtotal)} para frete grátis
+                    Falta {formatCurrency(remaining)} para frete grátis
                   </p>
                 )}
               </div>

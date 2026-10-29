@@ -1,19 +1,13 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Hero from './Hero';
-import { storeConfig } from '../../../config/storeConfig';
 import { formatCurrency } from '../../../utils/formatCurrency';
-
-const originalSocial = { ...storeConfig.social };
+import { setSettings } from '../../../test/settings';
 
 describe('Hero', () => {
-  // Valores fixados pelo teste, não lidos do arquivo (G-12).
+  // Valores fixados pelo teste, não os padrões de fábrica (G-12).
   beforeEach(() => {
-    Object.assign(storeConfig.social, { stats: null });
-  });
-
-  afterEach(() => {
-    Object.assign(storeConfig.social, originalSocial);
+    setSettings({ social: { stats: null } });
   });
 
   // Regressão da Fase 9: "+12.000 pedidos entregues", "4.9 / 5.0" e "+500
@@ -26,7 +20,7 @@ describe('Hero', () => {
   });
 
   it('com stats declarado, mostra a nota e o total em pt-BR', () => {
-    Object.assign(storeConfig.social, { stats: { rating: 4.7, reviews: 320 } });
+    setSettings({ social: { stats: { rating: 4.7, reviews: 320 } } });
     render(<Hero />);
 
     expect(screen.getByText('4,7')).toBeInTheDocument();
@@ -35,13 +29,14 @@ describe('Hero', () => {
 
   // O Intl separa "R$" do valor com espaço inquebrável; os dois lados são
   // normalizados para não depender disso.
-  it('o limite do frete grátis vem do storeConfig', () => {
+  it('o limite do frete grátis vem das configurações da loja', () => {
+    setSettings({ shipping: { freeThreshold: 199 } });
     render(<Hero />);
     const spaces = (text) => text.replace(/\s+/g, ' ');
 
     const pill = screen.getByText(/Frete grátis acima de/);
     expect(spaces(pill.textContent)).toContain(
-      spaces(`Frete grátis acima de ${formatCurrency(storeConfig.shipping.freeThreshold)}`)
+      spaces(`Frete grátis acima de ${formatCurrency(199)}`)
     );
   });
 

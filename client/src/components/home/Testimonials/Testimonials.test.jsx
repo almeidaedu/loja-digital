@@ -1,25 +1,21 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import Testimonials from './Testimonials';
-import { storeConfig } from '../../../config/storeConfig';
+import { setSettings } from '../../../test/settings';
 
-const originalSocial = { ...storeConfig.social };
+const SOCIAL = { stats: null, seedTestimonials: true };
 
 function renderWith(social) {
-  Object.assign(storeConfig.social, social);
+  setSettings({ social: { ...SOCIAL, ...social } });
   return render(<Testimonials />);
 }
 
 describe('Testimonials', () => {
-  // O storeConfig é do lojista: cada cliente do template (e cada teste manual no
-  // navegador) muda esses valores. A suíte fixa o próprio ponto de partida em
-  // vez de depender do que estiver no arquivo.
+  // As configurações são do lojista: cada cliente do template muda esses
+  // valores. A suíte fixa o próprio ponto de partida em vez de depender dos
+  // padrões de fábrica.
   beforeEach(() => {
-    Object.assign(storeConfig.social, { stats: null, seedTestimonials: true });
-  });
-
-  afterEach(() => {
-    Object.assign(storeConfig.social, originalSocial);
+    setSettings({ social: SOCIAL });
   });
 
   it('é dono da própria seção: âncora do Header e um título só', () => {

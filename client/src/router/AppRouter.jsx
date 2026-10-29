@@ -20,6 +20,7 @@ import AdminLayout from '../pages/admin/AdminLayout';
 import AdminDashboard from '../pages/admin/AdminDashboard/AdminDashboard';
 import AdminProducts from '../pages/admin/AdminProducts/AdminProducts';
 import AdminOrders from '../pages/admin/AdminOrders/AdminOrders';
+import AdminSettings from '../pages/admin/AdminSettings/AdminSettings';
 
 export default function AppRouter() {
   useScrollRestoration();
@@ -51,6 +52,7 @@ export default function AppRouter() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/produtos" element={<AdminProducts />} />
             <Route path="/admin/pedidos" element={<AdminOrders />} />
+            <Route path="/admin/configuracoes" element={<AdminSettings />} />
           </Route>
         </Route>
       </Route>

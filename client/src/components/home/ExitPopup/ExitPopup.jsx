@@ -1,17 +1,16 @@
 import { useCallback, useState } from 'react';
 import { useExitIntent } from '../../../hooks/useExitIntent';
 import { useUiStore } from '../../../store/uiStore';
-import { storeConfig } from '../../../config/storeConfig';
+import { useSettingsStore } from '../../../store/settingsStore';
 import Modal from '../../ui/Modal/Modal';
 import { GiftIcon } from '../../ui/Icons';
 import './ExitPopup.css';
-
-const { discount } = storeConfig.leadCapture;
 
 export default function ExitPopup() {
   const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState('');
   const addToast = useUiStore((s) => s.addToast);
+  const discount = useSettingsStore((s) => s.settings.leadCapture.discount);
 
   const handleExit = useCallback(() => setVisible(true), []);
   useExitIntent(handleExit);

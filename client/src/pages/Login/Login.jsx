@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { useAuthStore } from '../../store/authStore';
 import { useCartStore } from '../../store/cartStore';
+import { useSettingsStore } from '../../store/settingsStore';
 import { LockIcon } from '../../components/ui/Icons';
 import './Login.css';
 
@@ -13,6 +14,7 @@ export default function Login() {
 
   const setUser = useAuthStore((s) => s.setUser);
   const fetchCart = useCartStore((s) => s.fetchCart);
+  const [brandPrefix, brandSuffix] = useSettingsStore((s) => s.settings.brand.nameParts);
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -50,7 +52,7 @@ export default function Login() {
         </div>
 
         <div className="login-logo">
-          CAMPO <span>CHEIO</span>
+          {brandPrefix} <span>{brandSuffix}</span>
         </div>
         <p className="login-title">Entrar na sua conta</p>
 

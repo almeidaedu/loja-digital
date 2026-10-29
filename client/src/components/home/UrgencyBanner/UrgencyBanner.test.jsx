@@ -1,33 +1,32 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import UrgencyBanner from './UrgencyBanner';
-import { storeConfig } from '../../../config/storeConfig';
+import { setSettings } from '../../../test/settings';
 
 const NOW = new Date('2026-11-01T12:00:00Z').getTime();
-const originalPromo = { ...storeConfig.promo };
+
+// Valores fixados pelo teste, não os padrões de fábrica (G-12).
+const PROMO = {
+  enabled: true,
+  tag: 'Oferta',
+  title: 'Leve 3, pague 2',
+  subtitle: 'Só esta semana',
+  endsAt: null,
+};
 
 function renderWith(promo) {
-  Object.assign(storeConfig.promo, promo);
+  setSettings({ promo: { ...PROMO, ...promo } });
   return render(<UrgencyBanner />);
 }
 
 describe('UrgencyBanner', () => {
-  // Valores fixados pelo teste, não lidos do arquivo (G-12).
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(NOW);
-    Object.assign(storeConfig.promo, {
-      enabled: true,
-      tag: 'Oferta',
-      title: 'Leve 3, pague 2',
-      subtitle: 'Só esta semana',
-      endsAt: null,
-    });
   });
 
   afterEach(() => {
     vi.useRealTimers();
-    Object.assign(storeConfig.promo, originalPromo);
   });
 
   it('desligada no config, não aparece', () => {

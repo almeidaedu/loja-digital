@@ -1,4 +1,4 @@
-import { storeConfig } from '../../../config/storeConfig';
+import { useSettingsStore } from '../../../store/settingsStore';
 import Reveal from '../../ui/Reveal/Reveal';
 import { StarFilledIcon, StarEmptyIcon } from '../../ui/Icons';
 import './Testimonials.css';
@@ -58,7 +58,7 @@ function Stars({ value, size }) {
 }
 
 export default function Testimonials() {
-  const { stats, seedTestimonials } = storeConfig.social;
+  const { stats, seedTestimonials } = useSettingsStore((s) => s.settings.social);
 
   // Ainda não existe fonte de depoimento real; sem os de exemplo não há o que mostrar.
   if (!seedTestimonials) return null;
@@ -72,7 +72,7 @@ export default function Testimonials() {
 
           {/* Antes: "98%" e "+5.000 avaliações verificadas" cravados no JSX, e
               "Mais de 5.000 pedidos" no subtítulo da Home. Agora só aparece
-              número que o lojista declarou no storeConfig. */}
+              número que o lojista declarou nas configurações. */}
           {stats && (
             <div className="testimonials-rating">
               <span className="testimonials-rating-value">{ratingFormat.format(stats.rating)}</span>

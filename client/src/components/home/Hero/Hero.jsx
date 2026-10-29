@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'motion/react';
-import { storeConfig } from '../../../config/storeConfig';
+import { useSettingsStore } from '../../../store/settingsStore';
 import { formatCurrency } from '../../../utils/formatCurrency';
 import { popIn, rise, spring, withReducedMotion } from '../../../styles/motion';
 import Button from '../../ui/Button/Button';
@@ -20,8 +20,8 @@ const countFormat = new Intl.NumberFormat('pt-BR');
 
 export default function Hero() {
   const reduced = useReducedMotion();
-  const { stats } = storeConfig.social;
-  const { freeThreshold } = storeConfig.shipping;
+  const stats = useSettingsStore((s) => s.settings.social.stats);
+  const freeThreshold = useSettingsStore((s) => s.settings.shipping.freeThreshold);
 
   return (
     <section className="hero">

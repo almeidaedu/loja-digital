@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useCartStore } from '../../../store/cartStore';
 import { useUiStore } from '../../../store/uiStore';
 import { useAuthStore } from '../../../store/authStore';
-import { storeConfig } from '../../../config/storeConfig';
+import { useSettingsStore } from '../../../store/settingsStore';
 import { popIn, spring, tween } from '../../../styles/motion';
 import Button from '../../ui/Button/Button';
 import { CartIcon } from '../../ui/Icons';
@@ -26,18 +26,11 @@ const NAV_LINKS = [
   { key: 'inicio',       label: 'Início',     scrollTop: true },
   { key: 'categorias',   label: 'Categorias', hash: 'categorias' },
   { key: 'produtos',     label: 'Produtos',   to: '/produtos' },
-  // Mesma condição com que o Testimonials decide se a seção existe. Sem ela o
-  // link levava para uma âncora que não está na página.
-  {
-    key: 'prova-social',
-    label: 'Avaliações',
-    hash: 'prova-social',
-    disabled: !storeConfig.social.seedTestimonials,
-  },
+  // Desabilitado na mesma condição com que o Testimonials decide se a seção
+  // existe. Sem ela o link levava para uma âncora que não está na página.
+  { key: 'prova-social', label: 'Avaliações', hash: 'prova-social', needsTestimonials: true },
   { key: 'faq',          label: 'FAQ',        hash: 'faq' },
 ];
-
-const [brandPrefix, brandSuffix] = storeConfig.brand.nameParts;
 
 function getActiveSection() {
   const threshold = window.innerHeight * 0.45;
@@ -95,6 +88,10 @@ export default function Header() {
   const logout = useAuthStore((s) => s.logout);
   const items = useCartStore((s) => s.items);
   const toggleCart = useUiStore((s) => s.toggleCart);
+  const brand = useSettingsStore((s) => s.settings.brand);
+  const seedTestimonials = useSettingsStore((s) => s.settings.social.seedTestimonials);
+
+  const [brandPrefix, brandSuffix] = brand.nameParts;
 
   const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
   const userInitial = user?.name?.charAt(0).toUpperCase() ?? '?';
@@ -207,7 +204,8 @@ export default function Header() {
   };
 
   const renderNavLink = (link, mobile = false) => {
-    const active = !link.disabled && activeKey === link.key;
+    const disabled = link.needsTestimonials && !seedTestimonials;
+    const active = !disabled && activeKey === link.key;
     const props = {
       className: `${mobile ? 'mobile-nav-link' : 'nav-link'}${active ? ' active' : ''}`,
       'aria-current': active ? 'page' : undefined,
@@ -240,7 +238,7 @@ export default function Header() {
         key={link.key}
         type="button"
         {...props}
-        disabled={link.disabled}
+        disabled={disabled}
         onClick={link.scrollTop ? handleScrollTop : () => handleHashLink(link.hash)}
       >
         {content}
@@ -256,7 +254,7 @@ export default function Header() {
             type="button"
             className="logo"
             onClick={handleScrollTop}
-            aria-label={`${storeConfig.brand.name} — voltar ao início`}
+            aria-label={`${brand.name} — voltar ao início`}
           >
             {brandPrefix} <span>{brandSuffix}</span>
           </button>

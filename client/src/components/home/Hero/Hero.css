@@ -85,7 +85,7 @@
   white-space: nowrap;
 }
 
-/* Só com `storeConfig.social.stats` preenchido */
+/* Só com `social.stats` preenchido nas configurações da loja */
 .hero-rating {
   display: inline-flex;
   align-items: center;

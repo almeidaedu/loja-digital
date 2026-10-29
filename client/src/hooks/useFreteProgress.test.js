@@ -2,9 +2,9 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import useFreteProgress from './useFreteProgress';
 import { useCartStore } from '../store/cartStore';
-import { storeConfig } from '../config/storeConfig';
+import { setSettings } from '../test/settings';
 
-const { freeThreshold } = storeConfig.shipping;
+const FREE_THRESHOLD = 149;
 
 function withItems(items) {
   useCartStore.setState({ items });
@@ -14,6 +14,7 @@ function withItems(items) {
 describe('useFreteProgress', () => {
   beforeEach(() => {
     useCartStore.setState({ items: [] });
+    setSettings({ shipping: { freeThreshold: FREE_THRESHOLD } });
   });
 
   it('carrinho vazio: falta o limite inteiro e nada preenchido', () => {
@@ -21,7 +22,7 @@ describe('useFreteProgress', () => {
 
     expect(r.total).toBe(0);
     expect(r.count).toBe(0);
-    expect(r.remaining).toBe(freeThreshold);
+    expect(r.remaining).toBe(FREE_THRESHOLD);
     expect(r.fillPct).toBe(0);
     expect(r.unlocked).toBe(false);
   });
@@ -44,7 +45,7 @@ describe('useFreteProgress', () => {
   });
 
   it('libera exatamente no limite, não só acima dele', () => {
-    const r = withItems([{ price: String(freeThreshold), quantity: 1 }]);
+    const r = withItems([{ price: String(FREE_THRESHOLD), quantity: 1 }]);
 
     expect(r.unlocked).toBe(true);
     expect(r.remaining).toBe(0);
@@ -54,10 +55,38 @@ describe('useFreteProgress', () => {
   // A barra tem `overflow: hidden`, mas `fillPct` também alimenta texto e
   // aria — 180% escrito na tela seria absurdo.
   it('não passa de 100% nem deixa remaining negativo acima do limite', () => {
-    const r = withItems([{ price: String(freeThreshold * 2), quantity: 1 }]);
+    const r = withItems([{ price: String(FREE_THRESHOLD * 2), quantity: 1 }]);
 
     expect(r.fillPct).toBe(100);
     expect(r.remaining).toBe(0);
     expect(r.unlocked).toBe(true);
+  });
+
+  // Em ponto flutuante, 3 × 33.03 = 99.08999… e ficaria abaixo de 99,09; o
+  // servidor conta em centavos e liberaria o frete. Os dois têm que concordar.
+  it('conta em centavos, como o servidor', () => {
+    setSettings({ shipping: { freeThreshold: 99.09, standardCost: 15 } });
+    const r = withItems([{ price: '33.03', quantity: 3 }]);
+
+    expect(r.unlocked).toBe(true);
+    expect(r.remaining).toBe(0);
+    expect(r.shippingCost).toBe(0);
+  });
+
+  it('abaixo do limite, o frete é o valor configurado', () => {
+    setSettings({ shipping: { freeThreshold: FREE_THRESHOLD, standardCost: 22.5 } });
+
+    expect(withItems([{ price: '10', quantity: 1 }]).shippingCost).toBe(22.5);
+  });
+
+  // O painel aceita limite 0: frete sempre grátis. Sem o caso especial, a barra
+  // dividiria 0 por 0.
+  it('limite 0 é frete sempre grátis, com a barra cheia', () => {
+    setSettings({ shipping: { freeThreshold: 0, standardCost: 15 } });
+    const r = withItems([]);
+
+    expect(r.unlocked).toBe(true);
+    expect(r.fillPct).toBe(100);
+    expect(r.shippingCost).toBe(0);
   });
 });

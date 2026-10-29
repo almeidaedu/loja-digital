@@ -1,0 +1,101 @@
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: 760px;
+}
+
+.settings-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.settings-title {
+  font-family: var(--font-display);
+  font-size: var(--text-title-size);
+  letter-spacing: var(--text-title-tracking);
+  line-height: var(--text-title-leading);
+}
+
+.settings-subtitle {
+  font-size: var(--text-caption-size);
+  color: var(--ink-muted);
+}
+
+.settings-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.settings-card-title {
+  font-size: var(--text-body-size);
+  font-weight: 700;
+  letter-spacing: var(--text-label-tracking);
+  text-transform: uppercase;
+  color: var(--ink-secondary);
+}
+
+.settings-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+/* Prévia com as mesmas ênfases do logo do Header */
+.settings-logo-preview {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.settings-preview-label {
+  font-size: var(--text-label-size);
+  letter-spacing: var(--text-label-tracking);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.settings-logo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: var(--text-label-tracking);
+  text-transform: uppercase;
+}
+
+.settings-logo span { color: var(--brand-accent); }
+
+/* Ações presas ao fim da tela: com cinco cartões, o salvar não pode ficar
+   escondido lá embaixo. */
+.settings-actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--material-sheet);
+  backdrop-filter: blur(var(--blur-sheet));
+  -webkit-backdrop-filter: blur(var(--blur-sheet));
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.settings-status {
+  margin-right: auto;
+  font-size: var(--text-caption-size);
+  color: var(--ink-muted);
+}
+
+@media (max-width: 600px) {
+  .settings-row { grid-template-columns: 1fr; }
+  .settings-card { padding: var(--space-5); }
+}

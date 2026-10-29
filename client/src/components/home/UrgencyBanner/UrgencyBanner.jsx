@@ -1,15 +1,15 @@
-import { storeConfig } from '../../../config/storeConfig';
+import { useSettingsStore } from '../../../store/settingsStore';
 import { useCountdown } from '../../../hooks/useCountdown';
 import Countdown from '../Countdown/Countdown';
 import Button from '../../ui/Button/Button';
 import { BoltIcon } from '../../ui/Icons';
 import './UrgencyBanner.css';
 
-// Tudo vem do `storeConfig.promo`. Antes "LEVE 3, PAGUE 2" e "Só até domingo à
-// meia-noite" eram texto fixo, com um contador que inventava o prazo por
-// visitante: urgência falsa, ligada para todo mundo, para sempre.
+// Tudo vem da `promo` das configurações da loja. Antes "LEVE 3, PAGUE 2" e "Só
+// até domingo à meia-noite" eram texto fixo, com um contador que inventava o
+// prazo por visitante: urgência falsa, ligada para todo mundo, para sempre.
 export default function UrgencyBanner() {
-  const { enabled, tag, title, subtitle, endsAt } = storeConfig.promo;
+  const { enabled, tag, title, subtitle, endsAt } = useSettingsStore((s) => s.settings.promo);
   const remaining = useCountdown(endsAt);
 
   // Desligada, sem título ou já encerrada: não há oferta para anunciar. O

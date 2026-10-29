@@ -1,15 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
+import { setSettings } from '../../../test/settings';
 import Header from './Header';
-
-// O NAV_LINKS lê o storeConfig no import, então o config desligado precisa
-// estar no lugar antes do módulo carregar.
-vi.mock('../../../config/storeConfig', async (importOriginal) => {
-  const { storeConfig } = await importOriginal();
-  const config = { ...storeConfig, social: { ...storeConfig.social, seedTestimonials: false } };
-  return { storeConfig: config, default: config };
-});
 
 function LocationProbe() {
   const { pathname, hash } = useLocation();
@@ -25,7 +18,19 @@ function renderAt(entry) {
   );
 }
 
+describe('Header com os depoimentos ligados', () => {
+  it('"Avaliações" fica habilitado', () => {
+    renderAt('/');
+
+    expect(screen.getByRole('button', { name: 'Avaliações' })).toBeEnabled();
+  });
+});
+
 describe('Header com os depoimentos desligados', () => {
+  beforeEach(() => {
+    setSettings({ social: { seedTestimonials: false } });
+  });
+
   it('"Avaliações" fica no menu, mas desabilitado', () => {
     renderAt('/');
 

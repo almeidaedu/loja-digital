@@ -225,3 +225,17 @@ usou a mesma âncora e não a achou.
 **Regra:** inserção por replace é sempre `replace(anchor, novo + anchor)` (ou
 `anchor + novo` para "depois de"). Depois de editar documento por script, conferir
 os títulos com `grep -n "^## "` — é um comando, e mostra na hora o que sumiu.
+
+## G-14 — Import estático no `setup.js` anula o `vi.mock` dos testes
+
+**O que aconteceu (S4):** para todo teste começar com configurações válidas, o
+`test/setup.js` passou a importar o fixture de settings no topo. O fixture puxa
+store → service → `api.js` → `authStore` → `authService`. O setup roda **antes**
+de cada arquivo de teste, então essa cadeia entrou no cache de módulos antes dos
+`vi.mock` do arquivo: o `authStore.test` e o `settingsStore.test` passaram a usar
+os services reais (404 de rede no jsdom), sem nenhum aviso de mock ignorado.
+
+**Regra:** o `setup.js` não importa no topo nada que alcance services ou stores.
+O que precisa deles vai em `import()` dinâmico dentro do hook (`beforeEach`), que
+roda depois de o arquivo de teste registrar os mocks. Teste que de repente faz
+request de verdade é o sintoma.

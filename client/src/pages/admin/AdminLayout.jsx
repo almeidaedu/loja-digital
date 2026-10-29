@@ -1,12 +1,13 @@
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { storeConfig } from '../../config/storeConfig';
+import { useSettingsStore } from '../../store/settingsStore';
 import {
   DashboardIcon,
   ShirtIcon,
   OrdersIcon,
   StorefrontIcon,
   LogoutIcon,
+  SettingsIcon,
 } from '../../components/ui/Icons';
 import './AdminLayout.css';
 
@@ -14,16 +15,17 @@ const NAV_ITEMS = [
   { to: '/admin', label: 'Dashboard', Icon: DashboardIcon, end: true },
   { to: '/admin/produtos', label: 'Produtos', Icon: ShirtIcon },
   { to: '/admin/pedidos', label: 'Pedidos', Icon: OrdersIcon },
+  { to: '/admin/configuracoes', label: 'Configurações', Icon: SettingsIcon },
 ];
-
-const [brandPrefix, brandSuffix] = storeConfig.brand.nameParts;
-// A sidebar colapsada mostra só as iniciais. Derivadas do storeConfig, não mais
-// um `content: 'CC'` cravado no CSS.
-const brandInitials = `${brandPrefix[0]}${brandSuffix[0]}`;
 
 export default function AdminLayout() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+  const [brandPrefix, brandSuffix] = useSettingsStore((s) => s.settings.brand.nameParts);
+
+  // A sidebar colapsada mostra só as iniciais. Derivadas do nome da marca nas
+  // configurações da loja, não mais um `content: 'CC'` cravado no CSS.
+  const brandInitials = `${brandPrefix[0]}${brandSuffix[0]}`;
 
   return (
     <div className="admin-layout">

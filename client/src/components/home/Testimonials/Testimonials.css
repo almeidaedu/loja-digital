@@ -4,7 +4,7 @@
   border-block: 1px solid var(--border-subtle);
 }
 
-/* Só aparece com `storeConfig.social.stats` preenchido */
+/* Só aparece com `social.stats` preenchido nas configurações da loja */
 .testimonials-rating {
   display: flex;
   flex-direction: column;

@@ -276,6 +276,16 @@ section[id] { scroll-margin-top: var(--header-total); }
   padding: var(--space-16) var(--space-5);
 }
 
+/* Configurações da loja não carregaram: sem elas não há loja para montar */
+.boot-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
+  color: var(--ink-secondary);
+}
+
 /* ==============================================
    BUTTONS (legado — migrar para ui/Button conforme as fases avançam)
    ============================================== */
