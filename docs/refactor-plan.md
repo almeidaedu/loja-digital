@@ -492,7 +492,7 @@ do cliente · S5 consumidores · S6 painel.
 | PDP mostra **"(47 avaliações)" cravado** no JSX — o mesmo produto tem 248 no card | `ProductDetail.jsx:118` | 11 |
 | `ui/Rating` ainda não adotado nos depoimentos e na PDP | `Testimonials.jsx`, `ProductDetail.jsx` | 11 |
 | "12x sem juros" cravado no card, na PDP e no TrustBar — condição comercial, candidata às configurações | `ProductCard.jsx`, `ProductDetail.jsx`, `TrustBar.jsx` | G |
-| Favorito (coração) só vive no estado do card: some ao recarregar | `ProductCard.jsx` | decisão do usuário |
+| Favorito (coração) só vive no estado do card: some ao recarregar. **Decisão do usuário: favorito de verdade, salvo na conta** | `ProductCard.jsx` | G9 |
 
 ## Fase 9a — Hero honesto e FAQ com spring
 
@@ -588,6 +588,7 @@ tudo -> F16 varredura -> F17 delecoes -> [Estagio G]
 | G5 | ~~ESLint + Prettier + Vitest~~ ✅ no `client/` (T1) · falta **CI** e o `server/` | O repo não tinha nenhum dos três |
 | G6 | `sdk/` em TS strict + `openapi.yaml` + docs | Capstone do roadmap |
 | G7 | Multi-tenant: theming via `storeConfig` + seed por cliente | Tese do template revendável |
+| G9 | **Favoritos salvos na conta** (decisão do usuário): tabela de favoritos por usuário, API (listar/marcar/desmarcar), coração do card e da PDP ligado a ela, página "Meus favoritos". Sem login: o coração leva ao login, como o carrinho | Hoje o coração só vive no estado do card |
 | G8 | **Logo personalizado** (pedido do usuário): upload no painel de Configurações, convertido em alta qualidade, substituindo o logo de texto em Header, Footer, admin, Login/Cadastro | Hoje o logo é texto em duas partes (`brand.nameParts`) |
 
 ## Verificação
