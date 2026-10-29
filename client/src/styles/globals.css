@@ -173,6 +173,17 @@ input:is([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type
   cursor: pointer;
 }
 
+/* Desabilitado não reage a clique, então leva a seta como o resto do que não é
+   clicável. Uma regra só: as cópias de `not-allowed` espalhadas por botão, campo
+   e paginação saíram. O `!important` é de propósito: é um estado que precisa
+   vencer o `cursor: pointer` base de qualquer componente (`.btn`, `.chip`,
+   `select.form-input`…), que tem o mesmo peso ou mais e carrega depois. Botão
+   em loading fica de fora: o `progress` dele é estado, não bloqueio. */
+:disabled:not([aria-busy='true']),
+[aria-disabled='true']:not([aria-busy='true']) {
+  cursor: default !important;
+}
+
 /* Foco visível único para todo o app — teclado vê, mouse não */
 :focus-visible {
   outline: 2px solid var(--brand-accent);
@@ -218,6 +229,10 @@ input:is([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type
 .section { padding: var(--space-20) 0; }
 .section--tight { padding: var(--space-12) 0; }
 .section--flush { padding-bottom: 0; }
+
+/* Seção com âncora (`#categorias`, `#faq`…) para abaixo do chrome fixo, não atrás
+   dele. Vale para `scrollIntoView` e para hash na URL. */
+section[id] { scroll-margin-top: var(--header-total); }
 
 .section-header {
   display: flex;
@@ -293,7 +308,6 @@ input:is([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type
 
 .btn-primary:disabled {
   opacity: 0.6;
-  cursor: not-allowed;
   transform: none;
 }
 
@@ -478,7 +492,6 @@ input:is([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type
 
 .form-input:disabled {
   opacity: 0.55;
-  cursor: not-allowed;
 }
 
 select.form-input { cursor: pointer; }

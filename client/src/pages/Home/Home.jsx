@@ -10,9 +10,10 @@ import FAQ from '../../components/home/FAQ/FAQ';
 // Cada bloco é dono da própria seção: padding, título e âncora. A Home só
 // compõe. Antes ela embrulhava Benefits, FAQ e os depoimentos numa segunda
 // <section> com um segundo título — dois h2 por bloco e o padding em dobro.
+// Fragmento e não <main>: o `<main>` é do Layout, e eram dois aninhados.
 export default function Home() {
   return (
-    <main>
+    <>
       <Hero />
       <TrustBar />
       <Categories />
@@ -20,11 +21,7 @@ export default function Home() {
       <Testimonials />
       <UrgencyBanner />
       <Benefits />
-      {/* Só a âncora que o Header e o Footer usam. A Fase 9 passa o id para
-          dentro do FAQ e este div sai. */}
-      <div id="faq">
-        <FAQ />
-      </div>
-    </main>
+      <FAQ />
+    </>
   );
 }

@@ -1,315 +1,139 @@
+/* O `main` já desconta o header (`Layout.css`); o hero só ocupa o resto da tela.
+   Antes somava mais 100px de padding e `100vh` inteiros, empurrando a dobra. */
 .hero {
   position: relative;
-  min-height: 100vh;
-  background-color: var(--bg-dark);
   display: flex;
   align-items: center;
+  min-height: calc(100svh - var(--header-total));
+  padding: var(--space-16) 0;
   overflow: hidden;
-  padding: 100px 0 60px;
 }
 
-.hero-bg {
+/* Halo de fundo: dois gradientes num pseudo-elemento, sem div decorativa */
+.hero::before {
+  content: '';
   position: absolute;
   inset: 0;
+  background:
+    radial-gradient(600px circle at 0% 0%, var(--brand-accent-dim), transparent 65%),
+    radial-gradient(500px circle at 100% 100%, var(--brand-accent-dim), transparent 65%);
+  opacity: 0.7;
   pointer-events: none;
-  z-index: 0;
-}
-
-.hero-bg::before {
-  content: '';
-  position: absolute;
-  top: -20%;
-  left: -10%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(0, 255, 135, 0.08) 0%, transparent 65%);
-  border-radius: 50%;
-}
-
-.hero-bg::after {
-  content: '';
-  position: absolute;
-  bottom: -10%;
-  right: -5%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(0, 255, 135, 0.05) 0%, transparent 65%);
-  border-radius: 50%;
 }
 
 .hero-grid {
   position: relative;
-  z-index: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
   align-items: center;
+  gap: var(--space-16);
 }
 
-/* Left side – slides in from left */
 .hero-content {
-  animation: slide-in-left 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-6);
 }
 
 .hero-eyebrow {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.95rem;
+  font-size: var(--text-label-size);
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--text-label-tracking);
   text-transform: uppercase;
-  color: var(--accent-green);
-  margin: 0 0 16px;
+  color: var(--brand-accent);
 }
 
 .hero-headline {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(3rem, 6vw, 5.5rem);
-  line-height: 1;
-  color: var(--text-primary);
-  margin: 0 0 20px;
-  letter-spacing: 0.02em;
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 6vw, 4.75rem);
+  font-weight: 800;
+  letter-spacing: var(--text-display-tracking);
+  line-height: var(--text-display-leading);
 }
 
-.hero-headline .green {
-  color: var(--accent-green);
+.hero-headline-accent {
   display: block;
+  color: var(--brand-accent);
 }
 
 .hero-subheadline {
-  font-family: 'Barlow', sans-serif;
-  font-size: 1.05rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin: 0 0 24px;
   max-width: 440px;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-leading);
+  color: var(--ink-secondary);
 }
 
 .hero-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 32px;
+  gap: var(--space-2);
 }
 
 .hero-pill {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  background: var(--surface-raised);
+  font-size: var(--text-label-size);
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--text-label-tracking);
   text-transform: uppercase;
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  padding: 6px 14px;
   white-space: nowrap;
 }
 
-.hero-cta-group {
-  margin-bottom: 36px;
-}
-
-/* Assume btn-primary defined in globals.css */
-
-.hero-social-proof {
-  display: flex;
+/* Só com `storeConfig.social.stats` preenchido */
+.hero-rating {
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 20px;
+  gap: var(--space-1);
+  font-size: var(--text-caption-size);
+  color: var(--ink-secondary);
 }
 
-.hero-avatars {
-  display: flex;
-}
+.hero-rating-star { color: var(--brand-warning); }
+.hero-rating strong { color: var(--ink-primary); }
 
-.hero-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid var(--bg-dark);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700;
-  font-size: 0.75rem;
-  color: #fff;
-  margin-left: -8px;
-}
-
-.hero-avatars .hero-avatar:first-child {
-  margin-left: 0;
-}
-
-.hero-avatar.av-a { background: #e63946; }
-.hero-avatar.av-b { background: #2196f3; }
-.hero-avatar.av-c { background: #ff9800; }
-.hero-avatar.av-d { background: #9c27b0; }
-
-.hero-social-text {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.hero-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.hero-badge {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  padding: 6px 14px;
-  border-radius: 4px;
-}
-
-.hero-badge--green {
-  background: rgba(0, 255, 135, 0.1);
-  color: var(--accent-green);
-  border: 1px solid rgba(0, 255, 135, 0.3);
-}
-
-.hero-badge--red {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-/* Right side – slides in from right */
-.hero-image-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: slide-in-right 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.hero-shirt-visual {
+/* Ornamento: halo + ícone. `font-size` dimensiona o ícone (o `sx` herda) */
+.hero-visual {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 420px;
+  display: grid;
+  place-items: center;
+  font-size: clamp(10rem, 22vw, 16rem);
+  color: var(--brand-accent);
 }
 
-.hero-glow-circle {
+.hero-glow {
   position: absolute;
-  width: 340px;
-  height: 340px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 255, 135, 0.12) 0%, transparent 70%);
-  border: 1px solid rgba(0, 255, 135, 0.15);
+  width: 1.3em;
+  height: 1.3em;
+  border: 1px solid var(--brand-accent-dim);
+  border-radius: var(--radius-full);
+  background: radial-gradient(circle, var(--brand-accent-dim), transparent 70%);
 }
 
-.shirt-svg-wrap {
+.hero-emblem {
   position: relative;
-  z-index: 1;
-  width: 260px;
-  filter: drop-shadow(0 20px 50px rgba(0, 255, 135, 0.2));
+  filter: drop-shadow(0 20px 50px var(--brand-accent-glow));
 }
 
-.shirt-svg {
-  width: 100%;
-  height: auto;
-}
-
-.shirt-tag {
-  position: absolute;
-  z-index: 2;
-  background: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  padding: 8px 14px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-primary);
-  white-space: nowrap;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.shirt-tag-top {
-  top: 10%;
-  right: -10px;
-  color: var(--accent-green);
-  border-color: rgba(0, 255, 135, 0.3);
-}
-
-.shirt-tag-bottom {
-  bottom: 10%;
-  left: -10px;
-  font-size: 0.8rem;
-}
-
-/* Animations */
-@keyframes slide-in-left {
-  from {
-    opacity: 0;
-    transform: translateX(-60px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(60px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Mobile */
 @media (max-width: 768px) {
   .hero {
-    padding: 80px 0 48px;
+    min-height: auto;
+    padding: var(--space-10) 0 var(--space-12);
   }
 
   .hero-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: var(--space-8);
   }
 
-  /* Image on top on mobile */
-  .hero-image-wrap {
+  /* Ornamento em cima, menor */
+  .hero-visual {
     order: -1;
-  }
-
-  .hero-shirt-visual {
-    max-width: 280px;
-    margin: 0 auto;
-  }
-
-  .hero-glow-circle {
-    width: 220px;
-    height: 220px;
-  }
-
-  .shirt-svg-wrap {
-    width: 180px;
-  }
-
-  .hero-headline {
-    font-size: clamp(2.4rem, 10vw, 3.5rem);
-  }
-
-  .hero-subheadline {
-    font-size: 0.95rem;
-  }
-
-  .hero-pills {
-    gap: 8px;
+    font-size: 8rem;
   }
 }

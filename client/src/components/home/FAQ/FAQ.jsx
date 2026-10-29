@@ -1,4 +1,8 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { spring, tween } from '../../../styles/motion';
+import Reveal from '../../ui/Reveal/Reveal';
+import { PlusIcon } from '../../ui/Icons';
 import './FAQ.css';
 
 const ITEMS = [
@@ -26,34 +30,72 @@ const ITEMS = [
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
+  const reduced = useReducedMotion();
+  const baseId = useId();
 
   const toggle = (i) => setOpenIndex((prev) => (prev === i ? null : i));
 
   return (
-    <section className="faq-section">
+    <section id="faq" className="section faq-section">
       <div className="container">
         <div className="section-header">
           <h2 className="section-title">Perguntas Frequentes</h2>
           <p className="section-subtitle">Tudo que você precisa saber antes de comprar</p>
         </div>
-        <div className="faq-list">
-          {ITEMS.map((item, i) => (
-            <div key={i} className={`faq-item${openIndex === i ? ' open' : ''}`}>
-              <button
-                className="faq-question"
-                onClick={() => toggle(i)}
-                aria-expanded={openIndex === i}
-                type="button"
-              >
-                <span>{item.q}</span>
-                <span className="faq-icon" aria-hidden="true">+</span>
-              </button>
-              <div className="faq-answer" aria-hidden={openIndex !== i}>
-                <p>{item.a}</p>
+
+        <Reveal className="faq-list">
+          {ITEMS.map((item, i) => {
+            const open = openIndex === i;
+            const questionId = `${baseId}-q${i}`;
+            const answerId = `${baseId}-a${i}`;
+
+            return (
+              <div key={item.q} className={`faq-item${open ? ' faq-item--open' : ''}`}>
+                <h3>
+                  <button
+                    id={questionId}
+                    type="button"
+                    className="faq-question"
+                    aria-expanded={open}
+                    aria-controls={answerId}
+                    onClick={() => toggle(i)}
+                  >
+                    {item.q}
+                    <motion.span
+                      className="faq-icon"
+                      aria-hidden="true"
+                      animate={{ rotate: open ? 45 : 0 }}
+                      transition={reduced ? tween.fast : spring.snappy}
+                    >
+                      <PlusIcon sx={{ fontSize: '18px' }} />
+                    </motion.span>
+                  </button>
+                </h3>
+
+                {/* Exceção à regra de só animar transform/opacity, como a barra do
+                    FreteBar: acordeão é altura por natureza. Era `max-height: 300px`
+                    em CSS, que cortava resposta longa e levava o mesmo tempo para
+                    abrir uma linha ou dez. O motion mede o `auto` de verdade. */}
+                <AnimatePresence initial={false}>
+                  {open && (
+                    <motion.div
+                      id={answerId}
+                      role="region"
+                      aria-labelledby={questionId}
+                      className="faq-answer"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={reduced ? tween.fast : spring.snappy}
+                    >
+                      <p className="faq-answer-text">{item.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
-          ))}
-        </div>
+            );
+          })}
+        </Reveal>
       </div>
     </section>
   );

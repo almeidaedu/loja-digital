@@ -16,6 +16,7 @@ export { default as LockIcon }            from '@mui/icons-material/Lock';
 export { default as SyncIcon }            from '@mui/icons-material/Sync';
 export { default as CreditCardIcon }      from '@mui/icons-material/CreditCard';
 export { default as StadiumIcon }         from '@mui/icons-material/Stadium';
+export { default as SoccerBallIcon }      from '@mui/icons-material/SportsSoccer';
 export { default as GiftIcon }            from '@mui/icons-material/CardGiftcard';
 export { default as PackageIcon }         from '@mui/icons-material/Inventory2';
 export { default as CheckCircleIcon }     from '@mui/icons-material/CheckCircle';

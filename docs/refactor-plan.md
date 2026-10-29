@@ -54,6 +54,7 @@ globals não tem. Deletar o bloco duplicado quando a fase dona tocar o arquivo.
 | `.badge`, `.badge--yellow` | `AdminProducts.css:148` | 15 |
 | `.badge`, `.badge--{green,yellow,red}` | `AdminDashboard.css:114` | 14 |
 | `.form-label` | `Login.css:68`, `Register.css:50` | 13 |
+| `.qty-btn` (achado no H5) | `CartItem.css`, `ProductDetail.css` | 11 |
 | ~~`.section-title`, `.section-subtitle`~~ | ~~`Categories.css:11,19`~~ | ✅ 8a |
 | `.skeleton` | ~~`Categories.css:85`~~ ✅ 8a, `ProductGrid.css:36` | 10 |
 
@@ -83,13 +84,13 @@ Mesma regra: ícone é MUI. Estes são `<svg>` cravados no JSX.
 | ~~`Header.jsx:218`~~ | ~~carrinho~~ | ✅ 6 |
 | ~~`Layout.jsx:26`~~ | ~~WhatsApp~~ | ✅ 6 |
 | `Footer.jsx:55` | WhatsApp (mesmo path que estava no Layout) | 16 |
-| `Hero.jsx:62` | ornamento do hero | 9 |
+| ~~`Hero.jsx:62`~~ | ~~ornamento do hero~~ | ✅ 9a |
 
 ## Valores cravados fora do storeConfig
 
 | Valor | Onde | Fase |
 |---|---|---|
-| `149` | `Hero.jsx:30` ("Frete grátis +R$149" em texto) | 9 |
+| ~~`149`~~ | ~~`Hero.jsx:30` ("Frete grátis +R$149" em texto)~~ | ✅ 9a |
 | `149`, `15` | `Checkout.jsx:10-11` (`SHIPPING_THRESHOLD`, `SHIPPING_COST` locais; o `useFreteProgress` já lê do storeConfig) | 11 |
 | ~~`5511999999999`~~ | ~~`Layout.jsx:20`~~ | ✅ 6 |
 | `5511999999999` | `Footer.jsx:50` | 16 |
@@ -252,8 +253,8 @@ para a Fase 17, junto do `useScrollAnimation.js`, que é o par dela.
 
 | Achado | Onde | Fase |
 |---|---|---|
-| Hero mostra "4.9 / 5.0 avaliação" cravado. Mesmo caso do 8b: deve ler `social.stats` ou sumir | `Hero.jsx:50` | 9 |
-| Estrelas desenhadas à mão em três lugares, dois deles com `#FFD700` e `rgba` cravados. Candidato a `ui/Rating` quando o `ProductCard` for tocado | `ProductCard.jsx:27`, `ProductDetail.jsx:116`, `Testimonials.jsx` | 10 |
+| ~~Hero mostra "4.9 / 5.0 avaliação" cravado. Mesmo caso do 8b: deve ler `social.stats` ou sumir~~ | ~~`Hero.jsx:50`~~ | ✅ 9a |
+| Estrelas desenhadas à mão em três lugares, dois deles com `#FFD700` e `rgba` cravados. Candidato a `ui/Rating` quando o `ProductCard` for tocado. O mesmo `Intl.NumberFormat` de nota está repetido no `Hero` e no `Testimonials`: vai junto | `ProductCard.jsx:27`, `ProductDetail.jsx:116`, `Testimonials.jsx`, `Hero.jsx` | 10 |
 | ~~Com `seedTestimonials: false` a seção some, mas o link "Avaliações" do Header continua apontando para `#prova-social`~~ | ~~`Header.jsx:29`~~ | ✅ H4 |
 | `Product` tem `reviewCount` no schema. Uma média real por loja poderia vir da API em vez de ser declarada à mão no `storeConfig` | `schema.prisma:48` | G |
 
@@ -276,9 +277,88 @@ Dois relatos do teste no navegador da 8b.
   `storeConfig` em disco estava com os valores do teste manual. Agora cada teste
   fixa o próprio ponto de partida. G-12.
 
-| Pendente | Onde |
-|---|---|
-| Desabilitado usa `cursor: not-allowed` em 8 regras (`.btn`, `.btn-primary`, `.form-input`, `CartItem`, `ProductDetail`, `ProductListing`, `AdminProducts`); o `ProductCard` e o novo link do Header usam a seta. A regra "não clicável = seta" pede unificar. **Decisão do usuário** | `Button.css:94`, `globals.css:283,468`, … |
+## Hotfix H5 — cursor de desabilitado unificado (fora da numeração de fases)
+
+Decisão do usuário: "não clicável = seta" vale também para desabilitado.
+
+- Uma regra no `globals.css`: `:disabled` e `[aria-disabled='true']` levam seta. As
+  9 cópias locais (`not-allowed` em `.btn`, `.btn-primary`, `.form-input`,
+  `CartItem` ×2, `ProductDetail`, `ProductListing`, `AdminProducts`; `default` em
+  `ProductCard` e no `Header`) saíram.
+- **`!important` de propósito.** Sem ele a regra perdia para `.btn`, `.chip`,
+  `.produto-btn`, `select.form-input`…: mesmo peso ou mais, e carregados depois.
+  "Desabilitado" é estado e precisa vencer o estilo base de qualquer componente.
+- Botão em loading fica de fora (`:not([aria-busy='true'])`): mantém o `progress`.
+- **Exceção ao limite de 5 arquivos:** 8 arquivos, mas 7 deles com só uma linha
+  apagada, conferidos por `grep` (não sobrou nenhum `not-allowed` no projeto).
+
+## Hotfix H6 — checagem visual no navegador (fora da numeração de fases)
+
+Primeira checagem feita por mim no navegador (Playwright na aba do usuário), antes
+da dele. Quatro defeitos das fases 8 e 9a, corrigidos:
+
+- **Cabide no Hero:** o `ShirtIcon` do projeto é o `Checkroom` do MUI, um cabide. O
+  MUI não tem camisa; o Hero passou a usar `SoccerBallIcon` (`SportsSoccer`, +1
+  linha no `Icons.jsx`).
+- **Título escondido sob o header** ao navegar por âncora: regressão da 8a, que o
+  padding dobrado da Home mascarava. `section[id] { scroll-margin-top }` no
+  `globals.css`.
+- **`<main>` dentro de `<main>`:** o Layout e a Home declaravam um cada. A Home
+  agora devolve fragmento.
+- **"Avaliações" no Footer** apontava para `/#avaliacoes`, âncora que nunca existiu,
+  e ignorava o `seedTestimonials` (a mesma falha do G-11, que esqueci no Footer).
+  Agora `/#prova-social`, desligado junto com a seção.
+
+| Achado da checagem | Onde | Fase |
+|---|---|---|
+| Link de âncora do Footer vindo de outra página (`/login` → FAQ) para no lugar errado: a rolagem acontece antes de Categorias e Produtos carregarem, e o conteúdo assíncrono empurra a seção milhares de px para baixo | `Footer.jsx`, `useScrollRestoration.js`, `Header.jsx:177` | a combinar |
+| O cabide também é o placeholder de imagem do `ProductCard` | `ProductCard.jsx` | 10 |
+| TrustBar ainda diz "Entrega em 24h", agora em conflito com o Hero ("Envio no mesmo dia") | `TrustBar.jsx` | aguarda decisão de copy |
+| `Benefits.css` e `UrgencyBanner.css` cravam `'Barlow Condensed'`/`'Bebas Neue'`, fontes que não são carregadas: os títulos caem num sans-serif genérico, diferente do resto da página. O `Benefits` não está em nenhuma fase | `Benefits.css`, `UrgencyBanner.css` | 9b / 16 |
+| Footer: 7 links para rotas que não existem (`/politica-trocas`, `/sobre`, …) caem no 404 em branco; "Categorias" aponta para `/produtos`; marca e WhatsApp cravados; `<svg>` do WhatsApp | `Footer.jsx` | 12 / 16 |
+| Scroll-spy: entre Categorias e FAQ (produtos, promo, benefícios) a pill fica presa em "Categorias" | `Header.jsx` | 16 |
+
+
+**A Fase 9 virou 9a + 9b.** Gate de promo de verdade precisa do `Countdown.jsx` e do
+`useCountdown.js`: hoje o contador inventa um prazo "até domingo" por visitante
+(guardado no `localStorage`, renova toda semana) e ignora o `promo.endsAt`. Com o
+Hero e o FAQ seriam 8 arquivos.
+
+**Hero**
+- **Fora, por não virem de dado:** "+12.000 pedidos entregues" com quatro avatares
+  de letra, "4.9 / 5.0 avaliação", "+500 vendidos essa semana" e a etiqueta "Mais
+  vendida". A nota volta, formatada em pt-BR, se o lojista declarar `social.stats`.
+- **`<svg>` desenhado à mão com "CBF" no peito** (marca de terceiro, e SVG é vetado
+  no projeto) virou o `ShirtIcon` do MUI num halo.
+- **Copy alterada, conferir:** "Temporada 2024/25" (vencido) → "Nova temporada";
+  "Entrega em 24h" → "Envio no mesmo dia", que é o que o FAQ garante para todo
+  pedido (24h ele só diz que "costuma" valer em capitais). O resto do texto é o
+  original.
+- Frete grátis lê `storeConfig.shipping.freeThreshold` via `formatCurrency`.
+- CTA virou `ui/Button` com `href`, saindo do `.btn-primary` legado.
+- Entrada por spring do motion (`rise` + `popIn`), no lugar de dois `@keyframes`.
+- **Padding dobrado:** o `main` já desconta o header (`Layout.css`); o Hero somava
+  mais 100px e `min-height: 100vh` inteiro, empurrando a dobra. Agora é
+  `calc(100svh - var(--header-total))`.
+- `.green` (classe sem prefixo no JSX) → `.hero-headline-accent`. CSS de 315 para
+  ~140 linhas, só tokens. Passo 0 (limpeza antes de refatorar arquivo >300 LOC)
+  conferido: nenhuma regra era morta, então não houve commit de limpeza separado.
+
+**FAQ**
+- Acordeão por spring com altura `auto` medida pelo motion. Era
+  `max-height: 300px` em CSS, que cortava resposta longa e levava o mesmo tempo
+  para uma linha ou dez. Exceção documentada à regra de só animar
+  transform/opacity, como a barra do FreteBar.
+- O `+` em texto virou `PlusIcon` girando 45° por spring.
+- Padrão de acordeão acessível: pergunta em `h3 > button` com `aria-controls`, e
+  resposta como `role="region"` nomeada pela pergunta. Resposta fechada sai do DOM.
+- `id="faq"` entrou no FAQ e o `<div>` embrulho saiu da Home. **As quatro âncoras da
+  Home agora pertencem aos próprios blocos.**
+- `.open` (sem prefixo) → `.faq-item--open`.
+
+`Hero.test.jsx` e `FAQ.test.jsx` *(novos)*, 5 + 5 testes. Contra os componentes
+antigos, 7 dos 10 falham; os 3 que passam são comportamento preservado (FAQ começa
+fechado, segundo clique fecha, CTA é link).
 
 ## Fases
 
@@ -296,7 +376,8 @@ Dois relatos do teste no navegador da 8b.
 | 7b | ExitPopup sobre `Modal` | `ExitPopup.{jsx,css}` |
 | 8a | Home: de-dup, reveals (B9) | `Home.{jsx,css}`, `Categories.{jsx,css}`, `Benefits.jsx` |
 | 8b | Prova social honesta | `Testimonials.{jsx,css}`, `Home.jsx`, `Home.css` (del), `config/storeConfig.js` |
-| 9 | Hero, FAQ spring, promo gated | `Hero.{jsx,css}`, `FAQ.{jsx,css}`, `UrgencyBanner.jsx` (+1 linha em `Home.jsx`: `id="faq"` entra no FAQ e o `<div>` embrulho sai) |
+| 9a | Hero honesto, FAQ spring | `Hero.{jsx,css}`, `FAQ.{jsx,css}`, `Home.jsx` |
+| 9b | Promo condicionada ao config | `UrgencyBanner.{jsx,css}`, `Countdown.jsx`, `hooks/useCountdown.js`, `config/storeConfig.js` |
 | 10 | Catálogo: card link, paginação real (B1,B6,B7) | `ProductCard.{jsx,css}`, `ProductListing.{jsx,css}`, `ProductGrid.jsx` |
 | 11 | PDP + Checkout | `ProductDetail.{jsx,css}`, `Checkout.{jsx,css}` |
 | 12 | `ResultPage` único (B2) | `ui/ResultPage/{jsx,css}`, `Payment{Success,Failure,Pending}.jsx` |
@@ -397,7 +478,8 @@ clientes do template. Decisão para o Estágio G, junto do item de CI.
 A partir daqui cada fase que mexe em comportamento traz os seus: a 7b somou 6
 (`ExitPopup.test.jsx`), o H3 mais 6 (`useExitIntent.test.js`), a 8a mais 5
 (`Categories.test.jsx`), a 8b mais 5 (`Testimonials.test.jsx`) e o H4 mais 3
-(`Header.test.jsx`), fechando em **41 testes, 9 arquivos**.
+(`Header.test.jsx`) e a 9a mais 10 (`Hero.test.jsx`, `FAQ.test.jsx`), fechando em
+**51 testes, 11 arquivos**.
 
 | Arquivo | Cobre |
 |---|---|
@@ -406,6 +488,8 @@ A partir daqui cada fase que mexe em comportamento traz os seus: a 7b somou 6
 | `hooks/useScrollRestoration.test.jsx` | As três regras: não rola ao montar, rola no PUSH com pathname novo, não rola com hash, não rola em POP |
 | `hooks/useFreteProgress.test.js` | `price` como string (Decimal do Prisma), limite exato libera, `fillPct` não passa de 100 |
 | `components/home/Categories/Categories.test.jsx` | Skeleton sem links, link com slug codificado, contagem flexionada, filtro de vazias e corte em seis, falha da API some em vez de girar |
+| `components/home/Hero/Hero.test.jsx` | Sem `stats` nenhum número de prova social; com `stats`, nota em pt-BR; frete do config; CTA é link; nenhum `<svg>` à mão nem "CBF" |
+| `components/home/FAQ/FAQ.test.jsx` | Âncora `#faq`, começa fechado, resposta como região nomeada pela pergunta, uma aberta por vez, segundo clique fecha |
 | `components/layout/Header/Header.test.jsx` | Com `seedTestimonials: false`: "Avaliações" desabilitado, o clique não navega, sem pill mesmo com o hash na URL |
 | `components/home/Testimonials/Testimonials.test.jsx` | Sem `stats` não aparece número nem selo de verificado; com `stats`, nota e total em pt-BR; `seedTestimonials: false` some; uma `<section id="prova-social">` com um `h2` só |
 | `hooks/useExitIntent.test.js` | Topo dispara, laterais não; uma vez por sessão; timer de 30s e seu cancelamento; cleanup remove **todos** os listeners |
@@ -487,12 +571,14 @@ continua entregue.
 - [x] 5b — CartItem + FreteBar + limpeza *(verificado no navegador)*
 - [x] 6 — Header + hotfix da pill *(verificado no navegador)*
 - [x] 7a — Shell *(diagnostics limpos; falta verificação no navegador)* · [x] 7b — ExitPopup sobre `Modal` *(lint 0 erros, 22 testes passando; falta verificação no navegador)*
+- [x] H6 — Checagem visual: ícone, âncora sob o header, `<main>` duplo, link do Footer *(verificado por mim no navegador)*
+- [x] H5 — Cursor de desabilitado unificado *(falta verificação no navegador)*
 - [x] H4 — Cursor global + "Avaliações" desabilitado *(41 testes; falta verificação no navegador)*
 - [x] H3 — Gate do `leadCapture` + vazamento do `useExitIntent` *(28 testes passando)*
 - [x] H2 — Hotfix saída do painel admin + B3 *(diagnostics limpos; falta verificação no navegador)*
-- [x] T1 — Ferramental do frontend *(lint 0 erros / 25 warnings, exit 0)* · [x] T2 — 41 testes de regressão passando
+- [x] T1 — Ferramental do frontend *(lint 0 erros / 25 warnings, exit 0)* · [x] T2 — 51 testes de regressão passando
 - [x] 8a — Home: reveals + de-dup (B9) *(lint 0 erros, 33 testes, build ok; falta verificação no navegador)* · [x] 8b — Prova social honesta *(lint 0 erros, 38 testes, build ok; falta verificação no navegador)*
-- [ ] 9 — Hero/FAQ
+- [x] 9a — Hero honesto + FAQ spring *(lint 0 erros, 51 testes, build ok; falta verificação no navegador)* · [ ] 9b — Promo
 - [ ] 10 — Catálogo · [ ] 11 — PDP+Checkout · [ ] 12 — Resultados · [ ] 13 — Auth
 - [ ] 14 — Pedidos+Admin shell · [ ] 15 — Admin CRUD
 - [ ] 16 — Varredura · [ ] 17 — Deleções

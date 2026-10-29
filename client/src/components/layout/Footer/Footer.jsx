@@ -1,11 +1,18 @@
 import { Link } from 'react-router-dom';
+import { storeConfig } from '../../../config/storeConfig';
 import './Footer.css';
 
 const NAV_LINKS = [
   { to: '/', label: 'Início' },
   { to: '/produtos', label: 'Categorias' },
   { to: '/produtos', label: 'Produtos' },
-  { to: '/#avaliacoes', label: 'Avaliações' },
+  // Era `/#avaliacoes`, âncora que nunca existiu (a seção é `#prova-social`).
+  // Desligada junto com a seção, como no Header.
+  {
+    to: '/#prova-social',
+    label: 'Avaliações',
+    disabled: !storeConfig.social.seedTestimonials,
+  },
   { to: '/produtos?oferta=1', label: 'Ofertas' },
 ];
 
@@ -65,7 +72,13 @@ export default function Footer() {
             <ul className="footer-links">
               {NAV_LINKS.map((l) => (
                 <li key={l.label}>
-                  <Link to={l.to}>{l.label}</Link>
+                  {l.disabled ? (
+                    <span className="footer-link--disabled" aria-disabled="true">
+                      {l.label}
+                    </span>
+                  ) : (
+                    <Link to={l.to}>{l.label}</Link>
+                  )}
                 </li>
               ))}
             </ul>

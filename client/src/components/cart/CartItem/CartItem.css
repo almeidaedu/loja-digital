@@ -110,7 +110,6 @@
 
 .qty-btn:disabled {
   opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .qty-count {
@@ -148,5 +147,4 @@
 
 .cart-item-remove:disabled {
   opacity: 0.4;
-  cursor: not-allowed;
 }

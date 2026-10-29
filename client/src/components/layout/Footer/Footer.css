@@ -82,6 +82,13 @@
   color: var(--accent-green);
 }
 
+/* Mesmo tratamento do link desligado do Header: no lugar, apagado, sem a mão */
+.footer-link--disabled {
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  opacity: 0.55;
+}
+
 /* ── Bottom bar ───────────────────────────────────── */
 .footer-bottom {
   display: flex;

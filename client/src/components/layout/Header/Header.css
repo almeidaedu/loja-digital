@@ -265,12 +265,11 @@
   color: var(--brand-accent);
 }
 
-/* Seção desligada no storeConfig: o link fica no lugar, apagado e sem a mão,
-   para o menu não mudar de forma de cliente para cliente. */
+/* Seção desligada no storeConfig: o link fica no lugar, apagado (a seta vem
+   da regra global de `:disabled`), para o menu não mudar de cliente para cliente. */
 .nav-link:disabled,
 .mobile-nav-link:disabled {
   opacity: 0.55;
-  cursor: default;
 }
 
 .mobile-nav-cta {
