@@ -1,174 +1,149 @@
 .listing-page {
-  padding: 60px 0;
+  padding: var(--space-12) 0 var(--space-16);
 }
 
 .listing-title {
+  margin-bottom: var(--space-8);
   font-family: var(--font-display);
-  font-size: 3rem;
-  letter-spacing: 0.04em;
-  margin-bottom: 40px;
+  font-size: var(--text-display-size);
+  letter-spacing: var(--text-display-tracking);
+  line-height: var(--text-display-leading);
 }
 
-.listing-grid {
+.listing-layout {
   display: grid;
   grid-template-columns: 240px 1fr;
-  gap: 32px;
   align-items: start;
+  gap: var(--space-8);
 }
 
-/* Sidebar */
-.sidebar {
+/* ── Filtro de categoria ──────────────────────────── */
+.listing-sidebar {
   position: sticky;
-  top: calc(var(--header-total) + 20px);
-  height: fit-content;
+  top: calc(var(--header-total) + var(--space-5));
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
-.sidebar-title {
-  font-family: var(--font-condensed);
-  font-size: 0.8rem;
+.listing-sidebar-title {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-label-size);
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--text-label-tracking);
   text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 12px;
+  color: var(--ink-muted);
 }
 
-.category-filter-btn {
-  width: 100%;
-  text-align: left;
-  padding: 10px 14px;
-  border-radius: 4px;
-  font-family: var(--font-condensed);
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  background: transparent;
-  border: 1px solid transparent;
-  transition: all 0.2s;
+.listing-filter {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-caption-size);
+  font-weight: 600;
+  color: var(--ink-secondary);
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
 }
 
-.category-filter-btn:hover {
-  background: var(--bg-card);
-  color: var(--text-primary);
+.listing-filter:hover {
+  background: var(--surface-raised);
+  color: var(--ink-primary);
 }
 
-.category-filter-btn.active {
-  background: var(--accent-green-dim);
-  color: var(--accent-green);
-  border-left: 3px solid var(--accent-green);
-  border-color: transparent;
-  border-left-color: var(--accent-green);
+/* Marca por fundo e cor, sem borda lateral: a borda de 3px empurrava o texto */
+.listing-filter--active,
+.listing-filter--active:hover {
+  background: var(--brand-accent-dim);
+  color: var(--brand-accent);
 }
 
-.category-count {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+.listing-filter-count {
+  font-size: var(--text-label-size);
+  color: var(--ink-muted);
 }
 
-/* Products area */
-.products-area {
-  min-width: 0;
-}
+/* ── Resultados ───────────────────────────────────── */
+.listing-results { min-width: 0; }
 
-.products-grid {
+.listing-products {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: var(--space-4);
 }
 
-.listing-empty {
+.listing-message {
+  padding: var(--space-16) var(--space-5);
   text-align: center;
-  padding: 60px 20px;
-  font-family: var(--font-condensed);
-  font-size: 1rem;
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
-/* Pagination */
-.pagination {
+/* ── Paginação ────────────────────────────────────── */
+.listing-pagination {
   display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 40px;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-10);
 }
 
-.page-btn {
-  width: 40px;
-  height: 40px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-family: var(--font-condensed);
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  transition: border-color 0.2s, color 0.2s, background 0.2s;
+.listing-page-btn {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  font-size: var(--text-caption-size);
+  font-weight: 700;
+  color: var(--ink-secondary);
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
 }
 
-.page-btn:hover:not(:disabled):not(.active) {
-  border-color: var(--accent-green);
-  color: var(--accent-green);
+a.listing-page-btn:hover:not(.listing-page-btn--current) {
+  border-color: var(--brand-accent);
+  color: var(--brand-accent);
 }
 
-.page-btn.active {
-  background: var(--accent-green);
-  color: #000;
-  border-color: var(--accent-green);
+.listing-page-btn--current {
+  border-color: var(--brand-accent);
+  background: var(--brand-accent);
+  color: var(--ink-on-accent);
 }
 
-.page-btn:disabled {
-  opacity: 0.4;
-}
+.listing-page-btn[aria-disabled='true'] { opacity: 0.4; }
 
 @media (max-width: 900px) {
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .listing-products { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* Em tela estreita o filtro vira uma faixa de chips acima dos produtos */
 @media (max-width: 768px) {
-  .listing-grid {
-    grid-template-columns: 1fr;
-  }
+  .listing-layout { grid-template-columns: 1fr; }
 
-  .sidebar {
+  .listing-sidebar {
     position: static;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--space-2);
   }
 
-  .sidebar-title {
+  .listing-sidebar-title {
     width: 100%;
-    margin-bottom: 4px;
+    margin-bottom: 0;
   }
 
-  .category-filter-btn {
-    width: auto;
-    padding: 8px 14px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
+  .listing-filter {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
   }
 
-  .category-filter-btn.active {
-    border-left-width: 1px;
-    border-left-color: var(--accent-green);
-    border-color: var(--accent-green);
-  }
-}
-
-@media (max-width: 640px) {
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .listing-filter--active { border-color: var(--brand-accent); }
 }

@@ -1,224 +1,218 @@
 .produto-card {
-  background: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: transform var(--duration-base) var(--ease-standard),
+              border-color var(--duration-base) var(--ease-standard),
+              box-shadow var(--duration-base) var(--ease-standard);
 }
 
 .produto-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(0, 255, 135, 0.4);
-  box-shadow: 0 12px 40px rgba(0, 255, 135, 0.12);
+  transform: translateY(-4px);
+  border-color: var(--brand-accent);
+  box-shadow: var(--shadow-glow-accent);
 }
 
-/* Image */
+/* O foco do link vira o foco do card: o alvo clicável é o card inteiro */
+.produto-card:has(.produto-link:focus-visible) {
+  outline: 2px solid var(--brand-accent);
+  outline-offset: 2px;
+}
+
+/* ── Imagem ───────────────────────────────────────── */
 .produto-image-wrap {
   position: relative;
-  aspect-ratio: 4 / 5;
-  background: #111;
-  overflow: hidden;
   flex-shrink: 0;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--surface-base);
 }
 
 .produto-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform var(--duration-slow) var(--ease-standard);
 }
 
-.produto-card:hover .produto-image {
-  transform: scale(1.06);
-}
+.produto-card:hover .produto-image { transform: scale(1.05); }
 
 .produto-image-placeholder {
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #111;
-  color: var(--text-muted);
+  width: 100%;
+  height: 100%;
+  color: var(--border-strong);
 }
 
-/* Badge */
 .produto-badge {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: var(--space-3);
+  left: var(--space-3);
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.75rem;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-label-size);
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--text-label-tracking);
   text-transform: uppercase;
-  padding: 5px 10px;
-  border-radius: 4px;
   white-space: nowrap;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
 
-.badge--green {
-  background: rgba(0, 255, 135, 0.22);
-  color: #00ff87;
-  border: 1px solid rgba(0, 255, 135, 0.5);
-  text-shadow: 0 0 10px rgba(0, 255, 135, 0.4);
-}
+.produto-badge--best    { background: var(--brand-accent-dim);  color: var(--brand-accent); }
+.produto-badge--urgency { background: var(--brand-danger-dim);  color: var(--brand-danger); }
+.produto-badge--new     { background: var(--brand-info-dim);    color: var(--brand-info); }
 
-.badge--red {
-  background: rgba(239, 68, 68, 0.22);
-  color: #ff6b6b;
-  border: 1px solid rgba(239, 68, 68, 0.5);
-  text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
-}
-
-.badge--blue {
-  background: rgba(99, 179, 237, 0.22);
-  color: #90cdf4;
-  border: 1px solid rgba(99, 179, 237, 0.5);
-  text-shadow: 0 0 10px rgba(99, 179, 237, 0.4);
-}
-
-/* Heart */
+/* Por cima do link esticado: é um botão próprio, não "abrir o produto" */
 .produto-heart {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-muted);
-  font-size: 1rem;
+  z-index: 2;
+  top: var(--space-3);
+  right: var(--space-3);
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: color 0.2s, background 0.2s, border-color 0.2s;
-  backdrop-filter: blur(4px);
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  background: var(--material-thick);
+  color: var(--ink-secondary);
+  transition: color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
 }
 
-.produto-heart:hover {
-  color: #ef4444;
-  border-color: #ef4444;
+.produto-heart:hover,
+.produto-heart--liked {
+  color: var(--brand-danger);
+  border-color: var(--brand-danger);
 }
 
-.produto-heart.liked {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.4);
-}
-
-/* Info */
+/* ── Informações ──────────────────────────────────── */
 .produto-info {
-  padding: 16px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
   flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
 }
 
 .produto-time {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.72rem;
+  font-size: var(--text-label-size);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--text-label-tracking);
   text-transform: uppercase;
-  color: var(--accent-green);
+  color: var(--brand-accent);
 }
 
 .produto-name {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.05rem;
+  font-size: var(--text-body-size);
   font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
-  line-height: 1.3;
-  letter-spacing: 0.02em;
+  line-height: var(--text-title-leading);
 }
+
+/* B6: o link do nome cobre o card inteiro */
+.produto-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.produto-link:focus-visible { outline: none; }
 
 .produto-rating {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 2px;
-}
-
-.produto-stars {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
+  gap: var(--space-2);
 }
 
 .produto-reviews {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: var(--text-label-size);
+  color: var(--ink-muted);
 }
 
 .produto-preco {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  margin-top: 6px;
+  gap: var(--space-2);
 }
 
 .produto-preco-original {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  font-size: var(--text-caption-size);
+  color: var(--ink-muted);
   text-decoration: line-through;
 }
 
 .produto-preco-atual {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.7rem;
-  color: var(--text-primary);
-  letter-spacing: 0.02em;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
   line-height: 1;
 }
 
 .produto-parcela {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  margin: 0;
+  font-size: var(--text-label-size);
+  color: var(--ink-muted);
 }
 
-/* Button */
+/* B7: `margin-top: auto` empurra o botão para o pé do card, alinhando a linha
+   de botões mesmo com nomes de tamanhos diferentes. Um `margin-top: 12px`
+   declarado depois anulava o auto. */
 .produto-btn {
-  margin-top: auto;
-  padding-top: 12px;
+  position: relative;
+  z-index: 2;
   width: 100%;
-  padding: 10px 16px;
-  border: 1px solid var(--accent-green);
+  margin-top: auto;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--brand-accent);
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--accent-green);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.85rem;
+  color: var(--brand-accent);
+  font-size: var(--text-caption-size);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--text-label-tracking);
   text-transform: uppercase;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  margin-top: 12px;
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
 }
 
 .produto-btn:hover:not(:disabled) {
-  background: var(--accent-green);
-  color: #000;
+  background: var(--brand-accent);
+  color: var(--ink-on-accent);
 }
 
-.produto-btn:disabled {
-  border-color: rgba(0, 255, 135, 0.4);
-  color: var(--accent-green);
-  opacity: 0.8;
+.produto-btn:disabled { opacity: 0.8; }
+
+/* ── Skeleton (ProductCardSkeleton) ───────────────── */
+/* O shimmer é o `.skeleton` do globals; aqui só a forma de cada peça. */
+.produto-card--skeleton { pointer-events: none; }
+
+.produto-skeleton-image {
+  aspect-ratio: 4 / 5;
+  border-radius: 0;
+}
+
+.produto-skeleton-line { height: 12px; }
+.produto-skeleton-line--short { width: 45%; }
+.produto-skeleton-line--medium { width: 70%; }
+
+.produto-skeleton-price {
+  width: 55%;
+  height: 28px;
+}
+
+.produto-skeleton-btn {
+  height: 40px;
+  margin-top: auto;
 }

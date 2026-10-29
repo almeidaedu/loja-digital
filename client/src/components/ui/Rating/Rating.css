@@ -1,0 +1,7 @@
+.rating {
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-warning);
+}
+
+.rating-star--empty { color: var(--border-strong); }

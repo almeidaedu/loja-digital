@@ -1,9 +1,12 @@
 // Re-exports from MUI Icons — single import point for the whole app
 export { default as StarFilledIcon }      from '@mui/icons-material/Star';
 export { default as StarEmptyIcon }       from '@mui/icons-material/StarBorder';
+export { default as StarHalfIcon }        from '@mui/icons-material/StarHalf';
 export { default as HeartFilledIcon }     from '@mui/icons-material/Favorite';
 export { default as HeartOutlineIcon }    from '@mui/icons-material/FavoriteBorder';
 export { default as ShirtIcon }           from '@mui/icons-material/Checkroom';
+// Imagem de produto ausente. Não é o ShirtIcon: aquele é um cabide (`Checkroom`).
+export { default as ImagePlaceholderIcon } from '@mui/icons-material/ImageOutlined';
 export { default as TrophyIcon }          from '@mui/icons-material/EmojiEvents';
 export { default as FlameIcon }           from '@mui/icons-material/LocalFireDepartment';
 export { default as SparkleIcon }         from '@mui/icons-material/AutoAwesome';
@@ -29,6 +32,8 @@ export { default as WarningIcon }         from '@mui/icons-material/WarningAmber
 export { default as CartIcon }            from '@mui/icons-material/ShoppingCartOutlined';
 export { default as PlusIcon }            from '@mui/icons-material/Add';
 export { default as MinusIcon }           from '@mui/icons-material/Remove';
+export { default as ChevronLeftIcon }     from '@mui/icons-material/ChevronLeft';
+export { default as ChevronRightIcon }    from '@mui/icons-material/ChevronRight';
 export { default as TrashIcon }           from '@mui/icons-material/DeleteOutline';
 export { default as WhatsAppIcon }        from '@mui/icons-material/WhatsApp';
 export { default as StorefrontIcon }      from '@mui/icons-material/Storefront';

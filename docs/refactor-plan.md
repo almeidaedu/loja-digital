@@ -29,13 +29,13 @@ apontam para lá).
 
 | # | Onde | Defeito | Fase |
 |---|---|---|---|
-| B1 | `ProductListing.jsx:35` | Lê `data.totalPages`; API devolve `{products,total,page,limit}`. Paginação nunca renderiza | 10 |
+| B1 | `ProductListing.jsx:35` | ~~Lê `data.totalPages`; API devolve `{products,total,page,limit}`. Paginação nunca renderiza~~ ✅ `Math.ceil(total / limit)` | 10b |
 | B2 | `PaymentPending.jsx:45` | `navigate(path,{search})` não existe no RR6; success perde o `orderId` | 12 |
 | B3 | `AdminLayout.jsx` + `.css` | ~~CSS esconde `span:last-child` → esconde o ícone, não o label~~ ✅ label ganhou classe própria | H2 |
 | B4 | `CartDrawer.jsx:29` | Overlay sem exit; painel com transition 350ms → backdrop some na hora | 5 |
 | B5 | ~~`Header.jsx:68`~~ | ~~Pill medida por rect com dep `[activeKey]` → desalinha no resize~~ ✅ `layoutId` | 6 |
-| B6 | `ProductCard.jsx:64` | `<article>` sem `<Link>` → produto não é clicável | 10 |
-| B7 | `ProductCard.css:212` | `margin-top:12px` anula o `margin-top:auto` → CTAs desalinhados | 10 |
+| B6 | `ProductCard.jsx:64` | ~~`<article>` sem `<Link>` → produto não é clicável~~ ✅ link do nome esticado sobre o card | 10a |
+| B7 | `ProductCard.css:212` | ~~`margin-top:12px` anula o `margin-top:auto` → CTAs desalinhados~~ ✅ | 10a |
 | B8 | `ProtectedRoute.jsx` | ~~`isLoading` → `return null` → tela branca no refresh~~ ✅ gate com spinner; `AdminRoute` herda | 7a |
 | B9 | `Categories.jsx` | ~~IntersectionObserver monta antes dos dados → cards invisíveis~~ ✅ `ui/Reveal` na grade | 8a |
 
@@ -56,7 +56,8 @@ globals não tem. Deletar o bloco duplicado quando a fase dona tocar o arquivo.
 | `.form-label` | `Login.css:68`, `Register.css:50` | 13 |
 | `.qty-btn` (achado no H5) | `CartItem.css`, `ProductDetail.css` | 11 |
 | ~~`.section-title`, `.section-subtitle`~~ | ~~`Categories.css:11,19`~~ | ✅ 8a |
-| `.skeleton` | ~~`Categories.css:85`~~ ✅ 8a, `ProductGrid.css:36` | 10 |
+| ~~`.skeleton`~~ | ~~`Categories.css:85`~~ ✅ 8a, ~~`ProductGrid.css:36`~~ ✅ 10b | — |
+| ~~`.category-count`~~ (achado na 10b) | ~~`ProductListing.css`~~ (virou `.listing-filter-count`) | ✅ 10b |
 
 ## Emoji e glifos como ícone (varredura da Fase 4)
 
@@ -143,7 +144,7 @@ topo faria "voltar" do produto perder o lugar no catálogo).
 | Tela "ACESSO RESTRITO" com 25 linhas de `style` inline + `--text-muted` (alias legado) + `btn-primary` | `AdminRoute.jsx:16-38` | 12 |
 | ~~`setLoading` no `authStore` ficou sem nenhum consumidor — 1 linha morta~~ | ~~`authStore.js:10`~~ | ✅ H2 |
 | Spinner centrado com `style` inline repetido em 7 lugares (convenção atual do projeto; virou 8 com o gate do ProtectedRoute) | `Orders.jsx:60`, `AdminOrders.jsx:110`, `AdminDashboard.jsx:80`, `AdminProducts.jsx:313`, `ProtectedRoute.jsx:15`, … | 16 |
-| `handlePageChange` não rola ao topo — `page` é state local, não search param, então o `useScrollRestoration` não pega | `ProductListing.jsx:55` | 10 |
+| ~~`handlePageChange` não rola ao topo — `page` é state local~~ | ~~`ProductListing.jsx:55`~~ | ✅ 10b |
 
 Os dois primeiros são a mesma forma (página centrada: título, texto, CTA) e o
 `ui/ResultPage` da Fase 12 é o dono natural dos dois. Construí-lo na 7a só para
@@ -312,7 +313,7 @@ da dele. Quatro defeitos das fases 8 e 9a, corrigidos:
 | Achado da checagem | Onde | Fase |
 |---|---|---|
 | ~~Link de âncora do Footer vindo de outra página (`/login` → FAQ) para no lugar errado~~ | ~~`Footer.jsx`, `useScrollRestoration.js`, `Header.jsx:177`~~ | ✅ H7 |
-| O cabide também é o placeholder de imagem do `ProductCard` | `ProductCard.jsx` | 10 |
+| ~~O cabide também é o placeholder de imagem do `ProductCard`~~ | ~~`ProductCard.jsx`~~ | ✅ 10a |
 | ~~TrustBar ainda diz "Entrega em 24h", agora em conflito com o Hero~~ | ~~`TrustBar.jsx`~~ | ✅ H7 |
 | ~~`Benefits.css` e `UrgencyBanner.css` cravam fontes que não são carregadas~~ | ~~`Benefits.css`, `UrgencyBanner.css`~~ | ✅ 9b, 9c |
 | Footer: 7 links para rotas que não existem (`/politica-trocas`, `/sobre`, …) caem no 404 em branco; "Categorias" aponta para `/produtos`; marca e WhatsApp cravados; `<svg>` do WhatsApp | `Footer.jsx` | 12 / 16 |
@@ -450,9 +451,48 @@ do cliente · S5 consumidores · S6 painel.
 
 | Pendente da feature | Onde | Fase |
 |---|---|---|
-| `brand.name` e `brand.nameParts` são independentes: dá para trocar o logo e esquecer o nome (título da aba, ©, fatura). O painel avisa na dica, mas não amarra | `AdminSettings.jsx` | decisão do usuário |
+| `brand.name` e `brand.nameParts` são independentes: dá para trocar o logo e esquecer o nome (título da aba, ©, fatura). **Decisão do usuário: fica assim** até a feature de logo personalizado (G8), que muda o que o logo é | `AdminSettings.jsx` | G8 |
 | Navegação interna com alteração não salva não avisa (só `beforeunload`): exige data router | `App.jsx` / `AppRouter.jsx` | G |
 | Telas de pedido não mostram subtotal/frete separados | `Orders.jsx`, `AdminOrders.jsx` | 14 |
+
+## Fase 10 — catálogo (10a card + 10b listagem)
+
+**10a — card**
+- **B6:** o nome do produto é o link, esticado sobre o card por `::after`; coração e
+  "Adicionar" ficam por cima (`z-index`). Um `<Link>` em volta do card aninharia
+  botões em link (HTML inválido). Foco visível no card inteiro via `:has()`.
+- **B7:** botão só com `margin-top: auto`; o `12px` declarado depois anulava o auto.
+- **Preço comparado como texto:** Decimal do Prisma chega string, e `'99.00' >
+  '149.00'` é true — preço "de" menor aparecia riscado. Agora `Number()`.
+- **"Adicionado!" falso:** aparecia mesmo quando o `useAddToCart` recusava (sem
+  login). O card agora busca a ação sozinho (G-04) e só confirma com `true`.
+- `ui/Rating` *(novo)*: meia estrela, `role="img"` nomeado em pt-BR ("4,5 de 5
+  estrelas"); as estrelas antigas tinham `aria-label` em `<span>` sem papel.
+- Placeholder sem imagem: `ImagePlaceholderIcon` no lugar do cabide. Badge com tokens
+  (`.produto-badge--best/urgency/new`, antes `badge--green` sem prefixo). "De" do
+  preço riscado em `.sr-only` (novo utilitário no globals).
+
+**10b — listagem**
+- **B1:** total de páginas = `Math.ceil(total / limit)`.
+- Categoria e página na URL (`?category=&page=`), como **links**: compartilhável,
+  abre em nova aba, o voltar devolve a página. Primeira/última página: link
+  desabilitado (`aria-disabled`), sem `href`.
+- Paginação: `nav` "Paginação", `aria-current`, glifos `‹ ›` viraram ícones nomeados.
+- Classes com prefixo `listing-` (colisão de `.category-count` com o Categories).
+- `ProductCardSkeleton` *(novo)* compartilhado por vitrine e catálogo; o
+  `ProductGrid.css` redefinia `.skeleton` e o próprio shimmer. `ProductGrid` usa o
+  `productService` (era `fetch` cru).
+- Testes: `Rating` (4), `ProductCard` (7 — o de "sem login" falha com a lógica
+  antiga), `ProductListing` (6). 104 no total.
+- Navegador: 2 páginas (12 + 5), voltar devolve a página 1, botões alinhados nas 4
+  linhas, clique na imagem abre o produto.
+
+| Achado | Onde | Fase |
+|---|---|---|
+| PDP mostra **"(47 avaliações)" cravado** no JSX — o mesmo produto tem 248 no card | `ProductDetail.jsx:118` | 11 |
+| `ui/Rating` ainda não adotado nos depoimentos e na PDP | `Testimonials.jsx`, `ProductDetail.jsx` | 11 |
+| "12x sem juros" cravado no card, na PDP e no TrustBar — condição comercial, candidata às configurações | `ProductCard.jsx`, `ProductDetail.jsx`, `TrustBar.jsx` | G |
+| Favorito (coração) só vive no estado do card: some ao recarregar | `ProductCard.jsx` | decisão do usuário |
 
 ## Fase 9a — Hero honesto e FAQ com spring
 
@@ -516,7 +556,8 @@ fechado, segundo clique fecha, CTA é link).
 | 9a | Hero honesto, FAQ spring | `Hero.{jsx,css}`, `FAQ.{jsx,css}`, `Home.jsx` |
 | 9b | Promo condicionada ao config | `UrgencyBanner.{jsx,css}`, `Countdown.{jsx,css}`, `hooks/useCountdown.js` |
 | 9c | Benefícios + formato da promo | `Benefits.{jsx,css}`, `config/storeConfig.js` |
-| 10 | Catálogo: card link, paginação real (B1,B6,B7) | `ProductCard.{jsx,css}`, `ProductListing.{jsx,css}`, `ProductGrid.jsx` |
+| 10a | Card: link, `ui/Rating`, preço e "Adicionado!" honestos (B6, B7) | `ProductCard.{jsx,css}`, `ui/Rating/{jsx,css}` (+`sr-only` no `globals.css`, +ícones) |
+| 10b | Catálogo: paginação real, URL, skeleton único (B1) | `ProductListing.{jsx,css}`, `ProductGrid.{jsx,css}`, `ProductCardSkeleton.jsx` *(novo)* |
 | 11 | PDP + Checkout | `ProductDetail.{jsx,css}`, `Checkout.{jsx,css}` |
 | 12 | `ResultPage` único (B2) | `ui/ResultPage/{jsx,css}`, `Payment{Success,Failure,Pending}.jsx` |
 | 13 | Auth + Conta | `Login.{jsx,css}`, `Register.{jsx,css}`, `Account.jsx` |
@@ -547,6 +588,7 @@ tudo -> F16 varredura -> F17 delecoes -> [Estagio G]
 | G5 | ~~ESLint + Prettier + Vitest~~ ✅ no `client/` (T1) · falta **CI** e o `server/` | O repo não tinha nenhum dos três |
 | G6 | `sdk/` em TS strict + `openapi.yaml` + docs | Capstone do roadmap |
 | G7 | Multi-tenant: theming via `storeConfig` + seed por cliente | Tese do template revendável |
+| G8 | **Logo personalizado** (pedido do usuário): upload no painel de Configurações, convertido em alta qualidade, substituindo o logo de texto em Header, Footer, admin, Login/Cadastro | Hoje o logo é texto em duas partes (`brand.nameParts`) |
 
 ## Verificação
 
@@ -720,6 +762,6 @@ continua entregue.
 - [x] T1 — Ferramental do frontend *(lint 0 erros / 25 warnings, exit 0)* · [x] T2 — 67 testes de regressão passando
 - [x] 8a — Home: reveals + de-dup (B9) *(lint 0 erros, 33 testes, build ok; falta verificação no navegador)* · [x] 8b — Prova social honesta *(lint 0 erros, 38 testes, build ok; falta verificação no navegador)*
 - [x] 9a — Hero honesto + FAQ spring *(lint 0 erros, 51 testes, build ok; falta verificação no navegador)* · [x] 9b — Promo · [x] 9c — Benefícios *(67 testes, lint 0 erros / 24 warnings, build ok)*
-- [ ] 10 — Catálogo · [ ] 11 — PDP+Checkout · [ ] 12 — Resultados · [ ] 13 — Auth
+- [x] 10 — Catálogo *(10a card + 10b listagem; 104 testes, verificado no navegador)* · [ ] 11 — PDP+Checkout · [ ] 12 — Resultados · [ ] 13 — Auth
 - [ ] 14 — Pedidos+Admin shell · [ ] 15 — Admin CRUD
 - [ ] 16 — Varredura · [ ] 17 — Deleções

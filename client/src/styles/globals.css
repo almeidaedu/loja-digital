@@ -184,6 +184,20 @@ input:is([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type
   cursor: default !important;
 }
 
+/* Só para leitor de tela: some da tela, continua na árvore de acessibilidade.
+   Ex.: o "De" antes de um preço riscado, que o tachado não anuncia. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Foco visível único para todo o app — teclado vê, mouse não */
 :focus-visible {
   outline: 2px solid var(--brand-accent);

@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import useAddToCart from '../../../hooks/useAddToCart';
 import { formatCurrency } from '../../../utils/formatCurrency';
+import Rating from '../../ui/Rating/Rating';
 import {
-  StarFilledIcon,
-  StarEmptyIcon,
   HeartFilledIcon,
   HeartOutlineIcon,
-  ShirtIcon,
+  ImagePlaceholderIcon,
   TrophyIcon,
   FlameIcon,
   SparkleIcon,
@@ -13,116 +14,101 @@ import {
 import './ProductCard.css';
 
 const BADGE_MAP = {
-  best_seller: { label: 'Mais Vendido', Icon: TrophyIcon, mod: 'badge--green' },
-  urgency:     { label: 'Últimas unidades!', Icon: FlameIcon, mod: 'badge--red' },
-  new:         { label: 'Novo', Icon: SparkleIcon, mod: 'badge--blue' },
+  best_seller: { label: 'Mais Vendido', Icon: TrophyIcon, mod: 'best' },
+  urgency: { label: 'Últimas unidades!', Icon: FlameIcon, mod: 'urgency' },
+  new: { label: 'Novo', Icon: SparkleIcon, mod: 'new' },
 };
 
-function Stars({ rating }) {
-  const full = Math.round(rating ?? 0);
-  return (
-    <span className="produto-stars" aria-label={`${rating} estrelas`}>
-      {Array.from({ length: 5 }).map((_, i) =>
-        i < full
-          ? <StarFilledIcon key={i} sx={{ fontSize: '14px', color: '#FFD700' }} />
-          : <StarEmptyIcon  key={i} sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.2)' }} />
-      )}
-    </span>
-  );
-}
+// Quanto tempo o botão fica em "Adicionado!" antes de voltar.
+const ADDED_FEEDBACK_MS = 2000;
 
-export default function ProductCard({ product, onAddToCart }) {
+export default function ProductCard({ product }) {
   const [liked, setLiked] = useState(false);
   const [added, setAdded] = useState(false);
+  // O card busca a própria ação (G-04). Antes dependia de um `onAddToCart`
+  // opcional com bail silencioso, e o botão morreu quando uma tela esqueceu de passar.
+  const addToCart = useAddToCart();
 
-  const {
-    name,
-    price,
-    originalPrice,
-    imageUrl,
-    badge,
-    rating,
-    reviewCount,
-    categoryName,
-  } = product;
-
-  const installment = price / 12;
+  const { name, slug, imageUrl, badge, rating, reviewCount, categoryName } = product;
+  // Decimal do Prisma chega como string: `'99.00' > '149.00'` é true em
+  // comparação de texto, e o preço "de" menor que o atual aparecia riscado.
+  const price = Number(product.price);
+  const originalPrice = product.originalPrice == null ? null : Number(product.originalPrice);
   const badgeInfo = BADGE_MAP[badge] ?? null;
 
+  useEffect(() => {
+    if (!added) return undefined;
+    const timer = setTimeout(() => setAdded(false), ADDED_FEEDBACK_MS);
+    return () => clearTimeout(timer);
+  }, [added]);
+
+  // "Adicionado!" só quando entrou de verdade. Antes aparecia também para quem
+  // não estava logado — o hook devolvia false e o card ignorava.
   const handleAddToCart = async () => {
-    if (!onAddToCart) return;
-    try {
-      await onAddToCart(product);
-      setAdded(true);
-      setTimeout(() => setAdded(false), 2000);
-    } catch {
-      // erro tratado pelo pai
-    }
+    if (await addToCart(product)) setAdded(true);
   };
 
   return (
     <article className="produto-card">
       <div className="produto-image-wrap">
         {imageUrl ? (
-          <img src={imageUrl} alt={name} className="produto-image" loading="lazy" />
+          // alt vazio: o nome logo abaixo já nomeia o produto e o link do card
+          <img src={imageUrl} alt="" className="produto-image" loading="lazy" />
         ) : (
           <div className="produto-image-placeholder" aria-hidden="true">
-            <ShirtIcon sx={{ fontSize: '52px', opacity: 0.2 }} />
+            <ImagePlaceholderIcon sx={{ fontSize: '48px' }} />
           </div>
         )}
 
         {badgeInfo && (
-          <span className={`produto-badge ${badgeInfo.mod}`}>
+          <span className={`produto-badge produto-badge--${badgeInfo.mod}`}>
             <badgeInfo.Icon sx={{ fontSize: '13px' }} />
             {badgeInfo.label}
           </span>
         )}
 
         <button
-          className={`produto-heart ${liked ? 'liked' : ''}`}
+          type="button"
+          className={`produto-heart${liked ? ' produto-heart--liked' : ''}`}
           onClick={() => setLiked((v) => !v)}
           aria-label={liked ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-          type="button"
+          aria-pressed={liked}
         >
-          {liked
-            ? <HeartFilledIcon  sx={{ fontSize: '16px', color: '#ef4444' }} />
-            : <HeartOutlineIcon sx={{ fontSize: '16px' }} />
-          }
+          {liked ? <HeartFilledIcon sx={{ fontSize: '16px' }} /> : <HeartOutlineIcon sx={{ fontSize: '16px' }} />}
         </button>
       </div>
 
       <div className="produto-info">
-        {categoryName && (
-          <span className="produto-time">{categoryName}</span>
-        )}
-        <h3 className="produto-name">{name}</h3>
+        {categoryName && <span className="produto-time">{categoryName}</span>}
+
+        {/* B6: o card não levava a lugar nenhum. O link é o nome, esticado sobre o
+            card inteiro pelo `::after`; coração e botão ficam por cima dele. Um
+            <Link> em volta do card aninharia botões dentro de link, que é HTML
+            inválido e confunde leitor de tela. */}
+        <h3 className="produto-name">
+          <Link to={`/produtos/${slug}`} className="produto-link">
+            {name}
+          </Link>
+        </h3>
 
         <div className="produto-rating">
-          <Stars rating={rating} />
-          {reviewCount != null && (
-            <span className="produto-reviews">({reviewCount})</span>
-          )}
+          <Rating value={rating} size="14px" />
+          {reviewCount != null && <span className="produto-reviews">({reviewCount})</span>}
         </div>
 
         <div className="produto-preco">
-          {originalPrice && originalPrice > price && (
+          {originalPrice > price && (
             <span className="produto-preco-original">
+              <span className="sr-only">De </span>
               {formatCurrency(originalPrice)}
             </span>
           )}
           <span className="produto-preco-atual">{formatCurrency(price)}</span>
         </div>
 
-        <p className="produto-parcela">
-          12x de {formatCurrency(installment)} sem juros
-        </p>
+        <p className="produto-parcela">12x de {formatCurrency(price / 12)} sem juros</p>
 
-        <button
-          className="produto-btn"
-          onClick={handleAddToCart}
-          type="button"
-          disabled={added}
-        >
+        <button type="button" className="produto-btn" onClick={handleAddToCart} disabled={added}>
           {added ? 'Adicionado!' : 'Adicionar ao Carrinho'}
         </button>
       </div>
