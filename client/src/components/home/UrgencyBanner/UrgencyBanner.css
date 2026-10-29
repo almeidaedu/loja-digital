@@ -1,66 +1,56 @@
+/* Padding vem do `.section` do globals.css */
 .urgency-section {
-  padding: 80px 0;
-  background-color: var(--bg-dark);
-  border-top: 2px solid var(--accent-green);
-  border-bottom: 2px solid var(--accent-green);
-  text-align: center;
   position: relative;
   overflow: hidden;
+  text-align: center;
+  border-block: 2px solid var(--brand-accent);
 }
 
+/* Halo de cima para baixo, no próprio fundo da seção */
 .urgency-section::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(0, 255, 135, 0.07) 0%, transparent 60%);
+  background: radial-gradient(ellipse at 50% 0%, var(--brand-accent-dim), transparent 60%);
   pointer-events: none;
 }
 
 .urgency-inner {
   position: relative;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: var(--space-5);
 }
 
 .urgency-tag {
-  display: inline-block;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--brand-accent);
+  color: var(--ink-on-accent);
+  font-size: var(--text-label-size);
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--text-label-tracking);
   text-transform: uppercase;
-  background: var(--accent-green);
-  color: #000;
-  padding: 5px 16px;
-  border-radius: 20px;
 }
 
 .urgency-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(3.5rem, 8vw, 7rem);
-  line-height: 0.95;
-  color: var(--text-primary);
-  letter-spacing: 0.03em;
-  margin: 0;
-}
-
-.urgency-title-accent {
-  color: var(--accent-green);
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: var(--text-display-tracking);
+  line-height: var(--text-display-leading);
+  text-transform: uppercase;
 }
 
 .urgency-subtitle {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.05rem;
+  font-size: var(--text-body-size);
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--text-label-tracking);
   text-transform: uppercase;
-  color: var(--text-muted);
-  margin: 0;
-}
-
-.urgency-cta {
-  margin-top: 8px;
+  color: var(--ink-muted);
 }

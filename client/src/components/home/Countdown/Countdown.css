@@ -1,42 +1,36 @@
 .countdown {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
 }
 
 .countdown-block {
-  background: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  padding: 16px 8px 12px;
-  min-width: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
+  min-width: 76px;
+  padding: var(--space-4) var(--space-2) var(--space-3);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
 }
 
+/* Algarismos de largura fixa: sem isso o bloco "dança" a cada segundo */
 .countdown-number {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.8rem;
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
-  color: var(--accent-green);
-  letter-spacing: 0.04em;
+  color: var(--brand-accent);
 }
 
 .countdown-label {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.7rem;
+  font-size: var(--text-label-size);
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--text-label-tracking);
   text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.countdown-sep {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.5rem;
-  color: var(--accent-green);
-  margin-top: -20px;
-  user-select: none;
+  color: var(--ink-muted);
 }

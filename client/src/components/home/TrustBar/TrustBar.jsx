@@ -9,7 +9,8 @@ import {
 import './TrustBar.css';
 
 const ITEMS = [
-  { Icon: BoltIcon,       text: 'Entrega em 24h' },
+  // Mesma promessa do Hero: o que o FAQ garante para todo pedido é o despacho.
+  { Icon: BoltIcon,       text: 'Envio no mesmo dia' },
   { Icon: LockIcon,       text: 'Pagamento Seguro' },
   { Icon: TrophyIcon,     text: 'Produto Original' },
   { Icon: SyncIcon,       text: 'Troca Grátis' },

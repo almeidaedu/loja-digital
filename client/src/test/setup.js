@@ -19,3 +19,10 @@ globalThis.IntersectionObserver ??= class {
     return [];
   }
 };
+
+// Também ausente no jsdom; o useScrollRestoration observa a altura da página.
+globalThis.ResizeObserver ??= class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};

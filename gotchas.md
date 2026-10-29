@@ -214,3 +214,14 @@ muda. Teste que depende de um valor do config fixa esse valor (`beforeEach` com
 `Object.assign` + restauração, ou `vi.mock` quando o módulo lê no import). Teste
 que só precisa refletir o valor lê do config (`discount`, `freeThreshold`) em vez
 de cravar o número.
+
+## G-13 — Inserir "antes de X" com replace apaga o X
+
+**O que aconteceu (H6 → H7):** para inserir a seção H6 antes do título "## Fase 9a"
+do plano, troquei a âncora pelo texto novo e esqueci de recolocar a âncora no fim.
+O título da 9a sumiu, foi commitado assim, e só apareceu quando a próxima inserção
+usou a mesma âncora e não a achou.
+
+**Regra:** inserção por replace é sempre `replace(anchor, novo + anchor)` (ou
+`anchor + novo` para "depois de"). Depois de editar documento por script, conferir
+os títulos com `grep -n "^## "` — é um comando, e mostra na hora o que sumiu.

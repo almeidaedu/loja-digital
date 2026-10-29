@@ -1,21 +1,36 @@
+import { storeConfig } from '../../../config/storeConfig';
+import { useCountdown } from '../../../hooks/useCountdown';
 import Countdown from '../Countdown/Countdown';
-import { BoltIcon } from '../../../components/ui/Icons';
+import Button from '../../ui/Button/Button';
+import { BoltIcon } from '../../ui/Icons';
 import './UrgencyBanner.css';
 
+// Tudo vem do `storeConfig.promo`. Antes "LEVE 3, PAGUE 2" e "Só até domingo à
+// meia-noite" eram texto fixo, com um contador que inventava o prazo por
+// visitante: urgência falsa, ligada para todo mundo, para sempre.
 export default function UrgencyBanner() {
+  const { enabled, tag, title, subtitle, endsAt } = storeConfig.promo;
+  const remaining = useCountdown(endsAt);
+
+  // Desligada, sem título ou já encerrada: não há oferta para anunciar. O
+  // `ended` some com o banner no segundo em que o prazo passa.
+  if (!enabled || !title || remaining?.ended) return null;
+
   return (
-    <section className="urgency-section">
+    <section className="section urgency-section">
       <div className="container urgency-inner">
-        <span className="urgency-tag"><BoltIcon sx={{ fontSize: '14px' }} /> Oferta Especial</span>
-        <h2 className="urgency-title">
-          LEVE 3,<br />
-          <span className="urgency-title-accent">PAGUE 2</span>
-        </h2>
-        <p className="urgency-subtitle">Só até domingo à meia-noite</p>
-        <Countdown />
-        <a href="#produtos" className="btn-primary urgency-cta">
-          Aproveitar Agora
-        </a>
+        {tag && (
+          <span className="urgency-tag">
+            <BoltIcon sx={{ fontSize: '14px' }} /> {tag}
+          </span>
+        )}
+        <h2 className="urgency-title">{title}</h2>
+        {subtitle && <p className="urgency-subtitle">{subtitle}</p>}
+        {/* Sem `endsAt` a oferta não tem prazo, e então não tem contador. */}
+        {remaining && <Countdown {...remaining} />}
+        <Button href="#produtos" size="lg">
+          Aproveitar agora
+        </Button>
       </div>
     </section>
   );

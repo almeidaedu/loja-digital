@@ -3,7 +3,7 @@ import {
   LockIcon,
   SyncIcon,
   TrophyIcon,
-} from '../../../components/ui/Icons';
+} from '../../ui/Icons';
 import Reveal from '../../ui/Reveal/Reveal';
 import './Benefits.css';
 
@@ -32,7 +32,7 @@ const BENEFITS = [
 
 export default function Benefits() {
   return (
-    <section className="benefits-section">
+    <section className="section">
       <div className="container">
         <div className="section-header">
           <h2 className="section-title">Por Que Comprar Aqui?</h2>

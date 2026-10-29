@@ -1,38 +1,43 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-function getTarget() {
-  const key = 'cc_countdown_target';
-  let stored = localStorage.getItem(key);
-  if (!stored) {
-    const now = new Date();
-    const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
-    const target = new Date(now);
-    target.setDate(now.getDate() + daysUntilSunday);
-    target.setHours(23, 59, 59, 0);
-    stored = target.getTime().toString();
-    localStorage.setItem(key, stored);
-  }
-  return parseInt(stored, 10);
-}
+const SECOND = 1000;
+const MINUTE = 60 * SECOND;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
 
-export function useCountdown() {
-  const target = getTarget();
-
-  const calc = () => {
-    const diff = Math.max(0, target - Date.now());
-    return {
-      h: String(Math.floor(diff / 3600000)).padStart(2, '0'),
-      m: String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0'),
-      s: String(Math.floor((diff % 60000) / 1000)).padStart(2, '0'),
-    };
-  };
-
-  const [time, setTime] = useState(calc);
+/**
+ * Tempo restante até `target` (ISO ou qualquer coisa que o `Date` entenda).
+ * Devolve `null` sem prazo — ou com prazo inválido — e `ended: true` quando zera,
+ * para quem usa poder sumir no segundo em que a oferta acaba.
+ *
+ * Antes não recebia prazo nenhum: inventava "domingo 23:59" na primeira visita,
+ * guardava no `localStorage` e renovava toda semana. Cada visitante via um
+ * relógio diferente, e a oferta nunca acabava.
+ */
+export function useCountdown(target) {
+  const targetMs = target ? new Date(target).getTime() : NaN;
+  const valid = Number.isFinite(targetMs);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    const id = setInterval(() => setTime(calc()), 1000);
-    return () => clearInterval(id);
-  }, []);
+    if (!valid || Date.now() >= targetMs) return undefined;
 
-  return time;
+    const id = setInterval(() => {
+      const t = Date.now();
+      setNow(t);
+      if (t >= targetMs) clearInterval(id);
+    }, SECOND);
+    return () => clearInterval(id);
+  }, [valid, targetMs]);
+
+  if (!valid) return null;
+
+  const diff = Math.max(0, targetMs - now);
+  return {
+    days: Math.floor(diff / DAY),
+    hours: Math.floor((diff % DAY) / HOUR),
+    minutes: Math.floor((diff % HOUR) / MINUTE),
+    seconds: Math.floor((diff % MINUTE) / SECOND),
+    ended: diff === 0,
+  };
 }

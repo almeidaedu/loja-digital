@@ -18,10 +18,13 @@ export const storeConfig = {
   },
 
   // Banner de campanha. Desligado por padrão: urgência falsa só queima confiança.
+  // O texto é o da campanha de exemplo do template. Com `endsAt` (ISO com fuso,
+  // ex. '2026-11-30T23:59:59-03:00') aparece o contador, e o banner some sozinho
+  // quando o prazo passa. Sem `endsAt`, a oferta não tem prazo nem contador.
   promo: {
     enabled: false,
-    tag: '',
-    title: '',
+    tag: 'Oferta Especial',
+    title: 'Leve 3, pague 2',
     subtitle: '',
     endsAt: null,
   },

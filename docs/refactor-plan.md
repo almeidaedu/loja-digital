@@ -311,13 +311,66 @@ da dele. Quatro defeitos das fases 8 e 9a, corrigidos:
 
 | Achado da checagem | Onde | Fase |
 |---|---|---|
-| Link de âncora do Footer vindo de outra página (`/login` → FAQ) para no lugar errado: a rolagem acontece antes de Categorias e Produtos carregarem, e o conteúdo assíncrono empurra a seção milhares de px para baixo | `Footer.jsx`, `useScrollRestoration.js`, `Header.jsx:177` | a combinar |
+| ~~Link de âncora do Footer vindo de outra página (`/login` → FAQ) para no lugar errado~~ | ~~`Footer.jsx`, `useScrollRestoration.js`, `Header.jsx:177`~~ | ✅ H7 |
 | O cabide também é o placeholder de imagem do `ProductCard` | `ProductCard.jsx` | 10 |
-| TrustBar ainda diz "Entrega em 24h", agora em conflito com o Hero ("Envio no mesmo dia") | `TrustBar.jsx` | aguarda decisão de copy |
-| `Benefits.css` e `UrgencyBanner.css` cravam `'Barlow Condensed'`/`'Bebas Neue'`, fontes que não são carregadas: os títulos caem num sans-serif genérico, diferente do resto da página. O `Benefits` não está em nenhuma fase | `Benefits.css`, `UrgencyBanner.css` | 9b / 16 |
+| ~~TrustBar ainda diz "Entrega em 24h", agora em conflito com o Hero~~ | ~~`TrustBar.jsx`~~ | ✅ H7 |
+| ~~`Benefits.css` e `UrgencyBanner.css` cravam fontes que não são carregadas~~ | ~~`Benefits.css`, `UrgencyBanner.css`~~ | ✅ 9b, 9c |
 | Footer: 7 links para rotas que não existem (`/politica-trocas`, `/sobre`, …) caem no 404 em branco; "Categorias" aponta para `/produtos`; marca e WhatsApp cravados; `<svg>` do WhatsApp | `Footer.jsx` | 12 / 16 |
 | Scroll-spy: entre Categorias e FAQ (produtos, promo, benefícios) a pill fica presa em "Categorias" | `Header.jsx` | 16 |
 
+
+## Hotfix H7 — âncoras que chegam de outra página (fora da numeração de fases)
+
+- **Âncora por PUSH é do `useScrollRestoration`.** Footer, Header vindo de outra
+  página e qualquer `<Link>` para `/#secao`. Em rota nova, `followAnchor` alinha a
+  seção e realinha a cada mudança de altura do `body` (ResizeObserver) por até 2s,
+  porque Categorias e Produtos carregam depois e empurravam a seção para baixo. Roda,
+  toque, clique ou tecla devolvem o scroll ao usuário na hora. Na mesma rota, rola
+  suave. REPLACE (o scroll-spy reescrevendo a URL) é ignorado e não interrompe a
+  perseguição.
+- O `setTimeout(scrollIntoView, 100)` do Header saiu: era o remendo que falhava.
+- **`scrollTo(0, 0)` não era instantâneo**, ao contrário do que o comentário dizia:
+  o `html` tem `scroll-behavior: smooth`. Agora `{ behavior: 'instant' }`.
+- TrustBar: "Entrega em 24h" → "Envio no mesmo dia", como no Hero (aprovado).
+- Verificado no navegador: `/login` → FAQ pelo Footer, `/produtos` → FAQ e `/login` →
+  Categorias pelo Header. Nos três o título para em y≈180, abaixo do chrome (y=101).
+- `useScrollRestoration.test.jsx` reescrito: 8 testes.
+
+## Fases 9b + 9c — promo condicionada ao config e Benefícios
+
+**9b (promo):**
+- `UrgencyBanner` lê tag, título, subtítulo e `endsAt` do `storeConfig.promo`. Some
+  desligado, sem título ou com prazo vencido, e some **sozinho no segundo** em que o
+  prazo passa.
+- `useCountdown(target)` recebe o prazo. O antigo inventava "domingo 23:59" na
+  primeira visita, guardava no `localStorage` e renovava toda semana: cada visitante
+  via um relógio diferente e a oferta nunca acabava. Sem prazo, não há contador. O
+  `exhaustive-deps` do ratchet sumiu junto (25 → 24 warnings).
+- `Countdown` só apresenta. Ganhou bloco de dias (antes "97 horas"), algarismos
+  tabulares, e perdeu os ":" de texto posicionados com `margin-top: -20px`.
+- Verificado no navegador com a promo ligada e prazo de 3 dias: "3 Dias 03 Horas…".
+
+**9c:**
+- `storeConfig.promo` documenta o formato de `endsAt` e traz a campanha de exemplo
+  ("Oferta Especial", "Leve 3, pague 2"), **desligada**. Subtítulo vazio: o antigo
+  ("Só até domingo à meia-noite") afirmava um prazo que não existia.
+- Benefícios: só tokens e `.section` global. As fontes cravadas não eram carregadas.
+
+`useCountdown.test.js` (5) e `UrgencyBanner.test.jsx` (7) *(novos)*.
+
+## Testes ativos logado (conta local do usuário)
+
+Sem erro de página em nenhum fluxo: login → volta para `/`; carrinho (+, −, "−"
+desabilitado com 1 item, Escape fecha, foco entra no drawer); checkout (resumo e
+frete grátis corretos); meus pedidos; minha conta; admin (dashboard, produtos,
+pedidos). Parei antes de confirmar pedido para não criar cobrança.
+
+| Achado | Onde | Fase |
+|---|---|---|
+| `normalizeEmail()` do express-validator tira os pontos de e-mail Gmail: entra-se com `eduardo.hpa87@…` e a conta mostra `eduardohpa87@…` | `server/src/routes/authRoutes.js` | G |
+| **O servidor não cobra frete.** `totalAmount` = só os produtos; os R$ 15 existem apenas na tela do checkout | `orderController.js:24`, `Checkout.jsx:10-11` | Configurações (S) |
+
+## Fase 9a — Hero honesto e FAQ com spring
 
 **A Fase 9 virou 9a + 9b.** Gate de promo de verdade precisa do `Countdown.jsx` e do
 `useCountdown.js`: hoje o contador inventa um prazo "até domingo" por visitante
@@ -377,7 +430,8 @@ fechado, segundo clique fecha, CTA é link).
 | 8a | Home: de-dup, reveals (B9) | `Home.{jsx,css}`, `Categories.{jsx,css}`, `Benefits.jsx` |
 | 8b | Prova social honesta | `Testimonials.{jsx,css}`, `Home.jsx`, `Home.css` (del), `config/storeConfig.js` |
 | 9a | Hero honesto, FAQ spring | `Hero.{jsx,css}`, `FAQ.{jsx,css}`, `Home.jsx` |
-| 9b | Promo condicionada ao config | `UrgencyBanner.{jsx,css}`, `Countdown.jsx`, `hooks/useCountdown.js`, `config/storeConfig.js` |
+| 9b | Promo condicionada ao config | `UrgencyBanner.{jsx,css}`, `Countdown.{jsx,css}`, `hooks/useCountdown.js` |
+| 9c | Benefícios + formato da promo | `Benefits.{jsx,css}`, `config/storeConfig.js` |
 | 10 | Catálogo: card link, paginação real (B1,B6,B7) | `ProductCard.{jsx,css}`, `ProductListing.{jsx,css}`, `ProductGrid.jsx` |
 | 11 | PDP + Checkout | `ProductDetail.{jsx,css}`, `Checkout.{jsx,css}` |
 | 12 | `ResultPage` único (B2) | `ui/ResultPage/{jsx,css}`, `Payment{Success,Failure,Pending}.jsx` |
@@ -459,7 +513,7 @@ para `error`. Restam **24 ocorrências de quatro regras**, mais o `exhaustive-de
 | `Account.jsx` | 3 | `<label>` sem `htmlFor` | 13 |
 | ~~`ExitPopup.jsx`~~ | ~~2~~ | ~~overlay com `onClick` sem equivalente de teclado~~ | ✅ 7b |
 | `Orders.jsx` | 2 | `role="button"` sem `tabIndex` nem handler de tecla | 14 |
-| `useCountdown.js` | 1 | `exhaustive-deps`: falta `calc` | 16 |
+| ~~`useCountdown.js`~~ | ~~1~~ | ~~`exhaustive-deps`: falta `calc`~~ | ✅ 9b |
 
 A Fase 16 fecha as regras que ainda sobrarem e liga `--max-warnings 0`.
 
@@ -478,8 +532,9 @@ clientes do template. Decisão para o Estágio G, junto do item de CI.
 A partir daqui cada fase que mexe em comportamento traz os seus: a 7b somou 6
 (`ExitPopup.test.jsx`), o H3 mais 6 (`useExitIntent.test.js`), a 8a mais 5
 (`Categories.test.jsx`), a 8b mais 5 (`Testimonials.test.jsx`) e o H4 mais 3
-(`Header.test.jsx`) e a 9a mais 10 (`Hero.test.jsx`, `FAQ.test.jsx`), fechando em
-**51 testes, 11 arquivos**.
+(`Header.test.jsx`), a 9a mais 10 (`Hero.test.jsx`, `FAQ.test.jsx`), o H7 mais 4
+(`useScrollRestoration` reescrito) e a 9b mais 12 (`useCountdown`, `UrgencyBanner`),
+fechando em **67 testes, 13 arquivos**.
 
 | Arquivo | Cobre |
 |---|---|
@@ -571,14 +626,15 @@ continua entregue.
 - [x] 5b — CartItem + FreteBar + limpeza *(verificado no navegador)*
 - [x] 6 — Header + hotfix da pill *(verificado no navegador)*
 - [x] 7a — Shell *(diagnostics limpos; falta verificação no navegador)* · [x] 7b — ExitPopup sobre `Modal` *(lint 0 erros, 22 testes passando; falta verificação no navegador)*
+- [x] H7 — Âncoras vindas de outra página + TrustBar *(verificado por mim no navegador)*
 - [x] H6 — Checagem visual: ícone, âncora sob o header, `<main>` duplo, link do Footer *(verificado por mim no navegador)*
 - [x] H5 — Cursor de desabilitado unificado *(falta verificação no navegador)*
 - [x] H4 — Cursor global + "Avaliações" desabilitado *(41 testes; falta verificação no navegador)*
 - [x] H3 — Gate do `leadCapture` + vazamento do `useExitIntent` *(28 testes passando)*
 - [x] H2 — Hotfix saída do painel admin + B3 *(diagnostics limpos; falta verificação no navegador)*
-- [x] T1 — Ferramental do frontend *(lint 0 erros / 25 warnings, exit 0)* · [x] T2 — 51 testes de regressão passando
+- [x] T1 — Ferramental do frontend *(lint 0 erros / 25 warnings, exit 0)* · [x] T2 — 67 testes de regressão passando
 - [x] 8a — Home: reveals + de-dup (B9) *(lint 0 erros, 33 testes, build ok; falta verificação no navegador)* · [x] 8b — Prova social honesta *(lint 0 erros, 38 testes, build ok; falta verificação no navegador)*
-- [x] 9a — Hero honesto + FAQ spring *(lint 0 erros, 51 testes, build ok; falta verificação no navegador)* · [ ] 9b — Promo
+- [x] 9a — Hero honesto + FAQ spring *(lint 0 erros, 51 testes, build ok; falta verificação no navegador)* · [x] 9b — Promo · [x] 9c — Benefícios *(67 testes, lint 0 erros / 24 warnings, build ok)*
 - [ ] 10 — Catálogo · [ ] 11 — PDP+Checkout · [ ] 12 — Resultados · [ ] 13 — Auth
 - [ ] 14 — Pedidos+Admin shell · [ ] 15 — Admin CRUD
 - [ ] 16 — Varredura · [ ] 17 — Deleções

@@ -179,9 +179,11 @@ export default function Header() {
       document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
     } else {
       // Outra página: navega para /#hash — pathname e hash commitam juntos,
-      // então location.hash = '#prova-social' já no primeiro render com isHome=true
+      // então location.hash = '#prova-social' já no primeiro render com isHome=true.
+      // Quem leva até a seção é o useScrollRestoration. Aqui havia um
+      // `setTimeout(scrollIntoView, 100)`, que rolava antes de Categorias e
+      // Produtos carregarem; quando chegavam, a seção era empurrada para baixo.
       navigate({ pathname: '/', hash: `#${hash}` });
-      setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 100);
     }
   };
 
